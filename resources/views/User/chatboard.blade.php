@@ -8,7 +8,7 @@
             {{-- <div style="padding: 5px;border: #8e8e8e solid;border-radius: 11px;">
                 Menu
             </div> --}}
-            <div onclick="removeallmessage($user_send_user_data->id)" style="margin-top: 4px;padding: 5px;border: #8e8e8e solid;border-radius: 11px;">
+            <div onclick="removeallmessage({{ $user_send_user_data->id }})" style="margin-top: 4px;padding: 5px;border: #8e8e8e solid;border-radius: 11px;">
                 Clean All
             </div>
         </div>

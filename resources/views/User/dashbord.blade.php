@@ -53,7 +53,7 @@
                             element.scrollTop = element.scrollHeight;
                         } else {
                             Toastify({
-                                text: `name Send Message to ${e.message['message']}`
+                                text: `${e.message['name']} Send Message to ${e.message['message']}`
                                 , duration: 3000
                                 , gravity: "top"
                                 , position: "center"
@@ -117,8 +117,26 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
-        function removeallmessage(c) {
-            console.log('hello all messages');
+        function removeallmessage(messageuserid) {
+            console.log(messageuserid);
+            $.ajax({
+                type: 'post'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , url: '/message-remove-all'
+                , data: {
+                    messageuserid: messageuserid
+                }
+                , success: function(res) {
+                    $('#moreoptiondiv').css('display', 'none')
+                    console.log(messageuserid);
+                    message_show(messageuserid);
+                }
+                , error: function(e) {
+                    console.log(e);
+                }
+            });
         }
 
         function removemessagebyone(messageid) {

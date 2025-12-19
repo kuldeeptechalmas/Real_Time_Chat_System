@@ -50,6 +50,7 @@ class UserController extends Controller
             $message_data->receive_id = $request->receive_data_id;
             $message_data->save();
 
+            $message_data['name'] = $message_data->user_data_to_message->name;
             $userid = Auth::id();
             $selectuserid = $request->receive_data_id;
 
@@ -113,6 +114,27 @@ class UserController extends Controller
 
     public function message_remove_current_all(Request $request)
     {
-        dd($request->all());
+        $userid = Auth::id();
+        $selectuserid = $request->messageuserid;
+
+        $message_data_to_show = Message::where(function ($query) use ($userid, $selectuserid) {
+            $query->where('send_id', $userid)->whereNull('sender_deleted_at')
+                ->where('receive_id', $selectuserid);
+        })->orWhere(function ($query) use ($userid, $selectuserid) {
+            $query->where('send_id', $selectuserid)
+                ->where('receive_id', $userid)->whereNull('receiver_deleted_at');
+        })->orderBy('created_at', "asc")->get();
+
+        foreach ($message_data_to_show as $item) {
+            if ($item->send_id == Auth::id()) {
+                $item->sender_deleted_at = now();
+                $item->save();
+            }
+            if ($item->receive_id == Auth::id()) {
+                $item->receiver_deleted_at = now();
+                $item->save();
+            }
+        }
+        return response()->json(['allclean' => 'yes']);
     }
 }
