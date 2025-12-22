@@ -30,6 +30,7 @@ Route::middleware('RegisterUserExist')->group(function () {
 Route::middleware('AuthCheckExist')->group(function () {
     // Dashboard
     Route::match(['get', 'post'], '/dashboard', [MainController::class, 'dashboard'])->name('dashboard');
+    Route::match(['get', 'post'], '/user-profile', [UserController::class, 'user_profiles'])->name('user_profiles');
 
     // Ajax
     Route::match(['get', 'post'], '/search-friend', [UserController::class, 'search_friend'])->name('search_friend');
@@ -38,4 +39,5 @@ Route::middleware('AuthCheckExist')->group(function () {
     Route::match(['get', 'post'], '/message-show', [UserController::class, 'message_show_send_receive'])->name('message_show_send_receive');
     Route::match(['get', 'post'], '/message-remove', [UserController::class, 'message_remove_current'])->name('message_remove_current');
     Route::match(['get', 'post'], '/message-remove-all', [UserController::class, 'message_remove_current_all'])->name('message_remove_current_all');
+    Route::match(['get', 'post'], '/user-friend-list', [UserController::class, 'user_friend_list'])->name('user_friend_list');
 });

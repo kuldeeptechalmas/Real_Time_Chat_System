@@ -32,6 +32,15 @@
                         @enderror
                     </div>
                     <div class="mb-3">
+
+                        <label class="form-label">Gender</label> <br>
+                        <input type="radio" name="gender" value="Men" {{ old('gender')=='Men'?'checked':'' }}>Men
+                        <input type="radio" name="gender" value="Women" {{ old('gender')=='Women'?'checked':'' }}>Women
+                        @error('gender')
+                        <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label">Email Address</label>
                         <input type="text" class="form-control" name="email" value="{{ old('email') }}">
                         @error('email')

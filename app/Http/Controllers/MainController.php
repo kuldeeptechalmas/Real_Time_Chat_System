@@ -54,6 +54,7 @@ class MainController extends Controller
     public function registration(Request $request)
     {
         if ($request->isMethod('post')) {
+            // dd($request->all());
             $validator = Validator::make($request->all(), [
                 'username' => 'required|string|alpha_dash|unique:users,name',
                 'phone' => 'required|numeric|digits:10|unique:users,phone',
@@ -63,8 +64,10 @@ class MainController extends Controller
                     Password::min(8)->symbols()->mixedCase()->numbers()
                 ],
                 'cpassword' => 'required|same:password',
+                'gender' => 'required',
             ], [
                 'username.required' => 'Enter User Name is Required',
+                'gender.required' => 'Enter Gender is Required',
                 'username.alpha_dash' => 'Enter Only Letters, Numbers, Dashes and Underscores is Required',
                 'username.unique' => 'Enter User Name is Already Exist',
                 'phone.required' => 'Enter Phone No. is Required',
@@ -92,6 +95,7 @@ class MainController extends Controller
                 'phone' => $request->phone,
                 'email' => $request->email,
                 'password' => $request->password,
+                'gender' => $request->gender,
             );
 
             Session::put('register_user_data', $register_user_data);
@@ -110,12 +114,15 @@ class MainController extends Controller
     // Dashboard
     public function dashboard(Request $request)
     {
-        $message_data_order = Message::select('receive_id')
+        $message_data_order = Message::select('send_id', 'receive_id')
             ->selectRaw('MAX(created_at) as last_message_time')
             ->where('send_id', Auth::user()->id)
-            ->groupBy('receive_id')
+            ->orWhere('receive_id', Auth::user()->id)
+            ->groupBy('receive_id', 'send_id')
             ->orderByDesc('last_message_time')
             ->get();
+
+        // dd($message_data_order->toArray());
 
         if ($message_data_order->isNotEmpty()) {
             return view('User.dashbord', ['last_message_send_data' => $message_data_order, 'last_send_message_user' => $message_data_order[0]->receive_id]);
@@ -158,6 +165,7 @@ class MainController extends Controller
                     $user_data->name = $conform_user_data['username'];
                     $user_data->phone = $conform_user_data['phone'];
                     $user_data->email = $conform_user_data['email'];
+                    $user_data->gender = $conform_user_data['gender'];
                     $user_data->password = Hash::make($conform_user_data['password']);
                     $user_data->save();
 

@@ -11,6 +11,12 @@ use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller
 {
+    // User Profiles
+    public function user_profiles(Request $request)
+    {
+        return view('User.user_profile');
+    }
+
     // Search user Friend 
     public function search_friend(Request $request)
     {
@@ -40,10 +46,12 @@ class UserController extends Controller
         }
     }
 
+    // Message send Specific User
     public function message_send_specific_user(Request $request)
     {
         if (Auth::check()) {
 
+            // dd($request->message);   
             $message_data = new Message();
             $message_data->message = $request->message;
             $message_data->send_id = Auth::user()->id;
@@ -136,5 +144,19 @@ class UserController extends Controller
             }
         }
         return response()->json(['allclean' => 'yes']);
+    }
+
+    public function user_friend_list(Request $request)
+    {
+        $message_data_order = Message::select('receive_id')
+            ->selectRaw('MAX(created_at) as last_message_time')
+            ->where('send_id', Auth::user()->id)
+            ->groupBy('receive_id')
+            ->orderByDesc('last_message_time')
+            ->get();
+
+        // dd($message_data_order);
+
+        return view('user.searchfriend', ["last_message_send_data" => $message_data_order]);
     }
 }

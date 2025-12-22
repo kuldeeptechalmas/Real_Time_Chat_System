@@ -35,40 +35,6 @@
         }
 
     </style>
-    <script>
-        Pusher.logToConsole = true;
-        document.addEventListener('DOMContentLoaded', (event) => {
-            window.Echo.channel("send-channel")
-                .listen(".send-event", (e) => {
-                    if ("{{ Auth::user()->id }}" == e.message['receive_id']) {
-
-                        if (localStorage.getItem('current_user_chatboard') == e.message['send_id']) {
-                            var scrollbardiv = $("#scrollbarid").html();
-                            var addhtmldiv = `<div class="messagehover" style="margin: 14px;display: flex;justify-content: flex-start;">
-                            <div class=w_message d-flex gap-2"><div style="background: #fbdfd2;padding: 7px;border-radius: 0px 10px 10px;cursor: default;">
-                            ${e.message['message']}</div></div><div class="messagehovercontent" onclick="removemessagebyone(${e.message['id']})" style="background-color: #d28fa8;height: 32px;color: white;border-radius: 11px;margin-left: 13px;padding: 4px;cursor: default;">Remove</div></div>`;
-                            $("#scrollbarid").html(scrollbardiv + addhtmldiv);
-
-                            const element = document.getElementById("scrollbarid");
-                            element.scrollTop = element.scrollHeight;
-                        } else {
-                            Toastify({
-                                text: `${e.message['name']} Send Message to ${e.message['message']}`
-                                , duration: 3000
-                                , gravity: "top"
-                                , position: "center"
-                                , style: {
-                                    background: '#fbdfd2'
-                                    , color: "black"
-                                }
-                                , stopOnFocus: true
-                            , }).showToast();
-                        }
-                    }
-                });
-        });
-
-    </script>
 
 </head>
 <body style="height: 100vh;overflow: hidden;cursor: default;">
@@ -78,7 +44,19 @@
         {{-- first side manu --}}
         <div class="col-1" style="position: relative;">
             <div class="row" style="padding: 15px;background: #f9d8c9;">
-                {{ Auth::user()->name }}
+                <a href="{{ route('user_profiles') }}" style="color: black;">
+
+                    @if (Auth::user()->image_path==Null)
+                    @if (Auth::user()->gender=='Men')
+                    <i class="fa-solid fa-user" style="font-size: 21px;"></i>
+                    @else
+                    <i class="fa-regular fa-user" style="font-size: 21px;"></i>
+                    @endif
+                    @else
+                    {{ Auth::user()->image_path }}
+                    @endif
+                </a>
+                {{-- {{ Auth::user()->name }} --}}
             </div>
             <div style="position: absolute;bottom: 9px;">
                 <a href="{{ route('logout') }}"><button type="button" style="background: #fbdfd2;" class="btn btn-info">Logout</button></a>
@@ -117,8 +95,55 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
+        $(document).ready(function() {
+
+            Pusher.logToConsole = true;
+            window.Echo.channel("send-channel")
+                .listen(".send-event", (e) => {
+                    userfriendlist();
+                    if ("{{ Auth::user()->id }}" == e.message['receive_id']) {
+
+                        if (localStorage.getItem('current_user_chatboard') == e.message['send_id']) {
+                            console.log(e.message['message']);
+                            const data = e.message['message'].replace(/(?:\r\n|\r|\n)/g, '<br>');
+
+                            var scrollbardiv = $("#scrollbarid").html();
+                            var addhtmldiv = `<div class="messagehover" style="margin: 14px;display: flex;justify-content: flex-start;">
+                            <div class=w_message d-flex gap-2"><div style="background: #fbdfd2;padding: 7px;border-radius: 0px 10px 10px;cursor: default;">
+                            ${data}
+                            </div></div><div class="messagehovercontent" onclick="removemessagebyone(${e.message['id']})" style="background-color: #d28fa8;height: 32px;color: white;border-radius: 11px;margin-left: 13px;padding: 4px;cursor: default;">Remove</div></div>`;
+                            $("#scrollbarid").html(scrollbardiv + addhtmldiv);
+
+                            const element = document.getElementById("scrollbarid");
+                            element.scrollTop = element.scrollHeight;
+                        } else {
+                            Toastify({
+                                text: `${e.message['name']} Send Message to ${e.message['message']}`
+                                , duration: 3000
+                                , gravity: "top"
+                                , position: "center"
+                                , style: {
+                                    background: '#fbdfd2'
+                                    , color: "black"
+                                }
+                                , stopOnFocus: true
+                            , }).showToast();
+                        }
+                    }
+                });
+
+            // set deshboard data
+            if ("{{ isset($last_send_message_user) }}" != 0) {
+                localStorage.setItem('current_user_chatboard', "{{ isset($last_send_message_user) }}");
+                setsenduser("{{ isset($last_send_message_user)?$last_send_message_user:'' }}");
+            }
+
+            // messages textarea
+
+        });
+
         function removeallmessage(messageuserid) {
-            console.log(messageuserid);
+            // console.log(messageuserid);
             $.ajax({
                 type: 'post'
                 , headers: {
@@ -167,31 +192,28 @@
             $('#moreoptiondiv').css('display', 'block');
         }
 
-        $(document).ready(function() {
-            if ("{{ isset($last_send_message_user) }}" != 0) {
-                localStorage.setItem('current_user_chatboard', "{{ isset($last_send_message_user) }}");
-                setsenduser("{{ isset($last_send_message_user)?$last_send_message_user:'' }}");
-            }
-        });
-
         function Searchfriend() {
-            // console.log($('#searchfriendname').val());
-            $.ajax({
-                type: 'post'
-                , headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-                , url: '/search-friend'
-                , data: {
-                    searchdata: $('#searchfriendname').val()
-                }
-                , success: function(res) {
-                    $('#search_data').html(res);
-                }
-                , error: function(e) {
-                    console.log(e);
-                }
-            });
+            console.log($('#searchfriendname').val());
+            if ($('#searchfriendname').val() == '') {
+                userfriendlist();
+            } else {
+                $.ajax({
+                    type: 'post'
+                    , headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                    , url: '/search-friend'
+                    , data: {
+                        searchdata: $('#searchfriendname').val()
+                    }
+                    , success: function(res) {
+                        $('#search_data').html(res);
+                    }
+                    , error: function(e) {
+                        console.log(e);
+                    }
+                });
+            }
         }
 
         function setsenduser(user_id) {
@@ -253,8 +275,26 @@
                 , success: function(res) {
                     $('#message_to_show').html(res);
                     $('#messages').val('');
+                    userfriendlist();
                     const element = document.getElementById("scrollbarid");
                     element.scrollTop = element.scrollHeight;
+
+                }
+                , error: function(e) {
+                    console.log(e);
+                }
+            });
+        }
+
+        function userfriendlist() {
+            $.ajax({
+                type: 'get'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , url: '/user-friend-list'
+                , success: function(res) {
+                    $('#search_data').html(res);
 
                 }
                 , error: function(e) {
