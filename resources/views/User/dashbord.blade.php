@@ -53,34 +53,38 @@
                     <i class="fa-regular fa-user" style="font-size: 21px;"></i>
                     @endif
                     @else
-                    {{ Auth::user()->image_path }}
+                    <div style="height: 37px;width: 37px;">
+                        <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 22px;" src="{{ asset('storage/img/'.Auth::user()->image_path) }}" alt="">
+                    </div>
                     @endif
                 </a>
                 {{-- {{ Auth::user()->name }} --}}
             </div>
-            <div style="position: absolute;bottom: 9px;">
+            <a href="{{ route('dashboard') }}" style="color: black;text-decoration: none;">
+                <div class="row" style="padding: 15px;background: #f9d8c9;margin-top: 4px;">
+                    Home
+                </div>
+            </a>
+            <div style="position: fixed;bottom: 11px;">
                 <a href="{{ route('logout') }}"><button type="button" style="background: #fbdfd2;" class="btn btn-info">Logout</button></a>
             </div>
         </div>
+        @if (isset($dashboardshow))
 
         {{-- searching and show user --}}
         <div class="col-4 bg-light" style="padding: 0px;">
-            <div style="padding: 15px;background-color: #fbdfd2">
+            <div style="padding: 21px;background-color: #fbdfd2">
                 <div>
                     Real Time Chat
                 </div>
             </div>
             <div class="row" style="padding: 15px;">
-                <input style="width: 87%;margin-left: 20px;" id="searchfriendname" oninput="Searchfriend()" class="form-control" type="search" placeholder="Search" aria-label="Search" />
+                <input style="width: 87%;margin-left: 20px;" autocomplete="off" id="searchfriendname" oninput="Searchfriend()" class="form-control" type="search" placeholder="Search" aria-label="Search" />
             </div>
-            <div class="scroll-container" id="search_data" style="padding: 0px 20px 7px 20px;">
-                @if (isset($last_message_send_data))
-                @foreach ($last_message_send_data as $item)
-                <div class="card" style="padding: 16px;margin: 2px;" onclick="setsenduser({{ $item->user_data_to_message->id }})">
-                    {{ $item->user_data_to_message->name }}
-                </div>
-                @endforeach
-                @endif
+
+            {{-- here --}}
+            <div class="scroll-container" style="height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;" id="search_data" style="padding: 0px 20px 7px 20px;">
+
             </div>
         </div>
 
@@ -90,32 +94,73 @@
                 <img src="{{ asset('img/messages.png') }}" style="height: 100%;width: 100%;" alt="">
             </div>
         </div>
+        @endif
+        @yield('content')
     </div>
+    @stack('script')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
         $(document).ready(function() {
 
+            userfriendlist();
             Pusher.logToConsole = true;
-            window.Echo.channel("send-channel")
+            window.Echo.join("send-channel").here((mem) => {
+                    localStorage.setItem('onlinedata', JSON.stringify(mem));
+                    mem.forEach(element => {
+                        if ($(`#${element['id']}`).html() != null) {
+
+                            if (element['name'] == $(`#${element['name']}`).html().trim()) {
+
+                                $(`#${element['id']}`).html(`<div style="height: 37px;width: 37px;">
+                                        <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">
+                                        </div>
+                                        <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
+                                    <div style="margin-left: 21px;" id="${element['name']}">
+                                             ${element['name']} 
+                                        </div>`);
+                            }
+                        }
+                    });
+                }).joining((men) => {
+                    // console.log(men);
+
+                }).leaving((men) => {
+                    // console.log(men);
+
+                })
                 .listen(".send-event", (e) => {
-                    userfriendlist();
                     if ("{{ Auth::user()->id }}" == e.message['receive_id']) {
 
                         if (localStorage.getItem('current_user_chatboard') == e.message['send_id']) {
-                            console.log(e.message['message']);
                             const data = e.message['message'].replace(/(?:\r\n|\r|\n)/g, '<br>');
 
+                            // data convertion
+                            const isoString = e.message['created_at'];
+                            const dateObject = new Date(isoString);
+
+                            const options = {
+                                hour: 'numeric'
+                                , minute: '2-digit'
+                                , hour12: true
+                            };
+                            const formattedTime = dateObject.toLocaleString('en-US', options);
+
+                            // old message get
                             var scrollbardiv = $("#scrollbarid").html();
                             var addhtmldiv = `<div class="messagehover" style="margin: 14px;display: flex;justify-content: flex-start;">
                             <div class=w_message d-flex gap-2"><div style="background: #fbdfd2;padding: 7px;border-radius: 0px 10px 10px;cursor: default;">
                             ${data}
+                            <span style="font-size: 11px;"> ${formattedTime} </span>
                             </div></div><div class="messagehovercontent" onclick="removemessagebyone(${e.message['id']})" style="background-color: #d28fa8;height: 32px;color: white;border-radius: 11px;margin-left: 13px;padding: 4px;cursor: default;">Remove</div></div>`;
                             $("#scrollbarid").html(scrollbardiv + addhtmldiv);
 
                             const element = document.getElementById("scrollbarid");
                             element.scrollTop = element.scrollHeight;
+
+                            setsenduser(e.message['send_id']);
+                            // message_show(e.message['receive_id']);
                         } else {
                             Toastify({
                                 text: `${e.message['name']} Send Message to ${e.message['message']}`
@@ -132,18 +177,25 @@
                     }
                 });
 
+            window.Echo.channel("receive-channel")
+                .listen(".receive-event", (e) => {
+
+                    if ("{{ Auth::id() }}" == e.users_data['send_id']) {
+                        message_show(e.users_data['receive_id']);
+                    }
+                });
+
             // set deshboard data
-            if ("{{ isset($last_send_message_user) }}" != 0) {
-                localStorage.setItem('current_user_chatboard', "{{ isset($last_send_message_user) }}");
-                setsenduser("{{ isset($last_send_message_user)?$last_send_message_user:'' }}");
+            if ("{{ isset($last_send_message_user) }}") {
+
+                if ("{{ isset($last_send_message_user)?$last_send_message_user:''!=Auth::id() }}") {
+                    localStorage.setItem('current_user_chatboard', "{{ isset($last_send_message_user)?$last_send_message_user:'' }}");
+                    setsenduser("{{ isset($last_send_message_user)?$last_send_message_user:'' }}");
+                }
             }
-
-            // messages textarea
-
         });
 
         function removeallmessage(messageuserid) {
-            // console.log(messageuserid);
             $.ajax({
                 type: 'post'
                 , headers: {
@@ -155,8 +207,6 @@
                 }
                 , success: function(res) {
                     $('#moreoptiondiv').css('display', 'none')
-                    console.log(messageuserid);
-                    message_show(messageuserid);
                 }
                 , error: function(e) {
                     console.log(e);
@@ -193,31 +243,42 @@
         }
 
         function Searchfriend() {
-            console.log($('#searchfriendname').val());
-            if ($('#searchfriendname').val() == '') {
-                userfriendlist();
-            } else {
-                $.ajax({
-                    type: 'post'
-                    , headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                    , url: '/search-friend'
-                    , data: {
-                        searchdata: $('#searchfriendname').val()
-                    }
-                    , success: function(res) {
-                        $('#search_data').html(res);
-                    }
-                    , error: function(e) {
-                        console.log(e);
-                    }
-                });
-            }
+            $.ajax({
+                type: 'post'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , url: '/search-friend'
+                , data: {
+                    searchdata: $('#searchfriendname').val()
+                }
+                , success: function(res) {
+                    $('#search_data').html(res);
+                    const onlinesuser = localStorage.getItem('onlinedata');
+                    const onlineuserData = JSON.parse(onlinesuser);
+
+                    onlineuserData.forEach(element => {
+                        if ($(`#${element['id']}`).html() != null) {
+
+                            if (element['name'] == $(`#${element['name']}`).html().trim()) {
+                                $(`#${element['id']}`).html(`<div style="height: 37px;width: 37px;">
+                                        <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">
+                                        </div>
+                                        <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
+                                    <div style="margin-left: 21px;" id="${element['name']}">
+                                             ${element['name']} 
+                                        </div>`);
+                            }
+                        }
+                    });
+                }
+                , error: function(e) {
+                    console.log(e);
+                }
+            });
         }
 
         function setsenduser(user_id) {
-            // console.log(user_id);
             $.ajax({
                 type: 'post'
                 , headers: {
@@ -238,8 +299,12 @@
             });
         }
 
-        function sendmessagetosender(senduserid) {
-            // console.log($('#messages').val());
+        function sendmessagetosender(senduserid, message) {
+            if (message == null) {
+                var message_data = $('#messages').val();
+            } else {
+                var message_data = message;
+            }
             $.ajax({
                 type: 'post'
                 , headers: {
@@ -247,12 +312,15 @@
                 }
                 , url: '/message-send'
                 , data: {
-                    message: $('#messages').val()
+                    message: message_data
                     , receive_data_id: senduserid
                 }
                 , success: function(res) {
                     $('#message_to_show').html(res);
                     $('#messages').val('');
+
+                    userfriendlist();
+
                     const element = document.getElementById("scrollbarid");
                     element.scrollTop = element.scrollHeight;
                 }
@@ -275,7 +343,6 @@
                 , success: function(res) {
                     $('#message_to_show').html(res);
                     $('#messages').val('');
-                    userfriendlist();
                     const element = document.getElementById("scrollbarid");
                     element.scrollTop = element.scrollHeight;
 
@@ -296,6 +363,23 @@
                 , success: function(res) {
                     $('#search_data').html(res);
 
+                    const onlinesuser = localStorage.getItem('onlinedata');
+                    const onlineuserData = JSON.parse(onlinesuser);
+
+                    onlineuserData.forEach(element => {
+                        if ($(`#${element['id']}`).html() != null) {
+
+                            if (element['name'] == $(`#${element['name']}`).html().trim()) {
+                                $(`#${element['id']}`).html(`<div style="height: 37px;width: 37px;">
+                                        <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">
+                                        </div>
+                                        <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
+                                    <div style="margin-left: 21px;" id="${element['name']}">
+                                             ${element['name']} 
+                                        </div>`);
+                            }
+                        }
+                    });
                 }
                 , error: function(e) {
                     console.log(e);

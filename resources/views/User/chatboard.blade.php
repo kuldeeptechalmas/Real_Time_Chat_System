@@ -1,6 +1,8 @@
 <div style="position: relative;height: 100vh;">
     {{-- header of chating user --}}
     <div style="position: relative;padding: 15px;background-color: #fbdfd26e;display: flex;justify-content: space-between;">
+        <div style="height: 37px;width: 37px;">
+            <img style="object-fit: cover;height: 100%;width: 100%;border-radius: 20px;" src="{{ asset('storage/img/'.$user_send_user_data->image_path) }}" alt=""></div>
         <div>{{ $user_send_user_data->name }}</div>
 
         <i class="fa-solid fa-ellipsis-vertical" onclick="moreoptionshow()"></i>
@@ -19,10 +21,26 @@
     {{-- message input --}}
     <div class="bg-light" style="position: absolute;bottom: 1px;padding: 16px;width: 100%;display: flex;border-radius: 129px;">
         <i class="fa-solid fa-paperclip" style="padding-top: 14px;font-size: 19px;"></i>
-        {{-- <input type="text" style="width: 87%;margin-left: 20px;" autocomplete="off" class="form-control" id="messages" placeholder="Type Message Here..." aria-label="Search" /> --}}
         <textarea style="width: 87%;margin-left: 20px; resize: none;" rows="1" autocomplete="off" class="form-control scroll-container" id="messages" placeholder="Type Message Here..." aria-label="Search"></textarea>
         {{-- <input type="text" /> --}}
         <input type="submit" value="" hidden>
         <i class="fa-solid fa-paper-plane" onclick="sendmessagetosender({{ $user_send_user_data->id }})" style="padding-top: 9px;margin-left: 15px;font-size: 20px;"></i>
     </div>
 </div>
+<script>
+    var inputId = document.getElementById('messages');
+
+    inputId.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            if (!event.shiftKey) {
+                event.preventDefault();
+                const data_of_message = $('#messages').val();
+                $('#messages').val('');
+                console.log(data_of_message);
+
+                sendmessagetosender("{{ $user_send_user_data->id }}", data_of_message);
+            }
+        }
+    });
+
+</script>

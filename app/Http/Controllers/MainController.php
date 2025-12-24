@@ -114,20 +114,24 @@ class MainController extends Controller
     // Dashboard
     public function dashboard(Request $request)
     {
-        $message_data_order = Message::select('send_id', 'receive_id')
+        $message_data_order = Message::select('receive_id')
             ->selectRaw('MAX(created_at) as last_message_time')
             ->where('send_id', Auth::user()->id)
-            ->orWhere('receive_id', Auth::user()->id)
-            ->groupBy('receive_id', 'send_id')
+            ->groupBy('receive_id')
             ->orderByDesc('last_message_time')
             ->get();
-
-        // dd($message_data_order->toArray());
-
+        // dd($message_data_order[0]->receive_id);
         if ($message_data_order->isNotEmpty()) {
-            return view('User.dashbord', ['last_message_send_data' => $message_data_order, 'last_send_message_user' => $message_data_order[0]->receive_id]);
+            return view(
+                'User.dashbord',
+                [
+                    'last_message_send_data' => $message_data_order,
+                    'last_send_message_user' => $message_data_order[0]->receive_id,
+                    'dashboardshow' => 'yes'
+                ]
+            );
         } elseif ($message_data_order->count() == 0) {
-            return view('User.dashbord');
+            return view('User.dashbord', ['dashboardshow' => 'yes']);
         } else {
             return view('mainerror');
         }

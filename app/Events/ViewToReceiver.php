@@ -11,24 +11,24 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class SendMeesages implements ShouldBroadcastNow
+class ViewToReceiver implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $message;
-    public function __construct($message)
+    public $users_data;
+    public function __construct($users_data)
     {
-        $this->message = $message;
+        $this->users_data = $users_data;
     }
 
-    public function broadcastOn()
+    public function broadcastOn(): array
     {
-        return new PresenceChannel('send-channel');
-        // return new Channel('send-channel');
-        // new PrivateChannel('send-channel'),
+        return [
+            new Channel('receive-channel'),
+        ];
     }
     public function broadcastAs()
     {
-        return 'send-event';
+        return 'receive-event';
     }
 }
