@@ -17,11 +17,11 @@ class Message extends Model
 
     public function sender()
     {
-        return $this->belongsTo(User::class, 'send_id');
+        return $this->belongsTo(User::class, 'send_id', 'id');
     }
 
     public function receiver()
     {
-        return $this->belongsTo(User::class, 'receive_id');
+        return $this->belongsTo(User::class, 'receive_id', 'id');
     }
 }

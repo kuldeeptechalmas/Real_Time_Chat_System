@@ -58,7 +58,7 @@ class MainController extends Controller
             $validator = Validator::make($request->all(), [
                 'username' => 'required|string|alpha_dash|unique:users,name',
                 'phone' => 'required|numeric|digits:10|unique:users,phone',
-                'email' => 'required|unique:users,email|email:rfc,dns',
+                'email' => ['required', 'unique:users,email', 'email:rfc,dns', 'regex:/^[a-zA-Z0-9._%+-]+@(gmail|yahoo|yopmail)\.com$/'],
                 'password' => [
                     'required',
                     Password::min(8)->symbols()->mixedCase()->numbers()
@@ -77,6 +77,7 @@ class MainController extends Controller
                 'email.required' => 'Enter Email Address is Required',
                 'email.unique' => 'Enter Email Address is Already Exist',
                 'email.email' => 'Enter Valid Email Address is Required',
+                'email.regex' => 'Enter only Gmail,Yahoo,Yopmail Domain is Required',
                 'password.required' => 'Enter Password is Required',
                 'password.min' => 'Enter Password is Min 8 Letter Required',
                 'password.mixed' => 'Enter Password is One Upper and Lower Cases Required',
@@ -116,11 +117,12 @@ class MainController extends Controller
     {
         $message_data_order = Message::select('receive_id')
             ->selectRaw('MAX(created_at) as last_message_time')
+            ->selectRaw("SUM(CASE WHEN status = 'send' THEN 1 ELSE 0 END) as sent_count")
             ->where('send_id', Auth::user()->id)
             ->groupBy('receive_id')
             ->orderByDesc('last_message_time')
             ->get();
-        // dd($message_data_order[0]->receive_id);
+
         if ($message_data_order->isNotEmpty()) {
             return view(
                 'User.dashbord',

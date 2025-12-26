@@ -58,12 +58,12 @@
                     </div>
                     @endif
                 </a>
-                {{-- {{ Auth::user()->name }} --}}
             </div>
             <a href="{{ route('dashboard') }}" style="color: black;text-decoration: none;">
                 <div class="row" style="padding: 15px;background: #f9d8c9;margin-top: 4px;">
                     Home
                 </div>
+
             </a>
             <div style="position: fixed;bottom: 11px;">
                 <a href="{{ route('logout') }}"><button type="button" style="background: #fbdfd2;" class="btn btn-info">Logout</button></a>
@@ -74,8 +74,13 @@
         {{-- searching and show user --}}
         <div class="col-4 bg-light" style="padding: 0px;">
             <div style="padding: 21px;background-color: #fbdfd2">
-                <div>
-                    Real Time Chat
+                <div class="d-flex">
+                    <div style="height: 26px;width: 49px;">
+                        <img style="height: 100%;width: 100%;" src="{{ asset('img/logo.png') }}" alt="">
+                    </div>
+                    <div style="display: flex;align-items: center;margin-left: 20px;">
+                        Real Time Chat
+                    </div>
                 </div>
             </div>
             <div class="row" style="padding: 15px;">
@@ -97,6 +102,23 @@
         @endif
         @yield('content')
     </div>
+
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageshowmodel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog mt-0 mb-0">
+            <div class="modal-content text-white" style="height: 551px;background: #212529;width: 100%;">
+                <div class="modal-header">
+                    <h3 class="modal-title fs-5" id="ImageShowUserName"></h3>
+                    <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="ImageShowUserImage_path" style="height: 100%;width: 100%;">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     @stack('script')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -105,7 +127,8 @@
         $(document).ready(function() {
 
             userfriendlist();
-            Pusher.logToConsole = true;
+            // Pusher.logToConsole = true;
+            Pusher.logToConsole = false;
             window.Echo.join("send-channel").here((mem) => {
                     localStorage.setItem('onlinedata', JSON.stringify(mem));
                     mem.forEach(element => {
@@ -113,22 +136,81 @@
 
                             if (element['name'] == $(`#${element['name']}`).html().trim()) {
 
+                                let img = "";
+                                if (element['image_path'] != null) {
+                                    img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
+                                } else {
+                                    if (element['gender'] == "Men") {
+                                        img = `<i class="fa-solid fa-user" style="font-size: 21px;"></i>`;
+                                    }
+                                    if (element['gender'] == "Women") {
+                                        img = `<i class="fa-regular fa-user" style="font-size: 21px;"></i>`;
+                                    }
+                                }
+                                console.log(img);
                                 $(`#${element['id']}`).html(`<div style="height: 37px;width: 37px;">
-                                        <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">
+                                        ${img}
                                         </div>
                                         <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
-                                    <div style="margin-left: 21px;" id="${element['name']}">
+                                        <div onclick="setsenduser( ${element['id']} )">
+                                        <div style="margin-left: 21px;" id="${element['name']}">
                                              ${element['name']} 
-                                        </div>`);
+                                        </div>
+                                        </div>
+                                        `);
                             }
                         }
                     });
-                }).joining((men) => {
-                    // console.log(men);
+                }).joining((member) => {
+                    if ($(`#${member['id']}`).html() != null) {
 
-                }).leaving((men) => {
-                    // console.log(men);
+                        if (member['name'] == $(`#${member['name']}`).html().trim()) {
+                            if (member['image_path'] != null) {
+                                img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','${member['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${member['image_path']}" alt="">`;
+                            } else {
+                                if (member['gender'] == "Men") {
+                                    img = `<i class="fa-solid fa-user" style="font-size: 21px;"></i>`;
+                                }
+                                if (member['gender'] == "Women") {
+                                    img = `<i class="fa-regular fa-user" style="font-size: 21px;"></i>`;
+                                }
+                            }
+                            $(`#${member['id']}`).html(`<div style="height: 37px;width: 37px;">
+                                        ${ img }
+                                        </div>
+                                        <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
+                                        <div onclick="setsenduser( ${member['id']} )">
+                                        <div style="margin-left: 21px;" id="${member['name']}">
+                                             ${member['name']} 
+                                        </div>
+                                        </div>`);
+                        }
+                    }
 
+                }).leaving((member) => {
+                    if ($(`#${member['id']}`).html() != null) {
+
+                        if (member['name'] == $(`#${member['name']}`).html().trim()) {
+                            if (member['image_path'] != null) {
+                                img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','${member['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${member['image_path']}" alt="">`;
+                            } else {
+                                if (member['gender'] == "Men") {
+                                    img = `<i class="fa-solid fa-user" style="font-size: 21px;"></i>`;
+                                }
+                                if (member['gender'] == "Women") {
+                                    img = `<i class="fa-regular fa-user" style="font-size: 21px;"></i>`;
+                                }
+                            }
+                            $(`#${member['id']}`).html(`<div style="height: 37px;width: 37px;">
+                                        ${img}
+                                        </div>
+                                        <div onclick="setsenduser( ${member['id']} )">
+                                        <div style="margin-left: 21px;" id="${member['name']}">
+                                             ${member['name']} 
+                                        </div>
+                                        </div>`);
+                        }
+                    }
                 })
                 .listen(".send-event", (e) => {
                     if ("{{ Auth::user()->id }}" == e.message['receive_id']) {
@@ -160,8 +242,24 @@
                             element.scrollTop = element.scrollHeight;
 
                             setsenduser(e.message['send_id']);
-                            // message_show(e.message['receive_id']);
                         } else {
+                            if ($(`#${e.message['send_id']}`).html() != null) {
+
+                                if (e.message['sender']['name'] == $(`#${e.message['sender']['name']}`).html().trim()) {
+
+                                    $(`#${e.message['sender']['id']}`).html(`<div style="height: 37px;width: 37px;">
+                                        <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${e.message['sender']['name']}','${e.message['sender']['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${e.message['sender']['image_path']}" alt="">
+                                        </div>
+                                        <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
+                                        <div onclick="setsenduser( ${e.message['sender']['id']} )">
+                                        <div style="margin-left: 21px;font-weight: bold;" id="${e.message['sender']['name']}">
+                                             ${e.message['sender']['name']} 
+                                        </div>
+                                        </div>
+                                        `);
+                                }
+
+                            }
                             Toastify({
                                 text: `${e.message['name']} Send Message to ${e.message['message']}`
                                 , duration: 3000
@@ -194,6 +292,17 @@
                 }
             }
         });
+
+        function FilesImageSend() {
+            $('#files').click();
+        }
+
+        function imagesetshow(name, image_path) {
+            $('#ImageShowUserName').html(name);
+            $('#ImageShowUserImage_path').html(`
+            <img style="height: 100%;width: 100%;object-fit: cover;" src="storage/img/${image_path}" alt="">
+            `);
+        }
 
         function removeallmessage(messageuserid) {
             $.ajax({
@@ -261,12 +370,24 @@
                         if ($(`#${element['id']}`).html() != null) {
 
                             if (element['name'] == $(`#${element['name']}`).html().trim()) {
+                                if (element['image_path'] != null) {
+                                    img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
+                                } else {
+                                    if (element['gender'] == "Men") {
+                                        img = `<i class="fa-solid fa-user" style="font-size: 21px;"></i>`;
+                                    }
+                                    if (element['gender'] == "Women") {
+                                        img = `<i class="fa-regular fa-user" style="font-size: 21px;"></i>`;
+                                    }
+                                }
                                 $(`#${element['id']}`).html(`<div style="height: 37px;width: 37px;">
-                                        <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">
+                                        ${img}
                                         </div>
                                         <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
-                                    <div style="margin-left: 21px;" id="${element['name']}">
-                                             ${element['name']} 
+                                        <div onclick="setsenduser( ${element['id']} )">
+                                        <div style="margin-left: 21px;" id="${element['name']}">
+                                       ${element['name']} 
+                                        </div>
                                         </div>`);
                             }
                         }
@@ -279,6 +400,7 @@
         }
 
         function setsenduser(user_id) {
+
             $.ajax({
                 type: 'post'
                 , headers: {
@@ -300,10 +422,23 @@
         }
 
         function sendmessagetosender(senduserid, message) {
+
+            console.log(document.getElementById('files').files);
             if (message == null) {
                 var message_data = $('#messages').val();
             } else {
                 var message_data = message;
+            }
+            var formData = new FormData();
+            formData.append('message', message_data);
+            formData.append('receive_data_id', senduserid);
+
+            var fileInput = document.getElementById('files');
+
+            if (fileInput.files.length > 0) {
+                for (var i = 0; i < fileInput.files.length; i++) {
+                    formData.append('files[]', fileInput.files[i]);
+                }
             }
             $.ajax({
                 type: 'post'
@@ -311,10 +446,9 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
                 , url: '/message-send'
-                , data: {
-                    message: message_data
-                    , receive_data_id: senduserid
-                }
+                , data: formData
+                , contentType: false
+                , processData: false
                 , success: function(res) {
                     $('#message_to_show').html(res);
                     $('#messages').val('');
@@ -370,13 +504,24 @@
                         if ($(`#${element['id']}`).html() != null) {
 
                             if (element['name'] == $(`#${element['name']}`).html().trim()) {
+                                if (element['image_path'] != null) {
+                                    img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
+                                } else {
+                                    if (element['gender'] == "Men") {
+                                        img = `<i class="fa-solid fa-user" style="font-size: 21px;"></i>`;
+                                    }
+                                    if (element['gender'] == "Women") {
+                                        img = `<i class="fa-regular fa-user" style="font-size: 21px;"></i>`;
+                                    }
+                                }
                                 $(`#${element['id']}`).html(`<div style="height: 37px;width: 37px;">
-                                        <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">
+                                        ${img}
                                         </div>
                                         <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
-                                    <div style="margin-left: 21px;" id="${element['name']}">
+                                        <div onclick="setsenduser( ${element['id']} )">
+                                        <div style="margin-left: 21px;" id="${element['name']}">
                                              ${element['name']} 
-                                        </div>`);
+                                        </div></div>`);
                             }
                         }
                     });

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
@@ -36,6 +37,7 @@ class UserController extends Controller
                     'required',
                     'email',
                     'email:rfc,dns',
+                    'regex:/^[a-zA-Z0-9._%+-]+@(gmail|yahoo|yopmail)\.com$/',
                     Rule::unique('users', 'email')->ignore($request->id)
                 ],
             ], [
@@ -50,6 +52,7 @@ class UserController extends Controller
                 'email.required' => 'Enter Email Address is Required',
                 'email.unique' => 'Enter Email Address is Already Exist',
                 'email.email' => 'Enter Valid Email Address is Required',
+                'email.regex' => 'Enter only Gmail,Yahoo,Yopmail Domain is Required',
             ]);
 
             if ($validator->fails()) {
@@ -130,20 +133,32 @@ class UserController extends Controller
     public function message_send_specific_user(Request $request)
     {
         if (Auth::check()) {
-
-            $message_data = new Message();
-            $message_data->message = $request->message;
-            $message_data->send_id = Auth::user()->id;
-            $message_data->receive_id = $request->receive_data_id;
-            $message_data->status = 'send';
-            $message_data->created_at = now();
-            $message_data->save();
+            if ($files = $request->file('files')) {
+                foreach ($files as $file) {
+                    $file->storeAs('img', $file->getClientOriginalName());
+                    $message_data = new Message();
+                    $message_data->message = $file->getClientOriginalName();
+                    $message_data->send_id = Auth::user()->id;
+                    $message_data->receive_id = $request->receive_data_id;
+                    $message_data->status = 'send';
+                    $message_data->save();
+                }
+            } else {
+                $message_data = new Message();
+                $message_data->message = $request->message;
+                $message_data->send_id = Auth::user()->id;
+                $message_data->receive_id = $request->receive_data_id;
+                $message_data->status = 'send';
+                $message_data->save();
+            }
 
             $message_data['name'] = $message_data->user_data_to_message->name;
             $userid = Auth::id();
             $selectuserid = $request->receive_data_id;
 
-            event(new SendMeesages($message_data->toArray()));
+            $get_with_message_user = Message::with('sender')->find($message_data->id);
+
+            event(new SendMeesages($get_with_message_user->toArray()));
 
             $message_data_to_show = Message::where(function ($query) use ($userid, $selectuserid) {
                 $query->where('send_id', $userid)->whereNull('sender_deleted_at')

@@ -165,7 +165,7 @@
                                 <div class="cover"></div>
                             </div>
                             <div class="back-side cover"></div>
-                        </div>
+                        </div>  
                         <label class="custom-file-upload">
                             <input class="title" type="file" name="file" />
                             Upload a File
