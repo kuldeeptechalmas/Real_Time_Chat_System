@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/login');
 Route::match(['get', 'post'], '/login', [MainController::class, 'login'])->name('login');
 Route::match(['get', 'post'], '/registration', [MainController::class, 'registration'])->name('registration');
+Route::match(['get', 'post'], '/forgotpassword', [MainController::class, 'forgotpassword'])->name('forgotpassword');
 Route::match(['get', 'post'], '/logout', [MainController::class, 'logout'])->name('logout');
 Route::match(['get'], '/error', [MainController::class, 'main_error'])->name('main_error');
 

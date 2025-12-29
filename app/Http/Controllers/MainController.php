@@ -112,6 +112,46 @@ class MainController extends Controller
         return view('registration');
     }
 
+    // Forgot Password
+    public function forgotpassword(Request $request)
+    {
+        if ($request->isMethod('post')) {
+            $validator = Validator::make($request->all(), [
+                'user_name_email' => ['required', new check_username_email()],
+                'password' => [
+                    'required',
+                    Password::min(8)->symbols()->mixedCase()->numbers()
+                ],
+                'confpassword' => 'required|same:password',
+            ], [
+                'user_name_email.required' => 'Enter User Name Or Email is Required',
+                'password.required' => 'Enter Password is Required',
+                'password.min' => 'Enter Password is Min 8 Letter Required',
+                'password.mixed' => 'Enter Password is One Upper and Lower Cases Required',
+                'password.symbols' => 'Enter Password is One Symbols Required',
+                'password.numbers' => 'Enter Password is One Numbers Required',
+                'confpassword.required' => 'Enter Conform Password is Required',
+                'confpassword.same' => 'Enter Conform Password is Not Match Password',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withInput()->withErrors($validator);
+            }
+
+            $user_exist = User::where('name', $request->user_name_email)
+                ->orWhere('email', $request->user_name_email)
+                ->first();
+
+            if (isset($user_exist)) {
+                $user_exist->password = Hash::make($request->password);
+                $user_exist->save();
+            }
+
+            return redirect('login');
+        }
+        return view('forgotpassword');
+    }
+
     // Dashboard
     public function dashboard(Request $request)
     {

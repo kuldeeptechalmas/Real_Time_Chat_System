@@ -134,7 +134,7 @@
                 @if (isset(Auth::user()->image_path))
                 <div class="d-flex justify-content-center">
                     <div style="height: 222px;width: 219px;">
-                        <img src="{{ asset('storage/img/'.Auth::user()->image_path) }}" style="object-fit: contain;height: 100%;width: 100%;" alt="">
+                        <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ Auth::user()->name }}','{{ Auth::user()->image_path }}')" src="{{ asset('storage/img/'.Auth::user()->image_path) }}" style="object-fit: contain;height: 100%;width: 100%;" alt="">
                     </div>
                 </div>
                 <div class="container" style="margin-top: 109px;">
@@ -165,7 +165,7 @@
                                 <div class="cover"></div>
                             </div>
                             <div class="back-side cover"></div>
-                        </div>  
+                        </div>
                         <label class="custom-file-upload">
                             <input class="title" type="file" name="file" />
                             Upload a File

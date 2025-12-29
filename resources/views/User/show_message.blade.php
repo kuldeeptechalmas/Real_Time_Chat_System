@@ -10,14 +10,30 @@
 
         <div class="w_message d-flex gap-2">
             <div style="background: #fdf1ec;padding: 7px;border-radius: 10px 0px 10px 10px;cursor: default;">
+
+                @php
+                $etc = explode('.',$item->message);
+                @endphp
+
+                @if (isset($etc[1]))
+                @if ($etc[1]=='png' || $etc[1]=='jpg')
+                <div style="height: 192px;width: 239px;">
+                    <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->message }}','{{ $item->message }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 22px;" src="{{ asset('storage/img/'.$item->message) }}" alt="">
+                </div>
+                @endif
+
+                @else
                 {!! nl2br(e($item->message)) !!}
+
+                @endif
+
                 <span style="font-size: 11px;">{{ $item->created_at->timezone('Asia/Kolkata')->format('g:i a') }}</span>
                 @if ($item->status=='send')
                 <i class="fa-solid fa-check" style="font-size: 11px;"></i>
                 @endif
                 @if ($item->status=='view')
-                <i class="fa-solid fa-check" style="font-size: 11px;margin-left: 5px;margin-right: -23px;"></i>
-                <i class="fa-solid fa-check" style="font-size: 11px;"></i>
+                <i class="fa-solid fa-check" style="color: #7a7afc;font-size: 11px;margin-left: 5px;margin-right: -23px;"></i>
+                <i class="fa-solid fa-check" style="color: #7a7afc;font-size: 11px;"></i>
                 @endif
             </div>
         </div>
@@ -28,7 +44,21 @@
         <div class=w_message d-flex gap-2">
 
             <div style="background: #fbdfd2;padding: 7px;border-radius: 0px 10px 10px;cursor: default;">
+                @php
+                $etc = explode('.',$item->message);
+                @endphp
+
+                @if (isset($etc[1]))
+                @if ($etc[1]=='png' || $etc[1]=='jpg')
+                <div style="height: 192px;width: 239px;">
+                    <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->message }}','{{ $item->message }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 22px;" src="{{ asset('storage/img/'.$item->message) }}" alt="">
+                </div>
+                @endif
+
+                @else
                 {!! nl2br(e($item->message)) !!}
+
+                @endif
                 <span style="font-size: 11px;">{{ $item->created_at->timezone('Asia/Kolkata')->format('g:i a') }}</span>
             </div>
 

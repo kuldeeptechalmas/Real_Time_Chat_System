@@ -1,3 +1,61 @@
+<style>
+    .img-thumbs {
+        background: #eee;
+        border: 1px solid #ccc;
+        border-radius: 0.25rem;
+        margin: 1.5rem 0;
+        padding: 0.75rem;
+    }
+
+    .img-thumbs-hidden {
+        display: none;
+    }
+
+    .wrapper-thumb {
+        padding: 9px;
+        height: 67px;
+        width: 84px;
+        position: relative;
+        display: inline-block;
+        margin: 1rem 0;
+        justify-content: space-around;
+    }
+
+    .img-preview-thumb {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        background: #fff;
+        border: 1px solid none;
+        border-radius: 0.25rem;
+        box-shadow: 0.125rem 0.125rem 0.0625rem rgba(0, 0, 0, 0.12);
+        margin-right: 1rem;
+        max-width: 140px;
+        padding: 0.25rem;
+    }
+
+    .remove-btn {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: .7rem;
+        top: -5px;
+        right: 10px;
+        width: 20px;
+        height: 20px;
+        background: white;
+        border-radius: 10px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .remove-btn:hover {
+        box-shadow: 0px 0px 3px grey;
+        transition: all .3s ease-in-out;
+    }
+
+</style>
 <div style="position: relative;height: 100vh;">
     {{-- header of chating user --}}
     <div style="position: relative;padding: 15px;background-color: #fbdfd26e;display: flex;justify-content: space-between;">
@@ -29,10 +87,13 @@
 
     {{-- message input --}}
     <div class="bg-light" style="position: absolute;bottom: 1px;padding: 16px;width: 100%;display: flex;border-radius: 129px;">
-        <input type="file" name="files[]" multiple id="files" style="display: none">
+        <input type="file" class="form-control" name="files[]" multiple id="files" style="display: none">
         <i class="fa-solid fa-paperclip" style="padding-top: 14px;font-size: 19px;" onclick="FilesImageSend()"></i>
         <textarea style="width: 87%;margin-left: 20px; resize: none;" rows="1" autocomplete="off" class="form-control scroll-container" id="messages" placeholder="Type Message Here..." aria-label="Search"></textarea>
-        {{-- <input type="text" /> --}}
+
+        {{-- <input type="file" class="form-control" name="images[]" multiple style="display: none" id="upload-img" /> --}}
+        <div class="img-thumbs img-thumbs-hidden" id="img-preview" style="width: 87%;margin: 0px;height: 97px;"></div>
+
         <input type="submit" value="" hidden>
         <i type class="fa-solid fa-paper-plane" onclick="sendmessagetosender({{ $user_send_user_data->id }})" style="padding-top: 9px;margin-left: 15px;font-size: 20px;"></i>
     </div>
@@ -53,12 +114,88 @@
     });
 
     document.getElementById('files').addEventListener('change', function() {
+
+        var inputtag = document.getElementById('messages');
         if (this.files && this.files.length > 0) {
-            $('#messages').val(this.files[0].name);
+            $("#messages").css('display', "none")
+            $("#img-preview").css('display', "block")
             console.log(this.files);
         } else {
             console.log('no file ok');
+            $('#img-preview').html('');
+            $('#img-preview').css('display', "none");
+            $('#messages').css('display', "block");
         }
     })
+
+    var imgUpload = document.getElementById('files')
+        , imgPreview = document.getElementById('img-preview')
+        , imgUploadForm = document.getElementById('form-upload')
+        , totalFiles
+        , previewTitle
+        , previewTitleText
+        , img;
+
+    imgUpload.addEventListener('change', previewImgs, true);
+
+    function previewImgs(event) {
+
+        totalFiles = imgUpload.files.length;
+
+
+        if (!!totalFiles) {
+            imgPreview.classList.remove('img-thumbs-hidden');
+        }
+
+        for (var i = 0; i < totalFiles; i++) {
+            wrapper = document.createElement('div');
+            wrapper.classList.add('wrapper-thumb');
+            removeBtn = document.createElement("span");
+            nodeRemove = document.createTextNode('x');
+            removeBtn.classList.add('remove-btn');
+            removeBtn.classList.add('closeid' + i);
+            removeBtn.appendChild(nodeRemove);
+            img = document.createElement('img');
+            img.src = URL.createObjectURL(event.target.files[i]);
+            img.classList.add('img-preview-thumb');
+            wrapper.appendChild(img);
+            wrapper.appendChild(removeBtn);
+            imgPreview.appendChild(wrapper);
+
+
+            removeBtn.setAttribute("data-id", i);
+        }
+        var filesArray = Array.from(imgUpload.files);
+        $('.remove-btn').click(function() {
+            var data_id = $(this).attr('data-id');
+            // console.log(data_id);
+            filesArray.forEach((file, index) => {
+                if (index == $(this).attr('data-id')) {
+                    delete filesArray[index]
+                } else {
+                    const dataTransfer = new DataTransfer();
+                    filesArray.forEach(file => {
+                        dataTransfer.items.add(file);
+                    });
+                    document.getElementById('files').files = dataTransfer.files;
+                }
+
+            });
+            console.log(filesArray);
+
+            $(this).parent('.wrapper-thumb').remove();
+
+            var remainingImages = $('#img-preview').find('.wrapper-thumb').length;
+
+            if (remainingImages === 0) {
+                $("#messages").css('display', "block");
+                $("#file").val('');
+                imgPreview.classList.add('img-thumbs-hidden');
+            }
+
+        });
+
+
+    }
 
 </script>

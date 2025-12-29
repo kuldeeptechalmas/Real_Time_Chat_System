@@ -135,7 +135,7 @@ class UserController extends Controller
         if (Auth::check()) {
             if ($files = $request->file('files')) {
                 foreach ($files as $file) {
-                    $file->storeAs('img', $file->getClientOriginalName());
+                    $file->storeAs('public/img', $file->getClientOriginalName());
                     $message_data = new Message();
                     $message_data->message = $file->getClientOriginalName();
                     $message_data->send_id = Auth::user()->id;

@@ -109,9 +109,9 @@
             <div class="modal-content text-white" style="height: 551px;background: #212529;width: 100%;">
                 <div class="modal-header">
                     <h3 class="modal-title fs-5" id="ImageShowUserName"></h3>
-                    <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button style="color: #f9d8c9" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="height: 254px;width: 100%;">
                     <div id="ImageShowUserImage_path" style="height: 100%;width: 100%;">
 
                     </div>
@@ -147,7 +147,7 @@
                                         img = `<i class="fa-regular fa-user" style="font-size: 21px;"></i>`;
                                     }
                                 }
-                                console.log(img);
+
                                 $(`#${element['id']}`).html(`<div style="height: 37px;width: 37px;">
                                         ${img}
                                         </div>
@@ -293,17 +293,21 @@
             }
         });
 
+        // Show image
         function FilesImageSend() {
             $('#files').click();
+            $('#img-preview').html('');
+
         }
 
         function imagesetshow(name, image_path) {
             $('#ImageShowUserName').html(name);
             $('#ImageShowUserImage_path').html(`
-            <img style="height: 100%;width: 100%;object-fit: cover;" src="storage/img/${image_path}" alt="">
+            <img style="height: 100%;width: 100%;object-fit: contain;" src="storage/img/${image_path}" alt="">
             `);
         }
 
+        // Remove messages
         function removeallmessage(messageuserid) {
             $.ajax({
                 type: 'post'
@@ -316,6 +320,7 @@
                 }
                 , success: function(res) {
                     $('#moreoptiondiv').css('display', 'none')
+                    message_show(messageuserid);
                 }
                 , error: function(e) {
                     console.log(e);
@@ -351,6 +356,7 @@
             $('#moreoptiondiv').css('display', 'block');
         }
 
+        // Search user
         function Searchfriend() {
             $.ajax({
                 type: 'post'
@@ -399,6 +405,7 @@
             });
         }
 
+        // ChatBort set user
         function setsenduser(user_id) {
 
             $.ajax({
@@ -421,49 +428,62 @@
             });
         }
 
+        // Message Send 
         function sendmessagetosender(senduserid, message) {
 
-            console.log(document.getElementById('files').files);
+            console.log(document.getElementById('files').files.length);
+            // console.log();
             if (message == null) {
                 var message_data = $('#messages').val();
+                $('#messages').val('');
             } else {
                 var message_data = message;
             }
-            var formData = new FormData();
-            formData.append('message', message_data);
-            formData.append('receive_data_id', senduserid);
+            if (message_data == '' && document.getElementById('files').files.length == 0) {
 
-            var fileInput = document.getElementById('files');
+            } else {
+                var formData = new FormData();
+                formData.append('message', message_data);
+                formData.append('receive_data_id', senduserid);
 
-            if (fileInput.files.length > 0) {
-                for (var i = 0; i < fileInput.files.length; i++) {
-                    formData.append('files[]', fileInput.files[i]);
+                var fileInput = document.getElementById('files');
+                console.log(document.getElementById('files').files);
+
+                if (fileInput.files.length > 0) {
+                    for (var i = 0; i < fileInput.files.length; i++) {
+                        formData.append('files[]', fileInput.files[i]);
+                    }
                 }
+                $.ajax({
+                    type: 'post'
+                    , headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                    , url: '/message-send'
+                    , data: formData
+                    , contentType: false
+                    , processData: false
+                    , success: function(res) {
+                        $('#message_to_show').html(res);
+                        $('#messages').val('');
+                        $('#files').val('');
+                        $('#img-preview').html('');
+                        $('#messages').css('display', 'block');
+                        $('#img-preview').css('display', 'none');
+
+                        userfriendlist();
+
+                        const element = document.getElementById("scrollbarid");
+                        element.scrollTop = element.scrollHeight;
+                    }
+                    , error: function(e) {
+                        console.log(e);
+                    }
+                });
             }
-            $.ajax({
-                type: 'post'
-                , headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-                , url: '/message-send'
-                , data: formData
-                , contentType: false
-                , processData: false
-                , success: function(res) {
-                    $('#message_to_show').html(res);
-                    $('#messages').val('');
-
-                    userfriendlist();
-
-                    const element = document.getElementById("scrollbarid");
-                    element.scrollTop = element.scrollHeight;
-                }
-                , error: function(e) {
-                    console.log(e);
-                }
-            });
         }
 
+        // Message Show
         function message_show(select_user_id) {
             $.ajax({
                 type: 'get'
@@ -487,6 +507,7 @@
             });
         }
 
+        // User Friend List Show
         function userfriendlist() {
             $.ajax({
                 type: 'get'
