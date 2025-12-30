@@ -137,6 +137,16 @@
                         <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ Auth::user()->name }}','{{ Auth::user()->image_path }}')" src="{{ asset('storage/img/'.Auth::user()->image_path) }}" style="object-fit: contain;height: 100%;width: 100%;" alt="">
                     </div>
                 </div>
+                @error('file')
+                <div style="margin: 9px 0px 19px 40px;" class="text-danger">{{ $message }}</div>
+                @enderror
+
+                <div class="d-flex justify-content-center mt-2">
+                    <a href="{{ route('user_profiles_image_remove') }}">
+                        <button type="button" class="btn btn-primary">Remove Image</button>
+                    </a>
+                </div>
+
                 <div class="container" style="margin-top: 109px;">
                     <div class="folder">
                         <div class="front-side">
@@ -158,6 +168,9 @@
                             <img style="height: 187px;width: 175px;" src="{{ asset('img/galleryimg.png') }}" alt="">
                         </div>
                     </div>
+                    @error('file')
+                    <div style="margin: 9px 0px 19px 40px;" class="text-danger">{{ $message }}</div>
+                    @enderror
                     <div class="container" style="margin-top: 80px;">
                         <div class="folder">
                             <div class="front-side">

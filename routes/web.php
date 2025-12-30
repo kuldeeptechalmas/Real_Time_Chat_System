@@ -29,9 +29,11 @@ Route::middleware('RegisterUserExist')->group(function () {
 });
 
 Route::middleware('AuthCheckExist')->group(function () {
+
     // Dashboard
     Route::match(['get', 'post'], '/dashboard', [MainController::class, 'dashboard'])->name('dashboard');
     Route::match(['get', 'post'], '/user-profile', [UserController::class, 'user_profiles'])->name('user_profiles');
+    Route::match(['get', 'post'], '/user-profile-image-remove', [UserController::class, 'user_profiles_image_remove'])->name('user_profiles_image_remove');
 
     // Ajax
     Route::match(['get', 'post'], '/search-friend', [UserController::class, 'search_friend'])->name('search_friend');

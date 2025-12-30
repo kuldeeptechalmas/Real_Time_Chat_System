@@ -47,6 +47,9 @@ class MainController extends Controller
                 }
             }
         }
+        Session::forget('register_user_data');
+        Session::forget('emailotp');
+
         return view('login');
     }
 
@@ -109,6 +112,7 @@ class MainController extends Controller
         if (Session::get('register_user_data')) {
             Session::forget('register_user_data');
         }
+        Session::forget('emailotp');
         return view('registration');
     }
 
@@ -155,24 +159,49 @@ class MainController extends Controller
     // Dashboard
     public function dashboard(Request $request)
     {
-        $message_data_order = Message::select('receive_id')
+        $message_data_order = Message::select('send_id', 'receive_id')
             ->selectRaw('MAX(created_at) as last_message_time')
-            ->selectRaw("SUM(CASE WHEN status = 'send' THEN 1 ELSE 0 END) as sent_count")
             ->where('send_id', Auth::user()->id)
-            ->groupBy('receive_id')
+            ->orWhere('receive_id', Auth::user()->id)
+            ->groupBy('send_id', 'receive_id')
             ->orderByDesc('last_message_time')
             ->get();
+        $extra_collect = $message_data_order;
 
-        if ($message_data_order->isNotEmpty()) {
+        for ($i = 0; $i < $message_data_order->count(); $i++) {
+            $fresh_send_id = $message_data_order[$i]->send_id;
+            $fresh_receive_id = $message_data_order[$i]->receive_id;
+            $fresh_ct = $message_data_order[$i]->last_message_time;
+
+            for ($j = 0; $j < $extra_collect->count(); $j++) {
+                if ($fresh_send_id == $extra_collect[$j]->receive_id && $fresh_receive_id == $extra_collect[$j]->send_id) {
+                    if ($fresh_receive_id == Auth::id()) {
+                        $message_data_order[$i]->send_id = $extra_collect[$j]->send_id;
+                        $message_data_order[$i]->receive_id = $extra_collect[$j]->receive_id;
+                        $message_data_order[$j]->last_message_time = $fresh_ct;
+                    }
+                }
+            }
+        }
+
+        $uniqueConversations = $message_data_order->unique(function ($item) {
+            $participants = [$item->send_id, $item->receive_id];
+            sort($participants);
+            return implode('-', $participants);
+        });
+
+        $finalUserList = $uniqueConversations->values();
+
+        if ($finalUserList->isNotEmpty()) {
             return view(
                 'User.dashbord',
                 [
-                    'last_message_send_data' => $message_data_order,
-                    'last_send_message_user' => $message_data_order[0]->receive_id,
+                    'last_message_send_data' => $finalUserList,
+                    'last_send_message_user' => $finalUserList[0]->receive_id == Auth::id() ? $message_data_order[0]->send_id : $message_data_order[0]->receive_id,
                     'dashboardshow' => 'yes'
                 ]
             );
-        } elseif ($message_data_order->count() == 0) {
+        } elseif ($finalUserList->count() == 0) {
             return view('User.dashbord', ['dashboardshow' => 'yes']);
         } else {
             return view('mainerror');
@@ -194,6 +223,8 @@ class MainController extends Controller
             dispatch(new Email_OTP_Ver_Job($data));
 
             return redirect()->route('email_verification');
+        } else {
+            return redirect()->route('main_error');
         }
     }
 

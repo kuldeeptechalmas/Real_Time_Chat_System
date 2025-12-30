@@ -213,7 +213,9 @@
                     }
                 })
                 .listen(".send-event", (e) => {
-                    if ("{{ Auth::user()->id }}" == e.message['receive_id']) {
+                    if ("{{ Auth::user()->id }}" == e.message['receive_id'] && "{{ URL::full() }}" == "http://127.0.0.1:8000/dashboard") {
+
+                        userfriendlist();
 
                         if (localStorage.getItem('current_user_chatboard') == e.message['send_id']) {
                             const data = e.message['message'].replace(/(?:\r\n|\r|\n)/g, '<br>');
@@ -240,9 +242,22 @@
 
                             const element = document.getElementById("scrollbarid");
                             element.scrollTop = element.scrollHeight;
-
+                            userfriendlist();
                             setsenduser(e.message['send_id']);
                         } else {
+
+                            Toastify({
+                                text: `${e.message['sender']['name']} Send Message to ${e.message['message']}`
+                                , duration: 5000
+                                , gravity: "top"
+                                , position: "center"
+                                , style: {
+                                    background: '#fbdfd2'
+                                    , color: "black"
+                                }
+                                , stopOnFocus: true
+                            , }).showToast();
+
                             if ($(`#${e.message['send_id']}`).html() != null) {
 
                                 if (e.message['sender']['name'] == $(`#${e.message['sender']['name']}`).html().trim()) {
@@ -260,17 +275,6 @@
                                 }
 
                             }
-                            Toastify({
-                                text: `${e.message['name']} Send Message to ${e.message['message']}`
-                                , duration: 3000
-                                , gravity: "top"
-                                , position: "center"
-                                , style: {
-                                    background: '#fbdfd2'
-                                    , color: "black"
-                                }
-                                , stopOnFocus: true
-                            , }).showToast();
                         }
                     }
                 });
@@ -447,11 +451,13 @@
                 formData.append('receive_data_id', senduserid);
 
                 var fileInput = document.getElementById('files');
-                console.log(document.getElementById('files').files);
 
                 if (fileInput.files.length > 0) {
                     for (var i = 0; i < fileInput.files.length; i++) {
-                        formData.append('files[]', fileInput.files[i]);
+                        if (fileInput.files[i].name.split('.')[1] == 'png' || fileInput.files[i].name.split('.')[1] == 'jpg') {
+
+                            formData.append('files[]', fileInput.files[i]);
+                        }
                     }
                 }
                 $.ajax({

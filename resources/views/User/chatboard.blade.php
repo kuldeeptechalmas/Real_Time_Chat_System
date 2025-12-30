@@ -73,10 +73,10 @@
         <div>{{ $user_send_user_data->name }}</div>
 
         <i class="fa-solid fa-ellipsis-vertical" onclick="moreoptionshow()"></i>
-        <div id="moreoptiondiv" style="padding: 16px;display: none;position: absolute;top: 110%;right: 4%;background: lightblue;border-radius: 6px;">
+        <div id="moreoptiondiv" style="z-index: 999;padding: 16px;display: none;position: absolute;top: 110%;right: 4%;background: lightblue;border-radius: 6px;">
             <i class="fa-solid fa-xmark" onclick="closemanu()" style="position: absolute;top: 3%;right: 3%;"></i>
             <div onclick="removeallmessage({{ $user_send_user_data->id }})" style="margin-top: 4px;padding: 5px;border: #8e8e8e solid;border-radius: 11px;">
-                Clean All
+                Remove All
             </div>
         </div>
     </div>
@@ -167,21 +167,19 @@
         }
         var filesArray = Array.from(imgUpload.files);
         $('.remove-btn').click(function() {
+
             var data_id = $(this).attr('data-id');
-            // console.log(data_id);
             filesArray.forEach((file, index) => {
                 if (index == $(this).attr('data-id')) {
-                    delete filesArray[index]
-                } else {
-                    const dataTransfer = new DataTransfer();
-                    filesArray.forEach(file => {
-                        dataTransfer.items.add(file);
-                    });
-                    document.getElementById('files').files = dataTransfer.files;
+                    delete filesArray[index];
                 }
-
             });
-            console.log(filesArray);
+
+            const dataTransfer = new DataTransfer();
+            filesArray.forEach(files => {
+                dataTransfer.items.add(files);
+            });
+            document.getElementById('files').files = dataTransfer.files;
 
             $(this).parent('.wrapper-thumb').remove();
 
@@ -190,6 +188,8 @@
             if (remainingImages === 0) {
                 $("#messages").css('display', "block");
                 $("#file").val('');
+                $('#img-preview').css('display', "none");
+                $('#img-preview').html('');
                 imgPreview.classList.add('img-thumbs-hidden');
             }
 
