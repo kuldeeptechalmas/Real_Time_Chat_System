@@ -9,7 +9,8 @@
         </div>
 
         <div class="w_message d-flex gap-2">
-            <div style="position: relative;background: #fdf1ec;padding: 7px 70px 7px 7px ;border-radius: 10px 0px 10px 10px;cursor: default;">
+            {{-- <div style="position: relative;background: #fdf1ec;padding: 7px 70px 7px 7px ;border-radius: 10px 0px 10px 10px;cursor: default;"> --}}
+            <div style="position: relative;background: #fdf1ec;padding: 7px;border-radius: 10px 0px 10px 10px;cursor: default;">
 
                 @php
                 $etc = explode('.',$item->message);
@@ -27,16 +28,18 @@
 
                 @endif
 
-                <div style="position: absolute;top: 5px;right: 6px;">
-                    <span style="font-size: 11px;">{{ $item->created_at->timezone('Asia/Kolkata')->format('g:i a') }}</span>
-                    @if ($item->status=='send')
-                    <i class="fa-solid fa-check" style="font-size: 11px;"></i>
-                    @endif
-                    @if ($item->status=='view')
-                    <i class="fa-solid fa-check" style="color: #7a7afc;font-size: 11px;margin-left: 5px;margin-right: -23px;"></i>
-                    <i class="fa-solid fa-check" style="color: #7a7afc;font-size: 11px;"></i>
-                    @endif
-                </div>
+                {{-- <div style="position: absolute;top: 5px;right: 6px;"> --}}
+                {{-- <div class="d-flex justify-content-end align-items-center mt-2"> --}}
+                <span style="font-size: 11px;">{{ $item->created_at->timezone('Asia/Kolkata')->format('g:i a') }}</span>
+                @if ($item->status=='send')
+                <i class="fa-solid fa-check" style="font-size: 11px;"></i>
+                @endif
+                @if ($item->status=='view')
+                <i class="fa-solid fa-check" style="color: #7a7afc;font-size: 11px;margin-right: -12px;"></i>
+                <i class="fa-solid fa-check" style="color: #7a7afc;font-size: 11px;margin-right: 1px;"></i>
+                @endif
+                {{-- </div> --}}
+                {{-- </div> --}}
             </div>
         </div>
 

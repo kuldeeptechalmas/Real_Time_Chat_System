@@ -34,6 +34,35 @@
             max-width: 60%;
         }
 
+        .loader {
+            width: 15px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            animation: l5 1s infinite linear alternate;
+        }
+
+        @keyframes l5 {
+            0% {
+                box-shadow: 20px 0 #000, -20px 0 #0002;
+                background: #000
+            }
+
+            33% {
+                box-shadow: 20px 0 #000, -20px 0 #0002;
+                background: #0002
+            }
+
+            66% {
+                box-shadow: 20px 0 #0002, -20px 0 #000;
+                background: #0002
+            }
+
+            100% {
+                box-shadow: 20px 0 #0002, -20px 0 #000;
+                background: #000
+            }
+        }
+
     </style>
 
 </head>
@@ -299,9 +328,14 @@
 
         // Show image
         function FilesImageSend() {
+            var oldFiles = document.getElementById('files');
+            var filesArray = Array.from(oldFiles.files);
+            const dataTransfer = new DataTransfer();
+            filesArray.forEach(files => {
+                dataTransfer.items.add(files);
+            });
+            document.getElementById('oldfiles').files = dataTransfer.files;
             $('#files').click();
-            $('#img-preview').html('');
-
         }
 
         function imagesetshow(name, image_path) {
@@ -333,7 +367,7 @@
         }
 
         function removemessagebyone(messageid) {
-            console.log(messageid);
+            // console.log(messageid);
             $.ajax({
                 type: 'post'
                 , headers: {
@@ -435,20 +469,37 @@
         // Message Send 
         function sendmessagetosender(senduserid, message) {
 
-            console.log(document.getElementById('files').files.length);
-            // console.log();
             if (message == null) {
-                var message_data = $('#messages').val();
-                $('#messages').val('');
+
+                var message_data_of = $('#messages').val().replace(/\s/g, '');
+                if (message_data_of.length == 0) {
+                    $('#messages').val('');
+                } else {
+                    var message_data = $('#messages').val();
+                    $('#messages').val('');
+                    $('#messages').attr('placeholder', 'Sending...').prop('readonly', true);
+                }
             } else {
                 var message_data = message;
             }
-            if (message_data == '' && document.getElementById('files').files.length == 0) {
 
-            } else {
+            if (message_data != null && document.getElementById('files').files.length == 0) {
+
                 var formData = new FormData();
                 formData.append('message', message_data);
                 formData.append('receive_data_id', senduserid);
+
+            }
+            if (message_data == null && document.getElementById('files').files.length != 0) {
+
+                var formData = new FormData();
+                formData.append('message', message_data);
+                formData.append('receive_data_id', senduserid);
+
+                $("#messages").css('display', "block")
+                $("#img-preview").css('display', "none")
+                $('#messages').val('');
+                $('#messages').attr('placeholder', 'Sending...').prop('readonly', true);
 
                 var fileInput = document.getElementById('files');
 
@@ -457,9 +508,30 @@
                         if (fileInput.files[i].name.split('.')[1] == 'png' || fileInput.files[i].name.split('.')[1] == 'jpg') {
 
                             formData.append('files[]', fileInput.files[i]);
+                        } else {
+                            $('#img-preview').html('');
+                            $('#files').val('');
+                            $('#img-preview').css('display', "none");
+                            $('#messages').css('display', "block");
+                            Toastify({
+                                text: `Enter Image is Only png or jpg Images Allows`
+                                , duration: 5000
+                                , gravity: "top"
+                                , position: "center"
+                                , style: {
+                                    background: '#fbdfd2'
+                                    , color: "black"
+                                }
+                                , stopOnFocus: true
+                            , }).showToast();
                         }
                     }
                 }
+            }
+
+            if (message_data != null || document.getElementById('files').files.length != 0) {
+
+
                 $.ajax({
                     type: 'post'
                     , headers: {
@@ -473,9 +545,11 @@
                         $('#message_to_show').html(res);
                         $('#messages').val('');
                         $('#files').val('');
+
                         $('#img-preview').html('');
                         $('#messages').css('display', 'block');
                         $('#img-preview').css('display', 'none');
+                        $('#messages').prop('readonly', false).attr('placeholder', 'Type Message Here...')
 
                         userfriendlist();
 
@@ -487,6 +561,28 @@
                     }
                 });
             }
+        }
+
+        // Request Send
+        function requestsend(select_id) {
+
+            $.ajax({
+                type: 'post'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , url: '/user-send-request'
+                , data: {
+                    select_id: select_id
+                }
+                , success: function(res) {
+                    console.log(res);
+
+                }
+                , error: function(e) {
+                    console.log(e);
+                }
+            });
         }
 
         // Message Show

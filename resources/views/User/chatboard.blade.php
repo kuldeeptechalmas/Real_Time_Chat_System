@@ -80,6 +80,9 @@
             </div>
         </div>
     </div>
+    <div style="position: absolute;left: 50%;top: 50%;">
+        <div class="loader" style="display: none" id="loader"></div>
+    </div>
     {{-- messages --}}
     <div id="message_to_show">
 
@@ -87,12 +90,14 @@
 
     {{-- message input --}}
     <div class="bg-light" style="position: absolute;bottom: 1px;padding: 16px;width: 100%;display: flex;border-radius: 129px;">
+
+        <input type="file" class="form-control" name="oldfiles[]" multiple id="oldfiles" style="display: none" hidden>
         <input type="file" class="form-control" name="files[]" multiple id="files" style="display: none">
         <i class="fa-solid fa-paperclip" style="padding-top: 14px;font-size: 19px;" onclick="FilesImageSend()"></i>
         <textarea style="width: 87%;margin-left: 20px; resize: none;" rows="1" autocomplete="off" class="form-control scroll-container" id="messages" placeholder="Type Message Here..." aria-label="Search"></textarea>
 
         {{-- <input type="file" class="form-control" name="images[]" multiple style="display: none" id="upload-img" /> --}}
-        <div class="img-thumbs img-thumbs-hidden" id="img-preview" style="width: 87%;margin: 0px;height: 97px;"></div>
+        <div class="img-thumbs img-thumbs-hidden scroll-container" id="img-preview" style="overflow: scroll;overflow-y: auto;width: 87%;margin: 0px;height: 97px;"></div>
 
         <input type="submit" value="" hidden>
         <i type class="fa-solid fa-paper-plane" onclick="sendmessagetosender({{ $user_send_user_data->id }})" style="padding-top: 9px;margin-left: 15px;font-size: 20px;"></i>
@@ -105,10 +110,18 @@
         if (event.key === "Enter") {
             if (!event.shiftKey) {
                 event.preventDefault();
-                const data_of_message = $('#messages').val();
-                $('#messages').val('');
+                const data_of_message = $('#messages').val().replace(/\s/g, '');
+                const data_message = $('#messages').val();
+                console.log($('#messages').val());
 
-                sendmessagetosender("{{ $user_send_user_data->id }}", data_of_message);
+                if (data_of_message.length == 0) {
+                    $('#messages').val('');
+                } else {
+                    $('#messages').val('');
+                    $('#messages').attr('placeholder', 'Sending...').prop('readonly', true);
+                    sendmessagetosender("{{ $user_send_user_data->id }}", data_message);
+
+                }
             }
         }
     });
@@ -119,9 +132,20 @@
         if (this.files && this.files.length > 0) {
             $("#messages").css('display', "none")
             $("#img-preview").css('display', "block")
-            console.log(this.files);
+
+            var oldFiles = document.getElementById('oldfiles');
+            var newFiles = document.getElementById('files');
+            var oldfilesArray = Array.from(oldFiles.files);
+            var newfilesArray = Array.from(newFiles.files);
+            var finalArray = oldfilesArray.concat(newfilesArray);
+
+            const dataTransfer = new DataTransfer();
+            finalArray.forEach(files => {
+                dataTransfer.items.add(files);
+            });
+            document.getElementById('files').files = dataTransfer.files;
+
         } else {
-            console.log('no file ok');
             $('#img-preview').html('');
             $('#img-preview').css('display', "none");
             $('#messages').css('display', "block");
@@ -139,6 +163,21 @@
     imgUpload.addEventListener('change', previewImgs, true);
 
     function previewImgs(event) {
+        var oldFiles = document.getElementById('oldfiles');
+        var newFiles = document.getElementById('files');
+        var oldfilesArray = Array.from(oldFiles.files);
+        var newfilesArray = Array.from(newFiles.files);
+        var finalArray = oldfilesArray.concat(newfilesArray);
+
+        const dataTransfer = new DataTransfer();
+        finalArray.forEach(files => {
+            dataTransfer.items.add(files);
+        });
+        document.getElementById('files').files = dataTransfer.files;
+
+        $('#img-preview').html('');
+        var imgUpload = document.getElementById('files');
+        console.log(imgUpload.files);
 
         totalFiles = imgUpload.files.length;
 
@@ -165,6 +204,7 @@
 
             removeBtn.setAttribute("data-id", i);
         }
+
         var filesArray = Array.from(imgUpload.files);
         $('.remove-btn').click(function() {
 

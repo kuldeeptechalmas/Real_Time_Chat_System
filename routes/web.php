@@ -43,4 +43,5 @@ Route::middleware('AuthCheckExist')->group(function () {
     Route::match(['get', 'post'], '/message-remove', [UserController::class, 'message_remove_current'])->name('message_remove_current');
     Route::match(['get', 'post'], '/message-remove-all', [UserController::class, 'message_remove_current_all'])->name('message_remove_current_all');
     Route::match(['get', 'post'], '/user-friend-list', [UserController::class, 'user_friend_list'])->name('user_friend_list');
+    Route::match(['get', 'post'], '/user-send-request', [UserController::class, 'user_send_request'])->name('user_send_request');
 });

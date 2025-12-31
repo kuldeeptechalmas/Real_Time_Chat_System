@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\SendMeesages;
 use App\Events\ViewToReceiver;
+use App\Models\Friendship;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -168,36 +169,51 @@ class UserController extends Controller
     // User Select friend Data Show
     public function user_select_data(Request $request)
     {
-        $user_Select_to_show = User::find($request->select_user_id);
+        $select_user_id = $request->select_user_id;
+        $check_this_friend = Friendship::where(function ($query) use ($select_user_id) {
+            $query->where('sender_user_id', Auth::id())
+                ->where('receiver_user_id', $select_user_id);
+        })->orWhere(function ($query) use ($select_user_id) {
+            $query->where('receiver_user_id', Auth::id())
+                ->where('sender_user_id', $select_user_id);
+        })->get();
 
-        if ($user_Select_to_show) {
-            $message_view_ok = Message::where('send_id', $request->select_user_id)->where('receive_id', Auth::id())->get();
-            if (isset($message_view_ok)) {
-                foreach ($message_view_ok as $item) {
-                    $item->status = 'view';
-                    $item->save();
-                }
-            }
-
-            $data = array('send_id' => $request->select_user_id, 'receive_id' => Auth::id());
-            event(new ViewToReceiver($data));
-            if (isset($user_Select_to_show)) {
-                Session::put('chatboart_user_id', $user_Select_to_show->id);
-
-                return view('User.chatboard', ['user_send_user_data' => $user_Select_to_show]);
-            } else {
-
-                return response()->json(['error' => 'not found data for user']);
-            }
+        if ($check_this_friend->isEmpty()) {
+            $select_user_data = User::where('id', $request->select_user_id)->first();
+            return view('User.send_accespt_request', ['users_data' => $select_user_data]);
         } else {
-            return response()->json(['error' => "Not found user data"]);
+
+            $user_Select_to_show = User::find($request->select_user_id);
+
+            if ($user_Select_to_show) {
+                $message_view_ok = Message::where('send_id', $request->select_user_id)->where('receive_id', Auth::id())->get();
+                if (isset($message_view_ok)) {
+                    foreach ($message_view_ok as $item) {
+                        $item->status = 'view';
+                        $item->save();
+                    }
+                }
+
+                $data = array('send_id' => $request->select_user_id, 'receive_id' => Auth::id());
+                event(new ViewToReceiver($data));
+                if (isset($user_Select_to_show)) {
+                    Session::put('chatboart_user_id', $user_Select_to_show->id);
+
+                    return view('User.chatboard', ['user_send_user_data' => $user_Select_to_show]);
+                } else {
+
+                    return response()->json(['error' => 'not found data for user']);
+                }
+            } else {
+                return response()->json(['error' => "Not found user data"]);
+            }
         }
     }
 
     // Message send Specific User
     public function message_send_specific_user(Request $request)
     {
-
+        // dd($request->all());
         if (Auth::check()) {
             if ($files = $request->file('files')) {
                 foreach ($files as $file) {
@@ -358,6 +374,25 @@ class UserController extends Controller
             return view('User.searchfriend', ["last_message_send_data" => $finalUserList]);
         } else {
             return response()->json(['data' => "data is not found"]);
+        }
+    }
+
+    // Request Send in Other User
+    public function user_send_request(Request $request)
+    {
+        if (Auth::check()) {
+            $send_request_user_exist = User::find($request->select_id);
+            if (isset($send_request_user_exist)) {
+
+                $new_friend = new Friendship();
+                $new_friend->sender_user_id = Auth::id();
+                $new_friend->receiver_user_id  = $request->select_id;
+                $new_friend->status  = 0;
+                $new_friend->save();
+                return response()->json(['Data' => "ok"]);
+            } else {
+                return response()->json(['Data' => 'User not Found']);
+            }
         }
     }
 }
