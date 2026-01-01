@@ -1,5 +1,3 @@
-{{-- <div style="height: 500px;overflow: scroll; margin-bottom: 60px;"> --}}
-
 <div class="scroll-container" style="height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;" id="scrollbarid">
     @foreach ($message as $item)
     @if ($item->send_id==Auth::user()->id)
@@ -24,7 +22,8 @@
                 @endif
 
                 @else
-                {!! nl2br(e($item->message)) !!}
+                {{-- {!! nl2br(e($item->message)) !!} --}}
+                {{ $item->message }}
 
                 @endif
 
@@ -61,7 +60,8 @@
                 @endif
 
                 @else
-                {!! nl2br(e($item->message)) !!}
+                {{-- {!! nl2br(e($item->message)) !!} --}}
+                {{ $item->message }}
 
                 @endif
                 <span style="font-size: 11px;">{{ $item->created_at->timezone('Asia/Kolkata')->format('g:i a') }}</span>

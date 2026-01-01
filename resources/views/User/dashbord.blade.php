@@ -77,9 +77,13 @@
 
                     @if (Auth::user()->image_path==Null)
                     @if (Auth::user()->gender=='Men')
-                    <i class="fa-solid fa-user" style="font-size: 21px;"></i>
+                    <div style="height: 37px;width: 37px;">
+                        <img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt="">
+                    </div>
                     @else
-                    <i class="fa-regular fa-user" style="font-size: 21px;"></i>
+                    <div style="height: 37px;width: 37px;">
+                        <img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt="">
+                    </div>
                     @endif
                     @else
                     <div style="height: 37px;width: 37px;">
@@ -88,11 +92,23 @@
                     @endif
                 </a>
             </div>
+
             <a href="{{ route('dashboard') }}" style="color: black;text-decoration: none;">
                 <div class="row" style="padding: 15px;background: #f9d8c9;margin-top: 4px;">
                     Home
                 </div>
 
+            </a>
+            <a href="{{ route('user_friendlist_show') }}" style="color: black;text-decoration: none;">
+                <div class="row" style="padding: 15px;background: #f9d8c9;margin-top: 4px;">
+                    FriendList
+                </div>
+
+            </a>
+            <a href="{{ route('user_show_notification') }}" style="color: black;text-decoration: none;">
+                <div class="row" style="padding: 15px;background: #f9d8c9;margin-top: 4px;">
+                    Notification
+                </div>
             </a>
             <div style="position: fixed;bottom: 11px;">
                 <a href="{{ route('logout') }}"><button type="button" style="background: #fbdfd2;" class="btn btn-info">Logout</button></a>
@@ -170,10 +186,10 @@
                                     img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
                                 } else {
                                     if (element['gender'] == "Men") {
-                                        img = `<i class="fa-solid fa-user" style="font-size: 21px;"></i>`;
+                                        img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
                                     }
                                     if (element['gender'] == "Women") {
-                                        img = `<i class="fa-regular fa-user" style="font-size: 21px;"></i>`;
+                                        img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
                                     }
                                 }
 
@@ -181,7 +197,7 @@
                                         ${img}
                                         </div>
                                         <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
-                                        <div onclick="setsenduser( ${element['id']} )">
+                                        <div style="width: 100%;" onclick="setsenduser( ${element['id']} )">
                                         <div style="margin-left: 21px;" id="${element['name']}">
                                              ${element['name']} 
                                         </div>
@@ -198,17 +214,17 @@
                                 img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','${member['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${member['image_path']}" alt="">`;
                             } else {
                                 if (member['gender'] == "Men") {
-                                    img = `<i class="fa-solid fa-user" style="font-size: 21px;"></i>`;
+                                    img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
                                 }
                                 if (member['gender'] == "Women") {
-                                    img = `<i class="fa-regular fa-user" style="font-size: 21px;"></i>`;
+                                    img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
                                 }
                             }
                             $(`#${member['id']}`).html(`<div style="height: 37px;width: 37px;">
                                         ${ img }
                                         </div>
                                         <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
-                                        <div onclick="setsenduser( ${member['id']} )">
+                                        <div style="width: 100%;" onclick="setsenduser( ${member['id']} )">
                                         <div style="margin-left: 21px;" id="${member['name']}">
                                              ${member['name']} 
                                         </div>
@@ -224,16 +240,16 @@
                                 img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','${member['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${member['image_path']}" alt="">`;
                             } else {
                                 if (member['gender'] == "Men") {
-                                    img = `<i class="fa-solid fa-user" style="font-size: 21px;"></i>`;
+                                    img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
                                 }
                                 if (member['gender'] == "Women") {
-                                    img = `<i class="fa-regular fa-user" style="font-size: 21px;"></i>`;
+                                    img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
                                 }
                             }
                             $(`#${member['id']}`).html(`<div style="height: 37px;width: 37px;">
                                         ${img}
                                         </div>
-                                        <div onclick="setsenduser( ${member['id']} )">
+                                        <div style="width: 100%;" onclick="setsenduser( ${member['id']} )">
                                         <div style="margin-left: 21px;" id="${member['name']}">
                                              ${member['name']} 
                                         </div>
@@ -272,7 +288,9 @@
                             const element = document.getElementById("scrollbarid");
                             element.scrollTop = element.scrollHeight;
                             userfriendlist();
-                            setsenduser(e.message['send_id']);
+                            // setsenduser(e.message['send_id']);
+                            viewNotRefresh(e.message['send_id']);
+                            message_show(e.message['send_id']);
                         } else {
 
                             Toastify({
@@ -295,7 +313,7 @@
                                         <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${e.message['sender']['name']}','${e.message['sender']['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${e.message['sender']['image_path']}" alt="">
                                         </div>
                                         <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
-                                        <div onclick="setsenduser( ${e.message['sender']['id']} )">
+                                        <div style="width: 100%;" onclick="setsenduser( ${e.message['sender']['id']} )">
                                         <div style="margin-left: 21px;font-weight: bold;" id="${e.message['sender']['name']}">
                                              ${e.message['sender']['name']} 
                                         </div>
@@ -313,6 +331,40 @@
 
                     if ("{{ Auth::id() }}" == e.users_data['send_id']) {
                         message_show(e.users_data['receive_id']);
+                    }
+                });
+
+            window.Echo.channel("follow-channel")
+                .listen(".follow-event", (e) => {
+
+                    if ("{{ Auth::id() }}" == e.notification['receiver_id']) {
+                        if (e.notification['unfollow'] == 'yes') {
+
+                            Toastify({
+                                text: `${e.notification['sender_name']} is UnFollow You`
+                                , duration: 5000
+                                , gravity: "top"
+                                , position: "center"
+                                , style: {
+                                    background: '#fbdfd2'
+                                    , color: "black"
+                                }
+                                , stopOnFocus: true
+                            , }).showToast();
+                        } else {
+
+                            Toastify({
+                                text: `${e.notification['sender_name']} is Following You`
+                                , duration: 5000
+                                , gravity: "top"
+                                , position: "center"
+                                , style: {
+                                    background: '#fbdfd2'
+                                    , color: "black"
+                                }
+                                , stopOnFocus: true
+                            , }).showToast();
+                        }
                     }
                 });
 
@@ -366,8 +418,8 @@
             });
         }
 
+
         function removemessagebyone(messageid) {
-            // console.log(messageid);
             $.ajax({
                 type: 'post'
                 , headers: {
@@ -386,9 +438,11 @@
             });
         }
 
+
         function closemanu() {
             $('#moreoptiondiv').css('display', 'none')
         }
+
 
         function moreoptionshow() {
             $('#moreoptiondiv').css('display', 'block');
@@ -418,17 +472,17 @@
                                     img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
                                 } else {
                                     if (element['gender'] == "Men") {
-                                        img = `<i class="fa-solid fa-user" style="font-size: 21px;"></i>`;
+                                        img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
                                     }
                                     if (element['gender'] == "Women") {
-                                        img = `<i class="fa-regular fa-user" style="font-size: 21px;"></i>`;
+                                        img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
                                     }
                                 }
                                 $(`#${element['id']}`).html(`<div style="height: 37px;width: 37px;">
                                         ${img}
                                         </div>
                                         <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
-                                        <div onclick="setsenduser( ${element['id']} )">
+                                        <div style="width: 100%;" onclick="setsenduser( ${element['id']} )">
                                         <div style="margin-left: 21px;" id="${element['name']}">
                                        ${element['name']} 
                                         </div>
@@ -576,7 +630,27 @@
                     select_id: select_id
                 }
                 , success: function(res) {
-                    console.log(res);
+                    $('#requestid').css('display', 'none');
+                    $('#requestedid').css('display', 'block');
+                    $('#removerequestedid').css('display', 'block');
+                }
+                , error: function(e) {
+                    console.log(e);
+                }
+            });
+        }
+
+        function viewNotRefresh(select_id) {
+            $.ajax({
+                type: 'get'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , url: "{{ route('message_show_send_receive_pusher') }}"
+                , data: {
+                    select_user_id: select_id
+                }
+                , success: function(res) {
 
                 }
                 , error: function(e) {
@@ -631,23 +705,90 @@
                                     img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
                                 } else {
                                     if (element['gender'] == "Men") {
-                                        img = `<i class="fa-solid fa-user" style="font-size: 21px;"></i>`;
+                                        img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
                                     }
                                     if (element['gender'] == "Women") {
-                                        img = `<i class="fa-regular fa-user" style="font-size: 21px;"></i>`;
+                                        img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
                                     }
                                 }
                                 $(`#${element['id']}`).html(`<div style="height: 37px;width: 37px;">
                                         ${img}
                                         </div>
                                         <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
-                                        <div onclick="setsenduser( ${element['id']} )">
+                                        <div style="width: 100%;" onclick="setsenduser( ${element['id']} )">
                                         <div style="margin-left: 21px;" id="${element['name']}">
                                              ${element['name']} 
                                         </div></div>`);
                             }
                         }
                     });
+                }
+                , error: function(e) {
+                    console.log(e);
+                }
+            });
+        }
+
+        // Remove Request to Sended
+        function removerequest(select_user_id) {
+            $.ajax({
+                type: 'post'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , url: '/user-request-remove'
+                , data: {
+                    select_user_id: select_user_id
+                }
+                , success: function(res) {
+                    $('#requestid').css('display', 'block');
+                    $('#requestedid').css('display', 'none');
+                    $('#removerequestedid').css('display', 'none');
+
+                }
+                , error: function(e) {
+                    console.log(e);
+                }
+            });
+        }
+
+        // Accept Request
+        function RequestIsAccept(select_user_id, divthis) {
+
+            $.ajax({
+                type: 'post'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , url: '/user-request-accept'
+                , data: {
+                    select_user_id: select_user_id
+                }
+                , success: function(res) {
+                    divthis.textContent = 'Following';
+                    setsenduser(select_user_id);
+
+                }
+                , error: function(e) {
+                    console.log(e);
+                }
+            });
+        }
+
+        function unfollowbyid(id, btn) {
+
+            $.ajax({
+                type: 'post'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , url: "{{ route('user_unfollow') }}"
+                , data: {
+                    delete_id: id
+                }
+                , success: function(res) {
+                    btn.textContent = 'Follow';
+
                 }
                 , error: function(e) {
                     console.log(e);

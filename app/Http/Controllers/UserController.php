@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SendFollowNotification;
 use App\Events\SendMeesages;
 use App\Events\ViewToReceiver;
 use App\Models\Friendship;
@@ -116,7 +117,8 @@ class UserController extends Controller
     public function search_friend(Request $request)
     {
         if ($request->searchdata != '') {
-            $user_Find_Data = User::where('name', 'like', "%" . $request->searchdata . "%")->get();
+            $user_Find_Data = User::where('name', 'like', "%" . $request->searchdata . "%")
+                ->where('id', '!=', Auth::id())->get();
             if (isset($user_Find_Data)) {
 
                 return view('User.searchfriend', ["user_data" => $user_Find_Data]);
@@ -173,15 +175,55 @@ class UserController extends Controller
         $check_this_friend = Friendship::where(function ($query) use ($select_user_id) {
             $query->where('sender_user_id', Auth::id())
                 ->where('receiver_user_id', $select_user_id);
-        })->orWhere(function ($query) use ($select_user_id) {
+        })->first();
+        $check_this_friend_receiver = Friendship::where(function ($query) use ($select_user_id) {
             $query->where('receiver_user_id', Auth::id())
-                ->where('sender_user_id', $select_user_id);
-        })->get();
+                ->where('sender_user_id', $select_user_id)
+                ->where('status', 1);
+        })->first();
+        if (!isset($check_this_friend)) {
 
-        if ($check_this_friend->isEmpty()) {
+            if (isset($check_this_friend_receiver)) {
+                $user_Select_to_show = User::find($request->select_user_id);
+
+                if ($user_Select_to_show) {
+                    $message_view_ok = Message::where('send_id', $request->select_user_id)->where('receive_id', Auth::id())->get();
+                    if (isset($message_view_ok)) {
+                        foreach ($message_view_ok as $item) {
+                            $item->status = 'view';
+                            $item->save();
+                        }
+                    }
+
+                    $data = array('send_id' => $request->select_user_id, 'receive_id' => Auth::id());
+                    event(new ViewToReceiver($data));
+
+                    if (isset($user_Select_to_show)) {
+                        Session::put('chatboart_user_id', $user_Select_to_show->id);
+
+                        return view('User.chatboard', ['user_send_user_data' => $user_Select_to_show]);
+                    } else {
+
+                        return response()->json(['error' => 'not found data for user']);
+                    }
+                } else {
+                    return response()->json(['error' => "Not found user data"]);
+                }
+            }
             $select_user_data = User::where('id', $request->select_user_id)->first();
-            return view('User.send_accespt_request', ['users_data' => $select_user_data]);
+
+            $check_select_user_give_request = Friendship::where(function ($query) use ($select_user_id) {
+                $query->where('receiver_user_id', Auth::id())
+                    ->where('sender_user_id', $select_user_id);
+            })->first();
+
+            return view('User.send_accespt_request', ['users_data' => $select_user_data, 'user_can_request' => $check_select_user_give_request]);
         } else {
+            if ($check_this_friend->status == 0) {
+
+                $select_user_data = User::where('id', $request->select_user_id)->first();
+                return view('User.send_accespt_request', ['users_data' => $select_user_data, 'requested' => 'yes']);
+            }
 
             $user_Select_to_show = User::find($request->select_user_id);
 
@@ -210,10 +252,54 @@ class UserController extends Controller
         }
     }
 
+    // Pusher Refresher
+    public function message_show_send_receive_pusher(Request $request)
+    {
+        if (Auth::check()) {
+
+            $message_view_ok = Message::where('send_id', $request->select_user_id)->where('receive_id', Auth::id())->get();
+            if (isset($message_view_ok)) {
+                foreach ($message_view_ok as $item) {
+                    $item->status = 'view';
+                    $item->save();
+                }
+            }
+
+            $data = array('send_id' => $request->select_user_id, 'receive_id' => Auth::id());
+            event(new ViewToReceiver($data));
+            return response()->json(['data' => 'ok']);
+        } else {
+            return redirect()->route('main_error');
+        }
+    }
+
+    // User Show Notification
+    public function user_show_notification(Request $request)
+    {
+        $current_user_notification = Friendship::with('sendersData')
+            ->where('receiver_user_id', Auth::id())
+            ->orderByDesc('created_at')
+            ->get();
+        return view('User.user_notification', ['friendlistrequest' => $current_user_notification]);
+    }
+
+    // Unfollow by id
+    public function user_unfollow(Request $reqeust)
+    {
+        if (Auth::check()) {
+            $unfollow_user = Friendship::find($reqeust->delete_id);
+            if (isset($unfollow_user)) {
+                $unfollow_user->delete();
+                return response()->json(['data' => 'yes']);
+            }
+        } else {
+            return redirect()->route('main_error');
+        }
+    }
+
     // Message send Specific User
     public function message_send_specific_user(Request $request)
     {
-        // dd($request->all());
         if (Auth::check()) {
             if ($files = $request->file('files')) {
                 foreach ($files as $file) {
@@ -389,10 +475,67 @@ class UserController extends Controller
                 $new_friend->receiver_user_id  = $request->select_id;
                 $new_friend->status  = 0;
                 $new_friend->save();
+                $data_notification = array('receiver_id' => $new_friend->receiver_user_id, 'sender_name' => $new_friend->sendersData->name);
+                event(new SendFollowNotification($data_notification));
+
                 return response()->json(['Data' => "ok"]);
             } else {
                 return response()->json(['Data' => 'User not Found']);
             }
+        }
+    }
+
+    public function user_request_remove(Request $request)
+    {
+        if (Auth::check()) {
+            $remove_friend_request = Friendship::where('sender_user_id', Auth::id())->where('receiver_user_id', $request->select_user_id)->first();
+            if (isset($remove_friend_request)) {
+
+                $data_notification = array('receiver_id' => $remove_friend_request->receiver_user_id, 'sender_name' => $remove_friend_request->sendersData->name, 'unfollow' => 'yes');
+                event(new SendFollowNotification($data_notification));
+
+                $remove_friend_request->delete();
+                return response()->json(['delete' => 'yes']);
+            } else
+                return response()->json(['delete' => 'not found user']); {
+            }
+        } else {
+            return redirect()->route('main_error');
+        }
+    }
+
+    // User accept Reqeust
+    public function user_request_accept(Request $request)
+    {
+        if (Auth::check()) {
+            $request_accept = Friendship::where('receiver_user_id', Auth::id())->where('sender_user_id', $request->select_user_id)->first();
+            if (isset($request_accept)) {
+                $request_accept->status = 1;
+                $request_accept->save();
+
+                return response()->json(['data' => 'yes']);
+            } else {
+                return response()->json(['data' => 'not found data']);
+            }
+        } else {
+            return redirect()->route('main_error');
+        }
+    }
+
+    // Show user FriendList
+    public function user_friendlist_show(Request $request)
+    {
+        if (Auth::check()) {
+
+            $friendList = Friendship::with('sendersData', 'receiverData')->where(function ($query) {
+                $query->where('sender_user_id', Auth::id())
+                    ->orWhere('receiver_user_id', Auth::id());
+            })->where('status', 1)
+                ->orderByDesc('created_at')->get();
+
+            return view('User.friend_list_remove_show', ['friendList' => $friendList]);
+        } else {
+            return redirect()->route('main_error');
         }
     }
 }

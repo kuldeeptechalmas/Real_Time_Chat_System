@@ -64,9 +64,11 @@
             <img style="object-fit: cover;height: 100%;width: 100%;border-radius: 20px;" src="{{ asset('storage/img/'.$user_send_user_data->image_path) }}" alt="">
             @else
             @if ($user_send_user_data->gender=='Men')
-            <i class="fa-solid fa-user" style="font-size: 21px;"></i>
+            <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>
             @else
-            <i class="fa-regular fa-user" style="font-size: 21px;"></i>
+           <div style="height: 37px;width: 37px;">
+                        <img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt="">
+                    </div>
             @endif
             @endif
         </div>

@@ -37,4 +37,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Message::class, 'receive_id', 'id');
     }
+
+    public function friendSendersData()
+    {
+        return $this->belongsTo(Friendship::class, 'id', 'sender_user_id');
+    }
 }
