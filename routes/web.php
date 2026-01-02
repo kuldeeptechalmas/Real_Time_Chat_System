@@ -32,16 +32,17 @@ Route::middleware('AuthCheckExist')->group(function () {
 
     // Dashboard
     Route::match(['get', 'post'], '/dashboard', [MainController::class, 'dashboard'])->name('dashboard');
-    Route::match(['get', 'post'], '/user-profile', [UserController::class, 'user_profiles'])->name('user_profiles');
+    Route::match(['get', 'post'], '/user-profile', [UserController::class, 'User_Profiles'])->name('user_profiles');
     Route::match(['get', 'post'], '/user-profile-image-remove', [UserController::class, 'user_profiles_image_remove'])->name('user_profiles_image_remove');
 
     // Ajax
     Route::match(['get', 'post'], '/search-friend', [UserController::class, 'search_friend'])->name('search_friend');
-    Route::match(['get', 'post'], '/user-select', [UserController::class, 'user_select_data'])->name('user_select');
+    Route::match(['get', 'post'], '/user-select', [UserController::class, 'user_select_data'])->name('user_select_data');
     Route::match(['get', 'post'], '/message-send', [UserController::class, 'message_send_specific_user'])->name('message_send_specific_user');
     Route::match(['get', 'post'], '/message-show', [UserController::class, 'message_show_send_receive'])->name('message_show_send_receive');
 
     Route::match(['get', 'post'], '/message-show-pusher', [UserController::class, 'message_show_send_receive_pusher'])->name('message_show_send_receive_pusher');
+    Route::match(['get', 'post'], '/current-user-type-pusher', [UserController::class, 'Current_User_Type_Pusher'])->name('Current_User_Type_Pusher');
 
     Route::match(['get', 'post'], '/message-remove', [UserController::class, 'message_remove_current'])->name('message_remove_current');
     Route::match(['get', 'post'], '/message-remove-all', [UserController::class, 'message_remove_current_all'])->name('message_remove_current_all');

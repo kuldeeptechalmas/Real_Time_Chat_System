@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SenderTypingEvent;
 use App\Events\SendFollowNotification;
 use App\Events\SendMeesages;
 use App\Events\ViewToReceiver;
@@ -19,13 +20,12 @@ use Illuminate\Validation\Rules\Password;
 class UserController extends Controller
 {
     // User Profiles
-    public function user_profiles(Request $request)
+    public function User_Profiles(Request $request)
     {
         if (Auth::check()) {
 
-
             if ($request->isMethod('post')) {
-                $validator = Validator::make($request->all(), [
+                $Validator = Validator::make($request->all(), [
                     'username' => [
                         'required',
                         'string',
@@ -64,29 +64,29 @@ class UserController extends Controller
                     'file.max' => 'Enter Images is Max Size 2 MB Required',
                 ]);
 
-                if ($validator->fails()) {
-                    return redirect()->back()->withInput()->withErrors($validator);
+                if ($Validator->fails()) {
+                    return redirect()->back()->withInput()->withErrors($Validator);
                 }
 
-                $user_modify_data = User::find($request->id);
+                $user_Modify_Data = User::find($request->id);
 
-                if (isset($user_modify_data)) {
+                if (isset($user_Modify_Data)) {
 
-                    $user_modify_data->name = $request->username;
-                    $user_modify_data->phone = $request->phone;
-                    $user_modify_data->email = $request->email;
-                    $user_modify_data->gender = $request->gender;
-                    $user_modify_data->save();
+                    $user_Modify_Data->name = $request->username;
+                    $user_Modify_Data->phone = $request->phone;
+                    $user_Modify_Data->email = $request->email;
+                    $user_Modify_Data->gender = $request->gender;
+                    $user_Modify_Data->save();
                 }
 
                 if (isset($request->file)) {
                     $files = $request->file("file");
                     $files->storeAs("public/img", $files->getClientOriginalName());
-                    $user_modify_data->image_path = $files->getClientOriginalName();
-                    $user_modify_data->save();
+                    $user_Modify_Data->image_path = $files->getClientOriginalName();
+                    $user_Modify_Data->save();
                 }
 
-                Auth::login($user_modify_data);
+                Auth::login($user_Modify_Data);
                 return redirect()->route('dashboard');
             }
             return view('User.user_profile');
@@ -280,7 +280,11 @@ class UserController extends Controller
             ->where('receiver_user_id', Auth::id())
             ->orderByDesc('created_at')
             ->get();
-        return view('User.user_notification', ['friendlistrequest' => $current_user_notification]);
+        if (isset($current_user_notification)) {
+            return view('User.user_notification', ['friendlistrequest' => $current_user_notification]);
+        } else {
+            return redirect()->route('main_error');
+        }
     }
 
     // Unfollow by id
@@ -361,7 +365,7 @@ class UserController extends Controller
             $query->where('send_id', $selectuserid)
                 ->where('receive_id', $userid)->whereNull('receiver_deleted_at');
         })->orderBy('created_at', "asc")->get();
-
+        // dd($message_data_to_show->toArray());
         if (isset($message_data_to_show)) {
             return view('User.show_message', ['message' => $message_data_to_show]);
         } else {
@@ -536,6 +540,19 @@ class UserController extends Controller
             return view('User.friend_list_remove_show', ['friendList' => $friendList]);
         } else {
             return redirect()->route('main_error');
+        }
+    }
+
+    // Current User Typing Or Not
+    public function Current_User_Type_Pusher(Request $request)
+    {
+        if (Auth::check()) {
+            $data = array('sender_id' => Auth::id(), 'receiver_id' => $request->select_id, 'message' => 'Typing...');
+            event(new SenderTypingEvent($data));
+
+            return response()->json(['Data' => 'yes']);
+        } else {
+            return response()->json(['Data' => 'not Authentication User']);
         }
     }
 }

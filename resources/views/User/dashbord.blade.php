@@ -11,63 +11,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        .scroll-container {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-            overflow-y: scroll;
-        }
-
-        .scroll-container::-webkit-scrollbar {
-            display: none;
-        }
-
-        .messagehovercontent {
-            display: none;
-        }
-
-        .messagehover:hover .messagehovercontent {
-            display: block;
-        }
-
-        .w_message {
-            max-width: 60%;
-        }
-
-        .loader {
-            width: 15px;
-            aspect-ratio: 1;
-            border-radius: 50%;
-            animation: l5 1s infinite linear alternate;
-        }
-
-        @keyframes l5 {
-            0% {
-                box-shadow: 20px 0 #000, -20px 0 #0002;
-                background: #000
-            }
-
-            33% {
-                box-shadow: 20px 0 #000, -20px 0 #0002;
-                background: #0002
-            }
-
-            66% {
-                box-shadow: 20px 0 #0002, -20px 0 #000;
-                background: #0002
-            }
-
-            100% {
-                box-shadow: 20px 0 #0002, -20px 0 #000;
-                background: #000
-            }
-        }
-
-    </style>
-
+    <link rel="stylesheet" href="{{ asset('css/dashboard_css.css') }}">
 </head>
 <body style="height: 100vh;overflow: hidden;cursor: default;">
-
     <div class="row" style="margin: 0px;width: 100%;height: 100%;border-radius: 8px;">
 
         {{-- first side manu --}}
@@ -169,11 +115,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
+        var totalTimeType = 0;
         $(document).ready(function() {
 
             userfriendlist();
-            // Pusher.logToConsole = true;
-            Pusher.logToConsole = false;
+            Pusher.logToConsole = true;
+            // Pusher.logToConsole = false;
             window.Echo.join("send-channel").here((mem) => {
                     localStorage.setItem('onlinedata', JSON.stringify(mem));
                     mem.forEach(element => {
@@ -279,16 +226,17 @@
                             // old message get
                             var scrollbardiv = $("#scrollbarid").html();
                             var addhtmldiv = `<div class="messagehover" style="margin: 14px;display: flex;justify-content: flex-start;">
-                            <div class=w_message d-flex gap-2"><div style="background: #fbdfd2;padding: 7px;border-radius: 0px 10px 10px;cursor: default;">
+                            <div class=w_message d-flex gap-2"><div style="position: relative;min-width: 66px;background: #fbdfd2;padding: 28px 7px 7px 7px;border-radius: 0px 10px 10px;cursor: default;">
                             ${data}
-                            <span style="font-size: 11px;"> ${formattedTime} </span>
-                            </div></div><div class="messagehovercontent" onclick="removemessagebyone(${e.message['id']})" style="background-color: #d28fa8;height: 32px;color: white;border-radius: 11px;margin-left: 13px;padding: 4px;cursor: default;">Remove</div></div>`;
+                            <div style="position: absolute;top: 0px;right: 16px;">
+                            <span style="font-size: 11px;">${formattedTime}</span>
+                            </div></div></div><div class="messagehovercontent" onclick="removemessagebyone(${e.message['id']})" style="background-color: #d28fa8;height: 32px;color: white;border-radius: 11px;margin-left: 13px;padding: 4px;cursor: default;">Remove</div></div>`;
                             $("#scrollbarid").html(scrollbardiv + addhtmldiv);
 
                             const element = document.getElementById("scrollbarid");
                             element.scrollTop = element.scrollHeight;
+
                             userfriendlist();
-                            // setsenduser(e.message['send_id']);
                             viewNotRefresh(e.message['send_id']);
                             message_show(e.message['send_id']);
                         } else {
@@ -332,6 +280,32 @@
                     if ("{{ Auth::id() }}" == e.users_data['send_id']) {
                         message_show(e.users_data['receive_id']);
                     }
+                });
+
+            Echo.private('typing-channel')
+                .listenForWhisper('typing', (e) => {
+
+                    console.log(e);
+
+                    console.log(e.user + ' is typing...');
+                    if ("{{ Auth::user()->id }}" == e.user_id && "{{ URL::full() }}" == "http://127.0.0.1:8000/dashboard") {
+                        if ($('.typing').html() == null) {
+                            var scrollbardiv = $("#scrollbarid").html();
+                            var addhtmldiv = `<div style="background: #fbdfd2;width: 33px;display: flex;justify-content: center;border-radius: 18px;"" class='typing'><span>...</span></div>`;
+                            $("#scrollbarid").html(scrollbardiv + addhtmldiv);
+                            const element = document.getElementById("scrollbarid");
+                            element.scrollTop = element.scrollHeight;
+                            totalTimeType += 1000;
+
+                        } else {
+                            totalTimeType += 1000;
+                        }
+                        setTimeout(() => {
+                            $('.typing').css('display', 'none');
+                            $('.typing').remove();
+                        }, totalTimeType)
+                    }
+
                 });
 
             window.Echo.channel("follow-channel")
@@ -404,7 +378,7 @@
                 , headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
-                , url: '/message-remove-all'
+                , url: "{{ route('message_remove_current_all') }}"
                 , data: {
                     messageuserid: messageuserid
                 }
@@ -425,7 +399,7 @@
                 , headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
-                , url: '/message-remove'
+                , url: "{{ route('message_remove_current') }}"
                 , data: {
                     messageid: messageid
                 }
@@ -438,11 +412,10 @@
             });
         }
 
-
+        // Manu Show and Hide
         function closemanu() {
             $('#moreoptiondiv').css('display', 'none')
         }
-
 
         function moreoptionshow() {
             $('#moreoptiondiv').css('display', 'block');
@@ -455,7 +428,7 @@
                 , headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
-                , url: '/search-friend'
+                , url: "{{ route('search_friend') }}"
                 , data: {
                     searchdata: $('#searchfriendname').val()
                 }
@@ -505,7 +478,7 @@
                 , headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
-                , url: '/user-select'
+                , url: "{{ route('user_select_data') }}"
                 , data: {
                     select_user_id: user_id
                 }
@@ -591,7 +564,7 @@
                     , headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     }
-                    , url: '/message-send'
+                    , url: "{{ route('message_send_specific_user') }}"
                     , data: formData
                     , contentType: false
                     , processData: false
@@ -625,7 +598,7 @@
                 , headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
-                , url: '/user-send-request'
+                , url: "{{ route('user_send_request') }}"
                 , data: {
                     select_id: select_id
                 }
@@ -666,7 +639,7 @@
                 , headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
-                , url: '/message-show'
+                , url: "{{ route('message_show_send_receive') }}"
                 , data: {
                     select_user_id: select_user_id
                 }
@@ -690,7 +663,7 @@
                 , headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
-                , url: '/user-friend-list'
+                , url: "{{ route('user_friend_list') }}"
                 , success: function(res) {
                     $('#search_data').html(res);
 
@@ -736,7 +709,7 @@
                 , headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
-                , url: '/user-request-remove'
+                , url: "{{ route('user_request_remove') }}"
                 , data: {
                     select_user_id: select_user_id
                 }
@@ -760,7 +733,7 @@
                 , headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
-                , url: '/user-request-accept'
+                , url: "{{ route('user_request_accept') }}"
                 , data: {
                     select_user_id: select_user_id
                 }
@@ -794,6 +767,19 @@
                     console.log(e);
                 }
             });
+        }
+
+        // User Write Text
+        function userWriteText(current, id) {
+
+            Echo.private('typing-channel')
+                .whisper('typing', {
+                    user: "{{ Auth::user()->name }}"
+                    , user_id: id
+                    , typing: true
+                });
+
+            console.log(current);
         }
 
     </script>

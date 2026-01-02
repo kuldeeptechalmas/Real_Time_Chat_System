@@ -66,9 +66,9 @@
             @if ($user_send_user_data->gender=='Men')
             <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>
             @else
-           <div style="height: 37px;width: 37px;">
-                        <img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt="">
-                    </div>
+            <div style="height: 37px;width: 37px;">
+                <img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt="">
+            </div>
             @endif
             @endif
         </div>
@@ -95,14 +95,14 @@
 
         <input type="file" class="form-control" name="oldfiles[]" multiple id="oldfiles" style="display: none" hidden>
         <input type="file" class="form-control" name="files[]" multiple id="files" style="display: none">
-        <i class="fa-solid fa-paperclip" style="padding-top: 14px;font-size: 19px;" onclick="FilesImageSend()"></i>
-        <textarea style="width: 87%;margin-left: 20px; resize: none;" rows="1" autocomplete="off" class="form-control scroll-container" id="messages" placeholder="Type Message Here..." aria-label="Search"></textarea>
+        <i class="fa-solid fa-paperclip" style="padding-top: 14px;font-size: 19px;align-items: center;display: flex;justify-content: center;" onclick="FilesImageSend()"></i>
+        <textarea style="width: 87%;margin-left: 20px; resize: none;" rows="1" oninput="userWriteText(this,{{ $user_send_user_data->id }})" autocomplete="off" class="form-control scroll-container" id="messages" placeholder="Type Message Here..." aria-label="Search"></textarea>
 
         {{-- <input type="file" class="form-control" name="images[]" multiple style="display: none" id="upload-img" /> --}}
         <div class="img-thumbs img-thumbs-hidden scroll-container" id="img-preview" style="overflow: scroll;overflow-y: auto;width: 87%;margin: 0px;height: 97px;"></div>
 
         <input type="submit" value="" hidden>
-        <i type class="fa-solid fa-paper-plane" onclick="sendmessagetosender({{ $user_send_user_data->id }})" style="padding-top: 9px;margin-left: 15px;font-size: 20px;"></i>
+        <i type class="fa-solid fa-paper-plane" onclick="sendmessagetosender({{ $user_send_user_data->id }})" style="align-items: center;display: flex;justify-content: center;padding-top: 9px;margin-left: 15px;font-size: 20px;"></i>
     </div>
 </div>
 <script>
@@ -124,6 +124,19 @@
                     sendmessagetosender("{{ $user_send_user_data->id }}", data_message);
 
                 }
+            } else {
+                if (inputId.rows == 1) {
+                    inputId.rows = 2;
+                } else if (inputId.rows == 2) {
+                    inputId.rows = 3;
+                } else if (inputId.rows == 3) {
+                    inputId.rows = 4;
+                } else if (inputId.rows == 4) {
+                    inputId.rows = 5;
+                } else {
+                    inputId.rows = 5;
+                }
+
             }
         }
     });
@@ -183,7 +196,6 @@
 
         totalFiles = imgUpload.files.length;
 
-
         if (!!totalFiles) {
             imgPreview.classList.remove('img-thumbs-hidden');
         }
@@ -202,8 +214,6 @@
             wrapper.appendChild(img);
             wrapper.appendChild(removeBtn);
             imgPreview.appendChild(wrapper);
-
-
             removeBtn.setAttribute("data-id", i);
         }
 
@@ -221,10 +231,9 @@
             filesArray.forEach(files => {
                 dataTransfer.items.add(files);
             });
+
             document.getElementById('files').files = dataTransfer.files;
-
             $(this).parent('.wrapper-thumb').remove();
-
             var remainingImages = $('#img-preview').find('.wrapper-thumb').length;
 
             if (remainingImages === 0) {
@@ -234,10 +243,7 @@
                 $('#img-preview').html('');
                 imgPreview.classList.add('img-thumbs-hidden');
             }
-
         });
-
-
     }
 
 </script>
