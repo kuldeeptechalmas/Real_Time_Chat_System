@@ -118,6 +118,7 @@
 
                 if (data_of_message.length == 0) {
                     $('#messages').val('');
+                    document.getElementById('messages').rows = 1;
                 } else {
                     $('#messages').val('');
                     $('#messages').attr('placeholder', 'Sending...').prop('readonly', true);

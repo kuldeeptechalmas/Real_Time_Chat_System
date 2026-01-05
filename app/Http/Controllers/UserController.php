@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\EmojiResponseEvent;
 use App\Events\SenderTypingEvent;
 use App\Events\SendFollowNotification;
 use App\Events\SendMeesages;
@@ -555,4 +556,87 @@ class UserController extends Controller
             return response()->json(['Data' => 'not Authentication User']);
         }
     }
+
+    // Get Message Emoji
+    public function message_emoji_add(Request $request)
+    {
+        if (Auth::check()) {
+            $messages = Message::find($request->message_id);
+            if (isset($messages)) {
+                $messages->response = $request->emoji_code;
+                $messages->save();
+                event(new EmojiResponseEvent($messages));
+                return response()->json(['data' => 'yes']);
+            } else {
+                return response()->json(['data' => 'not found data message']);
+            }
+        } else {
+            return response()->json(['data' => 'not found data message']);
+        }
+    }
+
+    // Last time Seen At Add
+    public function user_last_seen_time(Request $request)
+    {
+        if (Auth::check()) {
+            $User_find = User::find($request->leav_id);
+            if (isset($User_find)) {
+                $User_find->last_seen_at = now();
+                $User_find->save();
+                return response()->json(['data' => 'yes']);
+            } else {
+                return response()->json(['data' => 'not found data user']);
+            }
+        } else {
+            return response()->json(['data' => 'not found data message']);
+        }
+    }
+
+    public function user_forword_message(Request $request)
+    {
+        $message_data_order = Message::select('send_id', 'receive_id')
+            ->selectRaw('MAX(created_at) as last_message_time')
+            ->where('send_id', Auth::user()->id)
+            ->orWhere('receive_id', Auth::user()->id)
+            ->groupBy('send_id', 'receive_id')
+            ->orderByDesc('last_message_time')
+            ->get();
+        $extra_collect = $message_data_order;
+
+        for ($i = 0; $i < $message_data_order->count(); $i++) {
+            $fresh_send_id = $message_data_order[$i]->send_id;
+            $fresh_receive_id = $message_data_order[$i]->receive_id;
+            $fresh_ct = $message_data_order[$i]->last_message_time;
+
+            for ($j = 0; $j < $extra_collect->count(); $j++) {
+                if ($fresh_send_id == $extra_collect[$j]->receive_id && $fresh_receive_id == $extra_collect[$j]->send_id) {
+                    if ($fresh_receive_id == Auth::id()) {
+                        $message_data_order[$i]->send_id = $extra_collect[$j]->send_id;
+                        $message_data_order[$i]->receive_id = $extra_collect[$j]->receive_id;
+                        $message_data_order[$j]->last_message_time = $fresh_ct;
+                    }
+                }
+            }
+        }
+
+        $uniqueConversations = $message_data_order->unique(function ($item) {
+            $participants = [$item->send_id, $item->receive_id];
+            sort($participants);
+            return implode('-', $participants);
+        });
+
+        $finalUserList = $uniqueConversations->values();
+
+        if (isset($message_data_order)) {
+
+            return view('User.Forword_Message', ["last_message_send_data" => $finalUserList]);
+        } else {
+            return response()->json(['data' => "data is not found"]);
+        }
+    }
+
+    // public function user_forword_message_user(Request $request)
+    // {
+    //     dd
+    // }
 }

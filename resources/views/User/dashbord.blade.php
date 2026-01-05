@@ -119,8 +119,8 @@
         $(document).ready(function() {
 
             userfriendlist();
-            Pusher.logToConsole = true;
-            // Pusher.logToConsole = false;
+            // Pusher.logToConsole = true;
+            Pusher.logToConsole = false;
             window.Echo.join("send-channel").here((mem) => {
                     localStorage.setItem('onlinedata', JSON.stringify(mem));
                     mem.forEach(element => {
@@ -201,6 +201,26 @@
                                              ${member['name']} 
                                         </div>
                                         </div>`);
+
+                            // last_seen_at
+                            $.ajax({
+                                type: 'post'
+                                , headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                }
+                                , url: "{{ route('user_last_seen_time') }}"
+                                , data: {
+                                    leav_id: member['id']
+                                }
+                                , success: function(res) {
+                                    // console.log(res);
+
+                                }
+                                , error: function(e) {
+                                    console.log(e);
+                                }
+                            });
+
                         }
                     }
                 })
@@ -304,6 +324,63 @@
                             $('.typing').css('display', 'none');
                             $('.typing').remove();
                         }, totalTimeType)
+                    }
+
+                });
+
+            Echo.channel('emoji-channel')
+                .listen('.emoji-event', (e) => {
+                    if ("{{ Auth::user()->id }}" == e.message['send_id'] && "{{ URL::full() }}" == "http://127.0.0.1:8000/dashboard") {
+                        if (localStorage.getItem('current_user_chatboard') == e.message['receive_id']) {
+
+                            if ($("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html() == null) {
+
+                                var message_div = $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message');
+                                console.log(message_div);
+
+                                if (e.message['response'] == 1) {
+                                    var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>👍</div>");
+                                }
+                                if (e.message['response'] == 2) {
+                                    var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>❤️</div>");
+                                }
+                                if (e.message['response'] == 3) {
+                                    var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😂</div>");
+                                }
+                                if (e.message['response'] == 4) {
+                                    var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😮</div>");
+                                }
+                                if (e.message['response'] == 5) {
+                                    var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😢</div>");
+                                }
+                                if (e.message['response'] == 6) {
+                                    var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😡</div>");
+                                }
+
+                                $(message_div).append(newdiv);
+
+                            } else {
+
+                                if (e.message['response'] == 1) {
+                                    $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("👍");
+                                } else
+                                if (e.message['response'] == 2) {
+                                    $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("❤️");
+                                } else
+                                if (e.message['response'] == 3) {
+                                    $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("😂");
+                                } else
+                                if (e.message['response'] == 4) {
+                                    $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("😮");
+                                } else
+                                if (e.message['response'] == 5) {
+                                    $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("😢");
+                                } else
+                                if (e.message['response'] == 6) {
+                                    $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("😡");
+                                }
+                            }
+                        }
                     }
 
                 });
@@ -495,7 +572,7 @@
 
         // Message Send 
         function sendmessagetosender(senduserid, message) {
-
+            document.getElementById('messages').rows = 1;
             if (message == null) {
 
                 var message_data_of = $('#messages').val().replace(/\s/g, '');
@@ -532,7 +609,7 @@
 
                 if (fileInput.files.length > 0) {
                     for (var i = 0; i < fileInput.files.length; i++) {
-                        if (fileInput.files[i].name.split('.')[1] == 'png' || fileInput.files[i].name.split('.')[1] == 'jpg') {
+                        if (fileInput.files[i].name.split('.')[1] == 'png' || fileInput.files[i].name.split('.')[1] == 'jpg' || fileInput.files[i].name.split('.')[1] == 'svg' || fileInput.files[i].name.split('.')[1] == 'pdf') {
 
                             formData.append('files[]', fileInput.files[i]);
                         } else {
@@ -540,6 +617,8 @@
                             $('#files').val('');
                             $('#img-preview').css('display', "none");
                             $('#messages').css('display', "block");
+                            $('#messages').val('');
+                            $('#messages').attr('placeholder', 'Type Message Here...').prop('readonly', false);
                             Toastify({
                                 text: `Enter Image is Only png or jpg Images Allows`
                                 , duration: 5000
@@ -577,7 +656,6 @@
                         $('#messages').css('display', 'block');
                         $('#img-preview').css('display', 'none');
                         $('#messages').prop('readonly', false).attr('placeholder', 'Type Message Here...')
-
                         userfriendlist();
 
                         const element = document.getElementById("scrollbarid");
@@ -779,7 +857,114 @@
                     , typing: true
                 });
 
-            console.log(current);
+            // console.log(current);
+        }
+
+        // Get Emoji And Show
+        function emojigetshow(div, message_id) {
+
+            var message_div = $(div).parent().parent().parent().find('div.w_message.d-flex.gap-2').children()[0];
+
+            if ($(div).data('code') == 1) {
+                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>👍</div>");
+            }
+            if ($(div).data('code') == 2) {
+                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>❤️</div>");
+            }
+            if ($(div).data('code') == 3) {
+                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😂</div>");
+            }
+            if ($(div).data('code') == 4) {
+                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😮</div>");
+            }
+            if ($(div).data('code') == 5) {
+                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😢</div>");
+            }
+            if ($(div).data('code') == 6) {
+                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😡</div>");
+            }
+
+            $(message_div).append(newdiv);
+            $.ajax({
+                type: 'post'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , url: "{{ route('message_emoji_add') }}"
+                , data: {
+                    emoji_code: $(div).data('code')
+                    , message_id: message_id
+                }
+                , success: function(res) {
+                    // console.log(res);
+
+                }
+                , error: function(e) {
+                    console.log(e);
+                }
+            });
+
+        }
+
+        // Forword Message
+        function forwordmessage(mid, mmessage) {
+            console.log(mid);
+            console.log(mmessage);
+            localStorage.setItem('m_message', mmessage);
+
+            $.ajax({
+                type: 'post'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , url: "{{ route('user_forword_message') }}"
+                , success: function(res) {
+                    $('#chatboardofreceiver').html(res);
+                    // const element = document.getElementById("scrollbarid");
+                    // element.scrollTop = element.scrollHeight;
+
+                }
+                , error: function(e) {
+                    console.log(e);
+                }
+            });
+
+        }
+
+        function ForwordMessageUserSelect(user_id) {
+            console.log(user_id);
+            var formData = new FormData();
+            formData.append('message', localStorage.getItem('m_message'));
+            formData.append('receive_data_id', user_id);
+            $.ajax({
+                type: 'post'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , url: "{{ route('message_send_specific_user') }}"
+                , data: formData
+                , contentType: false
+                , processData: false
+                , success: function(res) {
+                    setsenduser(user_id);
+                    $('#message_to_show').html(res);
+                    $('#messages').val('');
+                    $('#files').val('');
+
+                    $('#img-preview').html('');
+                    $('#messages').css('display', 'block');
+                    $('#img-preview').css('display', 'none');
+                    $('#messages').prop('readonly', false).attr('placeholder', 'Type Message Here...')
+                    userfriendlist();
+
+                    // const element = document.getElementById("scrollbarid");
+                    // element.scrollTop = element.scrollHeight;
+
+                }
+                , error: function(e) {
+                    console.log(e);
+                }
+            });
         }
 
     </script>

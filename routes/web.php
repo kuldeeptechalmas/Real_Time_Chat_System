@@ -55,4 +55,10 @@ Route::middleware('AuthCheckExist')->group(function () {
     Route::match(['get', 'post'], '/user-request-remove', [UserController::class, 'user_request_remove'])->name('user_request_remove');
     Route::match(['get', 'post'], '/user-unfollow', [UserController::class, 'user_unfollow'])->name('user_unfollow');
     Route::match(['get', 'post'], '/user-request-accept', [UserController::class, 'user_request_accept'])->name('user_request_accept');
+
+    Route::match(['get', 'post'], '/message-emoji-add', [UserController::class, 'message_emoji_add'])->name('message_emoji_add');
+    Route::match(['get', 'post'], '/user-last-seen-time', [UserController::class, 'user_last_seen_time'])->name('user_last_seen_time');
+
+    Route::match(['get', 'post'], '/user-forword-message', [UserController::class, 'user_forword_message'])->name('user_forword_message');
+    // Route::match(['get', 'post'], '/user-forword-message-user', [UserController::class, 'user_forword_message_user'])->name('user_forword_message_user');
 });

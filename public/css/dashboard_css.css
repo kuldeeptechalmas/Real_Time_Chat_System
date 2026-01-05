@@ -128,7 +128,6 @@
         .emoji-bar {
             position: absolute;
             left: 36%;
-            bottom: 0px;
             transform: translateX(-50%) scale(0.5);
             display: flex;
             background-color: white;
