@@ -24,4 +24,9 @@ class Message extends Model
     {
         return $this->belongsTo(User::class, 'receive_id', 'id');
     }
+
+    public function StarUserWithMessage()
+    {
+        return $this->hasOne(StarUser::class, 'star_user_id', 'receive_id');
+    }
 }

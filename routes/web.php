@@ -35,6 +35,10 @@ Route::middleware('AuthCheckExist')->group(function () {
     Route::match(['get', 'post'], '/user-profile', [UserController::class, 'User_Profiles'])->name('user_profiles');
     Route::match(['get', 'post'], '/user-profile-image-remove', [UserController::class, 'user_profiles_image_remove'])->name('user_profiles_image_remove');
 
+    // Pdf View and Download -> Not Ajax
+    Route::match(['get', 'post'], '/pdf-view/{filename}', [UserController::class, 'pdf_view'])->name('pdf.view');
+    Route::match(['get', 'post'], '/pdf-download/{filename}', [UserController::class, 'pdf_download'])->name('pdf.download');
+
     // Ajax
     Route::match(['get', 'post'], '/search-friend', [UserController::class, 'search_friend'])->name('search_friend');
     Route::match(['get', 'post'], '/user-select', [UserController::class, 'user_select_data'])->name('user_select_data');
@@ -60,5 +64,13 @@ Route::middleware('AuthCheckExist')->group(function () {
     Route::match(['get', 'post'], '/user-last-seen-time', [UserController::class, 'user_last_seen_time'])->name('user_last_seen_time');
 
     Route::match(['get', 'post'], '/user-forword-message', [UserController::class, 'user_forword_message'])->name('user_forword_message');
-    // Route::match(['get', 'post'], '/user-forword-message-user', [UserController::class, 'user_forword_message_user'])->name('user_forword_message_user');
+
+    // Star Add and Remove
+    Route::match(['get', 'post'], '/StarUser', [UserController::class, 'user_star_show'])->name('user.star.show');
+
+    Route::match(['get', 'post'], '/user-star-add', [UserController::class, 'user_star_add'])->name('user.star.add');
+    Route::match(['get', 'post'], '/user-star-remove', [UserController::class, 'user_star_remove'])->name('user.star.remove');
+
+    // Create Group
+    Route::match(['get', 'post'], '/create-group', [UserController::class, 'create_group'])->name('create.group');
 });

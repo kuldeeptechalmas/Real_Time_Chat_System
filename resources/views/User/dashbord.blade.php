@@ -12,6 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/dashboard_css.css') }}">
+
 </head>
 <body style="height: 100vh;overflow: hidden;cursor: default;">
     <div class="row" style="margin: 0px;width: 100%;height: 100%;border-radius: 8px;">
@@ -56,6 +57,11 @@
                     Notification
                 </div>
             </a>
+            <a href="{{ route('user.star.show') }}" style="color: black;text-decoration: none;">
+                <div class="row" style="padding: 15px;background: #f9d8c9;margin-top: 4px;">
+                    Starred
+                </div>
+            </a>
             <div style="position: fixed;bottom: 11px;">
                 <a href="{{ route('logout') }}"><button type="button" style="background: #fbdfd2;" class="btn btn-info">Logout</button></a>
             </div>
@@ -64,6 +70,11 @@
 
         {{-- searching and show user --}}
         <div class="col-4 bg-light" style="padding: 0px;">
+
+            <div onclick="CreateGroupDiv()" style="display: flex;justify-content: center;align-items: center;font-size: 21px;position: absolute;background: #828CAC;border-radius: 27px;bottom: 20px;right: 61%;z-index: 99;height: 40px;width: 40px;">
+                <i class="fa-solid fa-plus" style="color: white;"></i>
+            </div>
+
             <div style="padding: 21px;background-color: #fbdfd2">
                 <div class="d-flex">
                     <div style="height: 26px;width: 49px;">
@@ -114,6 +125,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script type="module" src="https://unpkg.com/emoji-picker-element"></script>
     <script>
         var totalTimeType = 0;
         $(document).ready(function() {
@@ -920,9 +932,6 @@
                 , url: "{{ route('user_forword_message') }}"
                 , success: function(res) {
                     $('#chatboardofreceiver').html(res);
-                    // const element = document.getElementById("scrollbarid");
-                    // element.scrollTop = element.scrollHeight;
-
                 }
                 , error: function(e) {
                     console.log(e);
@@ -957,14 +966,51 @@
                     $('#messages').prop('readonly', false).attr('placeholder', 'Type Message Here...')
                     userfriendlist();
 
-                    // const element = document.getElementById("scrollbarid");
-                    // element.scrollTop = element.scrollHeight;
-
                 }
                 , error: function(e) {
                     console.log(e);
                 }
             });
+        }
+
+        function CreateGroupDiv() {
+            $.ajax({
+                type: 'post'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , url: "{{ route('create.group') }}"
+                , success: function(res) {
+                    $('#chatboardofreceiver').html(res);
+                }
+                , error: function(e) {
+                    console.log(e);
+                }
+            });
+        }
+
+        let Select_User_Array = new Array();
+
+        function SelectedGroupUser(thisdiv) {
+
+            if ($(thisdiv).css('background-color') == 'rgba(208, 242, 208, 0.5)') {
+                $(thisdiv).css('background-color', 'rgb(255, 255, 255)');
+
+                const index = Select_User_Array.indexOf($(thisdiv).data('id'));
+                Select_User_Array.splice(index, 1);
+
+            } else {
+                $(thisdiv).css('background-color', 'rgba(208, 242, 208, 0.5)');
+                Select_User_Array.push($(thisdiv).data('id'));
+            }
+        }
+
+        function FinalCreateGroup() {
+            console.log($('#group_name').val());
+            const data_of_group_name = $('#messages').val().replace(/\s/g, '');
+            if (data_of_group_name.length == 0) {
+
+            }
         }
 
     </script>

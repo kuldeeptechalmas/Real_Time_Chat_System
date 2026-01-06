@@ -43,4 +43,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Friendship::class, 'id', 'sender_user_id');
     }
+
+    public function starUserFind()
+    {
+        return $this->hasOne(StarUser::class, 'star_user_id', 'id');
+    }
 }

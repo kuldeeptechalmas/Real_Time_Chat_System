@@ -9,14 +9,17 @@ use App\Events\SendMeesages;
 use App\Events\ViewToReceiver;
 use App\Models\Friendship;
 use App\Models\Message;
+use App\Models\StarUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File as FacadesFile;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use Symfony\Component\HttpFoundation\File\File;
 
 class UserController extends Controller
 {
@@ -182,10 +185,14 @@ class UserController extends Controller
                 ->where('sender_user_id', $select_user_id)
                 ->where('status', 1);
         })->first();
+
+        // This in User Receive message then Update status
         if (!isset($check_this_friend)) {
 
             if (isset($check_this_friend_receiver)) {
-                $user_Select_to_show = User::find($request->select_user_id);
+                $user_Select_to_show = User::with(['starUserFind' => function ($query) {
+                    $query->where('current_user_id', 1);
+                }])->find($request->select_user_id);
 
                 if ($user_Select_to_show) {
                     $message_view_ok = Message::where('send_id', $request->select_user_id)->where('receive_id', Auth::id())->get();
@@ -635,8 +642,161 @@ class UserController extends Controller
         }
     }
 
-    // public function user_forword_message_user(Request $request)
-    // {
-    //     dd
-    // }
+    // Pdf View
+    public function pdf_view(Request $request, $filename)
+    {
+        $path = storage_path('app/public/img/' . $filename);
+
+        if (FacadesFile::exists($path)) {
+
+            return response()->file($path, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"'
+            ]);
+        } else {
+            return response()->route('main_error');
+        }
+    }
+
+    // Pdf Download
+    public function pdf_download(Request $request, $filename)
+    {
+        $path = storage_path('app/public/img/' . $filename);
+
+        if (FacadesFile::exists($path)) {
+
+            return response()->download($path, $filename);
+        } else {
+            return response()->route('main_error');
+        }
+    }
+
+    // Star User Add
+    public function user_star_add(Request $request)
+    {
+        if (Auth::check()) {
+            $Star_user_Data = new StarUser();
+            $Star_user_Data->current_user_id = Auth::id();
+            $Star_user_Data->star_user_id = $request->star_user_id;
+            $Star_user_Data->save();
+
+            if (isset($Star_user_Data)) {
+                return response()->json(['data' => 'yes']);
+            }
+        } else {
+            return response()->json(['data' => 'Not Found Auth']);
+        }
+    }
+
+    // Star User remove
+    public function user_star_remove(Request $request)
+    {
+        if (Auth::check()) {
+            $Star_user_Data = StarUser::where('current_user_id', Auth::id())
+                ->where('star_user_id', $request->star_user_id)
+                ->first();
+
+            if (isset($Star_user_Data)) {
+                $Star_user_Data->delete();
+                return response()->json(['data' => 'yes']);
+            }
+        } else {
+            return response()->json(['data' => 'Not Found Auth']);
+        }
+    }
+
+    // Star Show
+    public function user_star_show(Request $request)
+    {
+        $message_data_order = Message::with(['StarUserWithMessage' => function ($query) {
+            $query->where('current_user_id', Auth::id());
+        }])
+            ->select('send_id', 'receive_id')
+            // ->whereNotNull('StarUserWithMessage')
+            ->selectRaw('MAX(created_at) as last_message_time')
+            ->where('send_id', Auth::user()->id)
+            ->orWhere('receive_id', Auth::user()->id)
+            ->groupBy('send_id', 'receive_id')
+            ->orderByDesc('last_message_time')
+            ->get();
+
+
+        $extra_collect = $message_data_order;
+
+        for ($i = 0; $i < $message_data_order->count(); $i++) {
+            $fresh_send_id = $message_data_order[$i]->send_id;
+            $fresh_receive_id = $message_data_order[$i]->receive_id;
+            $fresh_ct = $message_data_order[$i]->last_message_time;
+
+            for ($j = 0; $j < $extra_collect->count(); $j++) {
+                if ($fresh_send_id == $extra_collect[$j]->receive_id && $fresh_receive_id == $extra_collect[$j]->send_id) {
+                    if ($fresh_receive_id == Auth::id()) {
+                        $message_data_order[$i]->send_id = $extra_collect[$j]->send_id;
+                        $message_data_order[$i]->receive_id = $extra_collect[$j]->receive_id;
+                        $message_data_order[$j]->last_message_time = $fresh_ct;
+                    }
+                }
+            }
+        }
+
+        $uniqueConversations = $message_data_order->unique(function ($item) {
+            $participants = [$item->send_id, $item->receive_id];
+            sort($participants);
+            return implode('-', $participants);
+        });
+
+        $finalUserList = $uniqueConversations->values();
+
+        // dd($finalUserList->toArray());
+        if (isset($message_data_order)) {
+
+            return view('User.Star_User', ["last_message_send_data" => $finalUserList]);
+        } else {
+            return redirect()->route('main_error');
+        }
+    }
+
+    // Group Add Page Show
+    public function create_group(Request $request)
+    {
+        $message_data_order = Message::select('send_id', 'receive_id')
+            ->selectRaw('MAX(created_at) as last_message_time')
+            ->where('send_id', Auth::user()->id)
+            ->orWhere('receive_id', Auth::user()->id)
+            ->groupBy('send_id', 'receive_id')
+            ->orderByDesc('last_message_time')
+            ->get();
+        $extra_collect = $message_data_order;
+
+        for ($i = 0; $i < $message_data_order->count(); $i++) {
+            $fresh_send_id = $message_data_order[$i]->send_id;
+            $fresh_receive_id = $message_data_order[$i]->receive_id;
+            $fresh_ct = $message_data_order[$i]->last_message_time;
+
+            for ($j = 0; $j < $extra_collect->count(); $j++) {
+                if ($fresh_send_id == $extra_collect[$j]->receive_id && $fresh_receive_id == $extra_collect[$j]->send_id) {
+                    if ($fresh_receive_id == Auth::id()) {
+                        $message_data_order[$i]->send_id = $extra_collect[$j]->send_id;
+                        $message_data_order[$i]->receive_id = $extra_collect[$j]->receive_id;
+                        $message_data_order[$j]->last_message_time = $fresh_ct;
+                    }
+                }
+            }
+        }
+
+        $uniqueConversations = $message_data_order->unique(function ($item) {
+            $participants = [$item->send_id, $item->receive_id];
+            sort($participants);
+            return implode('-', $participants);
+        });
+
+        $finalUserList = $uniqueConversations->values();
+        // dd($finalUserList);
+        if (isset($message_data_order)) {
+
+            return view('User.Group_Create', ["last_message_send_data" => $finalUserList]);
+        } else {
+            return response()->json(['data' => "data is not found"]);
+        }
+    }
 }

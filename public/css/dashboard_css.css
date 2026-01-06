@@ -128,6 +128,7 @@
         .emoji-bar {
             position: absolute;
             left: 36%;
+            top: 15%;
             transform: translateX(-50%) scale(0.5);
             display: flex;
             background-color: white;
@@ -141,9 +142,16 @@
             transform-origin: bottom center;
         }
 
-        .messagehover:hover .emoji-bar {
+        .receiver_message:hover .emoji-bar {
             height: 50px;
             opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) scale(1);
+        }
+        .sender_message:hover .emoji-bar {
+            height: 50px;
+            opacity: 1;
+            left: 52%;
             visibility: visible;
             transform: translateX(-50%) scale(1);
         }

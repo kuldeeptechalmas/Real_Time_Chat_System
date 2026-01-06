@@ -74,6 +74,7 @@ use Carbon\Carbon;
     <div style="width: 100%;display: flex;" onclick="setsenduser({{ $item->user_data_to_message->id }})">
         <div style="margin-left: 21px;display: flex;" id="{{ $item->user_data_to_message->name }}">
             {{ $item->user_data_to_message->name }}
+            {{-- {{ $item }} --}}
         </div>
 
         @if (isset($item->user_data_to_message->last_seen_at))
@@ -83,7 +84,7 @@ use Carbon\Carbon;
         $current = Carbon::now();
         $diff = $old_time->diff($current);
         @endphp
-        <div style="margin-left: 199px;">
+        <div style="font-size: 12px;position: absolute;top: 29%;right: 6%;">
 
             @if ($old_time->diffInMinutes($current)>60)
             @if ($old_time->diffInHours($current)>24)

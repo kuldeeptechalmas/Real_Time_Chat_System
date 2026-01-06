@@ -2,34 +2,57 @@
     @foreach ($message as $item)
 
     @if ($item->send_id==Auth::user()->id)
-    <div class="messagehover" id="m{{ $item->id }}" style="margin: 18px 14px 14px 14px;display: flex;justify-content: flex-end;">
-        <div class="messagehovercontent" onclick="removemessagebyone({{ $item->id }})" style="background-color: #d28fa8;height: 32px;color: white;border-radius: 11px;margin-right: 13px;padding: 4px;cursor: default;">
-            Remove
+
+    @php
+    $etc = explode('.',$item->message);
+    @endphp
+
+    <div class="messagehover sender_message" id="m{{ $item->id }}" style="position: relative;margin: 18px 14px 14px 14px;display: flex;justify-content: flex-end;">
+        <div class="emoji-bar">
+            <div class="emoji-reaction" onclick="removemessagebyone({{ $item->id }})">
+                <div class="emoji">Remove</div>
+            </div>
+            <div class="emoji-reaction" onclick="forwordmessage('{{ $item->id }}',`{{ $item->message }}`)">
+                <div class="emoji"><i class="fa-regular fa-share-from-square"></i></div>
+            </div>
+
+            @if (isset($etc[1]))
+            <div class="emoji-reaction">
+                <a href="/pdf-download/{{ $item->message }}" style="color: black;" rel="noopener noreferrer">
+                    <div class="emoji"><i class="fa-solid fa-download"></i></div>
+                </a>
+            </div>
+            @endif
         </div>
 
         <div class="w_message d-flex gap-2">
             <div class="sub-w_message" style="position: relative;background: #fdf1ec;padding: 28px 7px 7px 7px;border-radius: 10px 0px 10px 10px;cursor: default;min-width: 72px;">
 
-                @php
-                $etc = explode('.',$item->message);
-                @endphp
-
                 @if (isset($etc[1]))
                 @if ($etc[1]=='png' || $etc[1]=='jpg'|| $etc[1]=='svg'|| $etc[1]=='pdf')
+                @if ($etc[1]=='pdf')
+                <div style="height: 210px;width: 239px;">
+                    <a href="/pdf-view/{{ $item->message }}" target="_blank">
+                        <img style="height: 89%;width: 100%;object-fit: cover;border-radius: 22px;" src="{{ asset('storage/img/pdf_image.png') }}" alt="">
+                    </a>
+                    <div style="padding-left: 16px;">{{ $item->message }}</div>
+                </div>
+                @else
+
                 <div style="height: 192px;width: 239px;">
                     <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->message }}','{{ $item->message }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 22px;" src="{{ asset('storage/img/'.$item->message) }}" alt="">
                 </div>
+
+                @endif
                 @else
                 {!! nl2br(e($item->message)) !!}
                 @endif
 
                 @else
                 {!! nl2br(e($item->message)) !!}
-                {{-- {{ $item->message }} --}}
 
                 @endif
 
-                {{-- <div style="position: absolute;top: 5px;right: 6px;"> --}}
                 <div style="position: absolute;top: 0%;right: 3%;" class="d-flex justify-content-end align-items-center mt-2">
                     <span style="font-size: 11px;">{{ $item->created_at->timezone('Asia/Kolkata')->format('g:i a') }}</span>
                     @if ($item->status=='send')
@@ -40,6 +63,7 @@
                     <i class="fa-solid fa-check" style="color: #7a7afc;font-size: 11px;margin-right: 1px;"></i>
                     @endif
                 </div>
+
                 @if ($item->response==1)
                 <div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>👍</div>
                 @endif
@@ -58,14 +82,14 @@
                 @if ($item->response==6)
                 <div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😡</div>
                 @endif
-                {{-- </div> --}}
+
             </div>
         </div>
 
     </div>
     @else
-    {{-- @dump($item) --}}
-    <div class="messagehover" id="m{{ $item->id }}" style="position: relative;margin: 18px 14px 14px 14px;display: flex;justify-content: flex-start;">
+
+    <div class="messagehover receiver_message" id="m{{ $item->id }}" style="position: relative;margin: 18px 14px 14px 14px;display: flex;justify-content: flex-start;">
         <div class="w_message d-flex gap-2" style="position: relative;">
 
             <div style="min-width: 66px;position: relative;background: #fbdfd2;padding: 28px 7px 7px 7px;border-radius: 0px 10px 10px;cursor: default;">
@@ -74,9 +98,20 @@
                 @endphp
                 @if (isset($etc[1]))
                 @if ($etc[1]=='png' || $etc[1]=='jpg' || $etc[1]=='svg'|| $etc[1]=='pdf')
+                @if ($etc[1]=='pdf')
+                <div style="height: 210px;width: 239px;">
+                    <a href="/pdf-view/{{ $item->message }}" target="_blank">
+                        <img style="height: 89%;width: 100%;object-fit: cover;border-radius: 22px;" src="{{ asset('storage/img/pdf_image.png') }}" alt="">
+                    </a>
+                    <div style="padding-left: 16px;">{{ $item->message }}</div>
+                </div>
+                @else
+
                 <div style="height: 192px;width: 239px;">
                     <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->message }}','{{ $item->message }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 22px;" src="{{ asset('storage/img/'.$item->message) }}" alt="">
                 </div>
+
+                @endif
 
                 @else
                 {!! nl2br(e($item->message)) !!}
@@ -136,11 +171,16 @@
             <div class="emoji-reaction" onclick="forwordmessage('{{ $item->id }}',`{{ $item->message }}`)">
                 <div class="emoji"><i class="fa-regular fa-share-from-square"></i></div>
             </div>
-        </div>
-        {{-- <div class="messagehovercontent" style="background-color: #d28fa8;height: 32px;color: white;border-radius: 11px;margin-left: 13px;padding: 4px;cursor: default;">
-            Remove
-        </div> --}}
 
+            @if (isset($etc[1]))
+            <div class="emoji-reaction">
+                <a href="/pdf-download/{{ $item->message }}" style="color: black;" rel="noopener noreferrer">
+                    <div class="emoji"><i class="fa-solid fa-download"></i></div>
+                </a>
+            </div>
+            @endif
+
+        </div>
     </div>
     @endif
     @endforeach

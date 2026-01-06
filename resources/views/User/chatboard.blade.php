@@ -56,21 +56,33 @@
     }
 
 </style>
+
 <div style="position: relative;height: 100vh;">
     {{-- header of chating user --}}
     <div style="position: relative;padding: 15px;background-color: #fbdfd26e;display: flex;justify-content: space-between;">
-        <div style="height: 37px;width: 37px;">
-            @if ($user_send_user_data->image_path!=Null)
-            <img style="object-fit: cover;height: 100%;width: 100%;border-radius: 20px;" src="{{ asset('storage/img/'.$user_send_user_data->image_path) }}" alt="">
+
+        <div style="height: 37px;width: 66px;display: flex;align-items: center;">
+            @if (isset($user_send_user_data->starUserFind))
+            <i id="showStar" class="fa-solid fa-star" style="padding-right: 27px;"></i>
+            <i id="addStar" class="fa-regular fa-star" style="padding-right: 27px;display:none"></i>
             @else
-            @if ($user_send_user_data->gender=='Men')
-            <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>
-            @else
+            <i id="showStar" class="fa-solid fa-star" style="padding-right: 27px;display:none"></i>
+            <i id="addStar" class="fa-regular fa-star" style="padding-right: 27px;"></i>
+            @endif
             <div style="height: 37px;width: 37px;">
-                <img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt="">
+
+                @if ($user_send_user_data->image_path!=Null)
+                <img style="object-fit: cover;height: 100%;width: 100%;border-radius: 20px;" src="{{ asset('storage/img/'.$user_send_user_data->image_path) }}" alt="">
+                @else
+                @if ($user_send_user_data->gender=='Men')
+                <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>
+                @else
+                <div style="height: 37px;width: 37px;">
+                    <img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt="">
+                </div>
+                @endif
+                @endif
             </div>
-            @endif
-            @endif
         </div>
         <div>{{ $user_send_user_data->name }}</div>
 
@@ -91,11 +103,13 @@
     </div>
 
     {{-- message input --}}
+    <emoji-picker id="emoji_picker" class="light" no-search style="display:none;width: 339px;height: 247px;position: absolute;bottom: 14%;"></emoji-picker>
     <div class="bg-light" style="position: absolute;bottom: 1px;padding: 16px;width: 100%;display: flex;border-radius: 129px;">
 
         <input type="file" class="form-control" name="oldfiles[]" multiple id="oldfiles" style="display: none" hidden>
         <input type="file" class="form-control" name="files[]" multiple id="files" style="display: none">
         <i class="fa-solid fa-paperclip" style="padding-top: 14px;font-size: 19px;align-items: center;display: flex;justify-content: center;" onclick="FilesImageSend()"></i>
+        <i class="fa-solid fa-face-smile" id="emoji_id" style="padding-top: 14px;font-size: 19px;align-items: center;display: flex;justify-content: center;padding-left: 25px;"></i>
         <textarea style="width: 87%;margin-left: 20px; resize: none;" rows="1" oninput="userWriteText(this,{{ $user_send_user_data->id }})" autocomplete="off" class="form-control scroll-container" id="messages" placeholder="Type Message Here..." aria-label="Search"></textarea>
 
         {{-- <input type="file" class="form-control" name="images[]" multiple style="display: none" id="upload-img" /> --}}
@@ -106,6 +120,71 @@
     </div>
 </div>
 <script>
+    $('#addStar').on('click', function() {
+        $('#addStar').css('display', 'none');
+        $('#showStar').css('display', 'block');
+
+        $.ajax({
+            type: 'post'
+            , headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+            , url: "{{ route('user.star.add') }}"
+            , data: {
+                star_user_id: "{{ $user_send_user_data->id }}"
+            }
+            , success: function(res) {
+                console.log(res);
+
+            }
+            , error: function(e) {
+                console.log(e);
+            }
+        });
+
+    });
+    $('#showStar').on('click', function() {
+        $('#showStar').css('display', 'none');
+        $('#addStar').css('display', 'block');
+
+        $.ajax({
+            type: 'post'
+            , headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+            , url: "{{ route('user.star.remove') }}"
+            , data: {
+                star_user_id: "{{ $user_send_user_data->id }}"
+            }
+            , success: function(res) {
+                console.log(res);
+
+            }
+            , error: function(e) {
+                console.log(e);
+            }
+        });
+    });
+
+    document.querySelector('emoji-picker').addEventListener('emoji-click', event => {
+        const data_message = $('#messages').val();
+        $('#messages').val(data_message + event.detail.unicode);
+    });
+
+    $('#emoji_id').on('click', function() {
+
+        if ($('#emoji_picker').css('display') == 'none') {
+            $('#emoji_picker').css('display', 'block');
+        } else {
+            if ($('#emoji_picker').css('display') == 'block') {
+                $('#emoji_picker').css('display', 'none');
+            }
+
+        }
+
+
+    });
+
     var inputId = document.getElementById('messages');
 
     inputId.addEventListener("keydown", function(event) {
