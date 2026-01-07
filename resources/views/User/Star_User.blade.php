@@ -45,46 +45,21 @@
                 <div style="margin-left: 21px;display: flex;" id="{{ $item->receiver->name }}">
                     {{ $item->receiver->name }}
                 </div>
-
-                {{-- @if (isset($item->receiver->last_seen_at))
-            
-            @php
-            $old_time = Carbon::parse($item->receiver->last_seen_at->timezone('Asia/Kolkata'));
-            $current = Carbon::now();
-            $diff = $old_time->diff($current);
-            @endphp
-            <div style="font-size: 12px;position: absolute;top: 29%;right: 13%;">
-
-                @if ($old_time->diffInMinutes($current)>60)
-                @if ($old_time->diffInHours($current)>24)
-                {{ $diff->format('%d') }}d
-
-                @else
-                {{ $diff->format('%h') }}h
-                {{ $diff->format('%i') }}m
-
-                @endif
-                @else
-                {{ $diff->format('%i') }}m
-                @endif
-
-                @endif
-            </div>--}}
+            </div>
         </div>
+        @endif
+
+
+        @endforeach
+
+        @else
+        <div style="display: flex;justify-content: center;margin-top: 25%;">
+            Not Found Result
+        </div>
+        @endif
+        @endif
+
     </div>
-    @endif
-
-
-    @endforeach
-
-    @else
-    <div style="display: flex;justify-content: center;margin-top: 25%;">
-        Not Found Result
-    </div>
-    @endif
-    @endif
-
-</div>
 
 </div>
 <div class="col-7" style="background: white;padding: 0px;" id="chatboardofreceiver">

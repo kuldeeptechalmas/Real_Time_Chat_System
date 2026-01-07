@@ -46,6 +46,12 @@
                 </div>
 
             </a>
+            <a href="{{ route('group.show') }}" style="color: black;text-decoration: none;">
+                <div class="row" style="padding: 15px;background: #f9d8c9;margin-top: 4px;">
+                    Groups
+                </div>
+
+            </a>
             <a href="{{ route('user_friendlist_show') }}" style="color: black;text-decoration: none;">
                 <div class="row" style="padding: 15px;background: #f9d8c9;margin-top: 4px;">
                     FriendList
@@ -108,7 +114,7 @@
     <!-- Image Modal -->
     <div class="modal fade" id="imageshowmodel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog mt-0 mb-0">
-            <div class="modal-content text-white" style="height: 551px;background: #212529;width: 100%;">
+            <div class="modal-content text-white" style="height: 551px;background: white;width: 100%;">
                 <div class="modal-header">
                     <h3 class="modal-title fs-5" id="ImageShowUserName"></h3>
                     <button style="color: #f9d8c9" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -982,6 +988,7 @@
                 , url: "{{ route('create.group') }}"
                 , success: function(res) {
                     $('#chatboardofreceiver').html(res);
+                    $('#chatboardofreceiverGroup').html(res);
                 }
                 , error: function(e) {
                     console.log(e);
@@ -992,6 +999,9 @@
         let Select_User_Array = new Array();
 
         function SelectedGroupUser(thisdiv) {
+            // console.log(thisdiv);
+
+            // console.log($(thisdiv).css('background-color'));
 
             if ($(thisdiv).css('background-color') == 'rgba(208, 242, 208, 0.5)') {
                 $(thisdiv).css('background-color', 'rgb(255, 255, 255)');
@@ -1006,10 +1016,57 @@
         }
 
         function FinalCreateGroup() {
-            console.log($('#group_name').val());
-            const data_of_group_name = $('#messages').val().replace(/\s/g, '');
+            const data_of_group_name = $('#group_name').val().replace(/\s/g, '');
+            if (Select_User_Array.length == 0) {
+                Toastify({
+                    text: `Select you friend...`
+                    , duration: 5000
+                    , gravity: "top"
+                    , position: "center"
+                    , style: {
+                        background: '#fbdfd2'
+                        , color: "black"
+                    }
+                    , stopOnFocus: true
+                , }).showToast();
+            } else
             if (data_of_group_name.length == 0) {
+                Toastify({
+                    text: `Enter Group Name !...`
+                    , duration: 5000
+                    , gravity: "top"
+                    , position: "center"
+                    , style: {
+                        background: '#fbdfd2'
+                        , color: "black"
+                    }
+                    , stopOnFocus: true
+                , }).showToast();
 
+            } else {
+                console.log($('#group_name').val());
+
+                console.log(Select_User_Array);
+
+                $.ajax({
+                    type: 'post'
+                    , headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                    , url: "{{ route('create.group.final') }}"
+                    , data: {
+                        group_name: $('#group_name').val()
+                        , group_user: Select_User_Array
+                    }
+                    , success: function(res) {
+                        Select_User_Array.length = 0;
+                        window.location.href = "http://127.0.0.1:8000/Groups";
+                        // $('#chatboardofreceiver').html(res);
+                    }
+                    , error: function(e) {
+                        console.log(e);
+                    }
+                });
             }
         }
 

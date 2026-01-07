@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreign('group_id')->references('id')->on('group');
             $table->bigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('group');
-            $table->bigInteger('creater_id');
+            $table->bigInteger('creater_id')->nullable();
             $table->foreign('creater_id')->references('id')->on('group');
             $table->softDeletes();
             $table->timestamps();

@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('group', function (Blueprint $table) {
+        Schema::create('group_messages', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('image_path')->nullable();
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('group_id')->constrained();
+            $table->string('message', 16000);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('group');
+        Schema::dropIfExists('group_messages');
     }
 };

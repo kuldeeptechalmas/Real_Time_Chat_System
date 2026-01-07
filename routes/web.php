@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GroupController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -72,5 +73,15 @@ Route::middleware('AuthCheckExist')->group(function () {
     Route::match(['get', 'post'], '/user-star-remove', [UserController::class, 'user_star_remove'])->name('user.star.remove');
 
     // Create Group
-    Route::match(['get', 'post'], '/create-group', [UserController::class, 'create_group'])->name('create.group');
+    Route::match(['get', 'post'], '/Groups', [GroupController::class, 'Group_Show'])->name('group.show');
+
+    Route::match(['get', 'post'], '/create-group-final', [GroupController::class, 'create_group_final'])->name('create.group.final');
+    Route::match(['get', 'post'], '/create-group', [GroupController::class, 'create_group'])->name('create.group');
+
+    Route::match(['get', 'post'], '/group-chatbort', [GroupController::class, 'Group_Chatbort'])->name('group.chatbort');
+    Route::match(['get', 'post'], '/group-send-message', [GroupController::class, 'Group_Send_Message'])->name('group.send.message');
+    Route::match(['get', 'post'], '/group-message-show', [GroupController::class, 'Group_Message_Show'])->name('group.message.show');
+
+    Route::match(['get', 'post'], '/group-in-all-user', [GroupController::class, 'Group_user_Show_All'])->name('group.user.show.all');
+    Route::match(['get', 'post'], '/group-exit', [GroupController::class, 'Group_Exit'])->name('group.exit');
 });

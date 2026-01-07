@@ -62,34 +62,21 @@
     <div style="position: relative;padding: 15px;background-color: #fbdfd26e;display: flex;justify-content: space-between;">
 
         <div style="height: 37px;width: 66px;display: flex;align-items: center;">
-            @if (isset($user_send_user_data->starUserFind))
-            <i id="showStar" class="fa-solid fa-star" style="padding-right: 27px;"></i>
-            <i id="addStar" class="fa-regular fa-star" style="padding-right: 27px;display:none"></i>
-            @else
-            <i id="showStar" class="fa-solid fa-star" style="padding-right: 27px;display:none"></i>
-            <i id="addStar" class="fa-regular fa-star" style="padding-right: 27px;"></i>
-            @endif
             <div style="height: 37px;width: 37px;">
 
-                @if ($user_send_user_data->image_path!=Null)
-                <img style="object-fit: cover;height: 100%;width: 100%;border-radius: 20px;" src="{{ asset('storage/img/'.$user_send_user_data->image_path) }}" alt="">
+                @if ($chatboart_group->image_path!=Null)
+                <img style="object-fit: cover;height: 100%;width: 100%;border-radius: 20px;" src="{{ asset('storage/img/'.$chatboart_group->image_path) }}" alt="">
                 @else
-                @if ($user_send_user_data->gender=='Men')
-                <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>
-                @else
-                <div style="height: 37px;width: 37px;">
-                    <img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt="">
-                </div>
-                @endif
+                <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $chatboart_group->name }}','freepik__talk__488.png')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/freepik__talk__488.png') }}" alt="">
                 @endif
             </div>
         </div>
-        <div>{{ $user_send_user_data->name }}</div>
+        <div>{{ $chatboart_group->name }}</div>
 
         <i class="fa-solid fa-ellipsis-vertical" onclick="moreoptionshow()"></i>
         <div id="moreoptiondiv" style="z-index: 999;padding: 16px;display: none;position: absolute;top: 110%;right: 4%;background: lightblue;border-radius: 6px;">
             <i class="fa-solid fa-xmark" onclick="closemanu()" style="position: absolute;top: 3%;right: 3%;"></i>
-            <div onclick="removeallmessage({{ $user_send_user_data->id }})" style="margin-top: 4px;padding: 5px;border: #8e8e8e solid;border-radius: 11px;">
+            <div onclick="removeallmessage({{ $chatboart_group->id }})" style="margin-top: 4px;padding: 5px;border: #8e8e8e solid;border-radius: 11px;">
                 Remove All
             </div>
         </div>
@@ -97,6 +84,7 @@
     <div style="position: absolute;left: 50%;top: 50%;">
         <div class="loader" style="display: none" id="loader"></div>
     </div>
+
     {{-- messages --}}
     <div id="message_to_show">
 
@@ -110,13 +98,13 @@
         <input type="file" class="form-control" name="files[]" multiple id="files" style="display: none">
         <i class="fa-solid fa-paperclip" style="padding-top: 14px;font-size: 19px;align-items: center;display: flex;justify-content: center;" onclick="FilesImageSend()"></i>
         <i class="fa-solid fa-face-smile" id="emoji_id" style="padding-top: 14px;font-size: 19px;align-items: center;display: flex;justify-content: center;padding-left: 25px;"></i>
-        <textarea style="width: 87%;margin-left: 20px; resize: none;" rows="1" oninput="userWriteText(this,{{ $user_send_user_data->id }})" autocomplete="off" class="form-control scroll-container" id="messages" placeholder="Type Message Here..." aria-label="Search"></textarea>
+        <textarea style="width: 87%;margin-left: 20px; resize: none;" rows="1" oninput="userWriteText(this,{{ $chatboart_group->id }})" autocomplete="off" class="form-control scroll-container" id="messages" placeholder="Type Message Here..." aria-label="Search"></textarea>
 
         {{-- <input type="file" class="form-control" name="images[]" multiple style="display: none" id="upload-img" /> --}}
         <div class="img-thumbs img-thumbs-hidden scroll-container" id="img-preview" style="overflow: scroll;overflow-y: auto;width: 86%;margin: 0px;height: 97px;margin-left:20px"></div>
 
         <input type="submit" value="" hidden>
-        <i type class="fa-solid fa-paper-plane" onclick="sendmessagetosender({{ $user_send_user_data->id }})" style="align-items: center;display: flex;justify-content: center;padding-top: 9px;margin-left: 15px;font-size: 20px;"></i>
+        <i type class="fa-solid fa-paper-plane" onclick="sendmessagetosenderGroup({{ $chatboart_group->id }})" style="align-items: center;display: flex;justify-content: center;padding-top: 9px;margin-left: 15px;font-size: 20px;"></i>
     </div>
 </div>
 <script>
@@ -131,7 +119,7 @@
             }
             , url: "{{ route('user.star.add') }}"
             , data: {
-                star_user_id: "{{ $user_send_user_data->id }}"
+                star_user_id: "{{ $chatboart_group->id }}"
             }
             , success: function(res) {
                 console.log(res);
@@ -154,7 +142,7 @@
             }
             , url: "{{ route('user.star.remove') }}"
             , data: {
-                star_user_id: "{{ $user_send_user_data->id }}"
+                star_user_id: "{{ $chatboart_group->id }}"
             }
             , success: function(res) {
                 console.log(res);
@@ -201,7 +189,7 @@
                 } else {
                     $('#messages').val('');
                     $('#messages').attr('placeholder', 'Sending...').prop('readonly', true);
-                    sendmessagetosender("{{ $user_send_user_data->id }}", data_message);
+                    sendmessagetosenderGroup("{{ $chatboart_group->id }}", data_message);
 
                 }
             } else {

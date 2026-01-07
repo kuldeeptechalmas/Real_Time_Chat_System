@@ -8,6 +8,8 @@ use App\Events\SendFollowNotification;
 use App\Events\SendMeesages;
 use App\Events\ViewToReceiver;
 use App\Models\Friendship;
+use App\Models\Group;
+use App\Models\GroupUser;
 use App\Models\Message;
 use App\Models\StarUser;
 use App\Models\User;
@@ -753,50 +755,6 @@ class UserController extends Controller
             return view('User.Star_User', ["last_message_send_data" => $finalUserList]);
         } else {
             return redirect()->route('main_error');
-        }
-    }
-
-    // Group Add Page Show
-    public function create_group(Request $request)
-    {
-        $message_data_order = Message::select('send_id', 'receive_id')
-            ->selectRaw('MAX(created_at) as last_message_time')
-            ->where('send_id', Auth::user()->id)
-            ->orWhere('receive_id', Auth::user()->id)
-            ->groupBy('send_id', 'receive_id')
-            ->orderByDesc('last_message_time')
-            ->get();
-        $extra_collect = $message_data_order;
-
-        for ($i = 0; $i < $message_data_order->count(); $i++) {
-            $fresh_send_id = $message_data_order[$i]->send_id;
-            $fresh_receive_id = $message_data_order[$i]->receive_id;
-            $fresh_ct = $message_data_order[$i]->last_message_time;
-
-            for ($j = 0; $j < $extra_collect->count(); $j++) {
-                if ($fresh_send_id == $extra_collect[$j]->receive_id && $fresh_receive_id == $extra_collect[$j]->send_id) {
-                    if ($fresh_receive_id == Auth::id()) {
-                        $message_data_order[$i]->send_id = $extra_collect[$j]->send_id;
-                        $message_data_order[$i]->receive_id = $extra_collect[$j]->receive_id;
-                        $message_data_order[$j]->last_message_time = $fresh_ct;
-                    }
-                }
-            }
-        }
-
-        $uniqueConversations = $message_data_order->unique(function ($item) {
-            $participants = [$item->send_id, $item->receive_id];
-            sort($participants);
-            return implode('-', $participants);
-        });
-
-        $finalUserList = $uniqueConversations->values();
-        // dd($finalUserList);
-        if (isset($message_data_order)) {
-
-            return view('User.Group_Create', ["last_message_send_data" => $finalUserList]);
-        } else {
-            return response()->json(['data' => "data is not found"]);
         }
     }
 }
