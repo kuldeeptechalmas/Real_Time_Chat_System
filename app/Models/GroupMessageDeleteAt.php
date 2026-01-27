@@ -6,13 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Group extends Model
+class GroupMessageDeleteAt extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $table = 'group';
-
-    public function GroupUserTotal()
-    {
-        return $this->hasMany(GroupUser::class, 'group_id', 'id');
-    }
+    protected $table = 'group_message_delete_at';
 }

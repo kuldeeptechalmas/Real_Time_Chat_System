@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('group_messages', function (Blueprint $table) {
-            $table->string('response')->nullable();
+        Schema::table('messages', function (Blueprint $table) {
+            $table->softDeletes();
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('group_messages', function (Blueprint $table) {
-            $table->dropColumn('response');
+        Schema::table('messages', function (Blueprint $table) {
+            $table->dropColumn('delete_at');
         });
     }
 };

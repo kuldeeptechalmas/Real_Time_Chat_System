@@ -62,6 +62,7 @@
     <div style="position: relative;padding: 15px;background-color: #fbdfd26e;display: flex;justify-content: space-between;">
 
         <div style="height: 37px;width: 66px;display: flex;align-items: center;">
+            {{-- {{ $user_send_user_data->starUserFind }} --}}
             @if (isset($user_send_user_data->starUserFind))
             <i id="showStar" class="fa-solid fa-star" style="padding-right: 27px;"></i>
             <i id="addStar" class="fa-regular fa-star" style="padding-right: 27px;display:none"></i>
@@ -110,7 +111,8 @@
         <input type="file" class="form-control" name="files[]" multiple id="files" style="display: none">
         <i class="fa-solid fa-paperclip" style="padding-top: 14px;font-size: 19px;align-items: center;display: flex;justify-content: center;" onclick="FilesImageSend()"></i>
         <i class="fa-solid fa-face-smile" id="emoji_id" style="padding-top: 14px;font-size: 19px;align-items: center;display: flex;justify-content: center;padding-left: 25px;"></i>
-        <textarea style="width: 87%;margin-left: 20px; resize: none;" rows="1" oninput="userWriteText(this,{{ $user_send_user_data->id }})" autocomplete="off" class="form-control scroll-container" id="messages" placeholder="Type Message Here..." aria-label="Search"></textarea>
+
+        <textarea style="width: 87%;margin-left: 20px;field-sizing: content;resize: none;max-height: 5lh;" rows="1" oninput="userWriteText(this,{{ $user_send_user_data->id }})" autocomplete="off" class="form-control scroll-container" id="messages" placeholder="Type Message Here..." aria-label="Search"></textarea>
 
         {{-- <input type="file" class="form-control" name="images[]" multiple style="display: none" id="upload-img" /> --}}
         <div class="img-thumbs img-thumbs-hidden scroll-container" id="img-preview" style="overflow: scroll;overflow-y: auto;width: 86%;margin: 0px;height: 97px;margin-left:20px"></div>
@@ -120,6 +122,8 @@
     </div>
 </div>
 <script>
+    localStorage.setItem('cuurentCatboard', "{{ $user_send_user_data->name}}");
+
     $('#addStar').on('click', function() {
         $('#addStar').css('display', 'none');
         $('#showStar').css('display', 'block');
@@ -192,8 +196,8 @@
             if (!event.shiftKey) {
                 event.preventDefault();
                 const data_of_message = $('#messages').val().replace(/\s/g, '');
+
                 const data_message = $('#messages').val();
-                console.log($('#messages').val());
 
                 if (data_of_message.length == 0) {
                     $('#messages').val('');
@@ -204,19 +208,6 @@
                     sendmessagetosender("{{ $user_send_user_data->id }}", data_message);
 
                 }
-            } else {
-                if (inputId.rows == 1) {
-                    inputId.rows = 2;
-                } else if (inputId.rows == 2) {
-                    inputId.rows = 3;
-                } else if (inputId.rows == 3) {
-                    inputId.rows = 4;
-                } else if (inputId.rows == 4) {
-                    inputId.rows = 5;
-                } else {
-                    inputId.rows = 5;
-                }
-
             }
         }
     });

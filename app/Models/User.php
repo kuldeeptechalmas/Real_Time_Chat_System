@@ -48,4 +48,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(StarUser::class, 'star_user_id', 'id');
     }
+
+    // public function groupMessage()
+    // {
+    //     return $this->belongsToMany(User::class, 'id', 'user_id');
+    // }
 }

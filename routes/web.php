@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\HelpController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -45,6 +46,7 @@ Route::middleware('AuthCheckExist')->group(function () {
     Route::match(['get', 'post'], '/user-select', [UserController::class, 'user_select_data'])->name('user_select_data');
     Route::match(['get', 'post'], '/message-send', [UserController::class, 'message_send_specific_user'])->name('message_send_specific_user');
     Route::match(['get', 'post'], '/message-show', [UserController::class, 'message_show_send_receive'])->name('message_show_send_receive');
+    Route::match(['get', 'post'], '/message-clean', [UserController::class, 'message_clean'])->name('message.clean');
 
     Route::match(['get', 'post'], '/message-show-pusher', [UserController::class, 'message_show_send_receive_pusher'])->name('message_show_send_receive_pusher');
     Route::match(['get', 'post'], '/current-user-type-pusher', [UserController::class, 'Current_User_Type_Pusher'])->name('Current_User_Type_Pusher');
@@ -84,4 +86,20 @@ Route::middleware('AuthCheckExist')->group(function () {
 
     Route::match(['get', 'post'], '/group-in-all-user', [GroupController::class, 'Group_user_Show_All'])->name('group.user.show.all');
     Route::match(['get', 'post'], '/group-exit', [GroupController::class, 'Group_Exit'])->name('group.exit');
+
+    Route::match(['get', 'post'], '/group-message-emoji', [GroupController::class, 'Group_Message_Emoji'])->name('group.message.emoji');
+    Route::match(['get', 'post'], '/group-message-remove', [GroupController::class, 'Group_Message_Remove'])->name('group.message.remove');
+    Route::match(['get', 'post'], '/group-message-remove-all', [GroupController::class, 'Group_Message_Remove_All'])->name('group.message.remove.all');
+    Route::match(['get', 'post'], '/group-forword-message', [GroupController::class, 'Group_Forword_Message'])->name('group.forword.message');
+    Route::match(['get', 'post'], '/group-add-friend-page', [GroupController::class, 'Group_Friend_add_Page'])->name('group.add.friend.page');
+    Route::match(['get', 'post'], '/group-add-friend', [GroupController::class, 'Group_In_Add_Friend'])->name('group.add.friend');
+    Route::match(['get', 'post'], '/group-friend-remove', [GroupController::class, 'Group_Friend_Remove'])->name('group.friend.remove');
+    Route::match(['get', 'post'], '/group-image-store', [GroupController::class, 'Group_Image_Store'])->name('group.image.store');
+    Route::match(['get', 'post'], '/group-image-remove', [GroupController::class, 'Group_Image_Remove'])->name('group.image.remove');
+    Route::match(['get', 'post'], '/group-message-clean', [GroupController::class, 'Group_Message_Clean'])->name('group.message.clean');
+    Route::match(['get', 'post'], '/group-search', [GroupController::class, 'Group_Search'])->name('group.search');
+    Route::match(['get', 'post'], '/group-get-message', [GroupController::class, 'Group_Get_Message'])->name('group.get_message');
+
+    Route::match(['get', 'post'], '/Help', [HelpController::class, 'Help_Page'])->name('help.page');
+    Route::match(['get', 'post'], '/help-user-select', [HelpController::class, 'Help_user_select'])->name('help.user.select');
 });

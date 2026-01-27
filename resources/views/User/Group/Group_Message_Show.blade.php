@@ -4,12 +4,17 @@
     $etc = explode('.',$item->message);
     @endphp
     @if ($item->user_id==Auth::id())
+    @if ($item->GroupMessageDeleteAtData->isNotEmpty())
+
     <div class="messagehover sender_message" id="m{{ $item->id }}" style="position: relative;margin: 18px 14px 14px 14px;display: flex;justify-content: flex-end;">
         <div class="emoji-bar">
-            <div class="emoji-reaction" onclick="removemessagebyone({{ $item->id }})">
+            <div class="emoji-reaction" onclick="removemessagebyoneGroup({{ $item->id }},{{ $item->group_id }})">
                 <div class="emoji">Remove</div>
             </div>
-            <div class="emoji-reaction" onclick="forwordmessage('{{ $item->id }}',`{{ $item->message }}`)">
+            <div class="emoji-reaction" onclick="ClearMessageByOneGroup('{{ $item->id }}','{{ $item->group_id }}')">
+                <div class="emoji">Clear</div>
+            </div>
+            <div class="emoji-reaction" onclick="forwordmessageGroup('{{ $item->id }}',`{{ $item->message }}`)">
                 <div class="emoji"><i class="fa-regular fa-share-from-square"></i></div>
             </div>
 
@@ -35,7 +40,7 @@
                         @endif
                         @else
                         {{-- <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 22px;" src="{{ asset('storage/img/'.Auth::user()->image_path) }}" alt=""> --}}
-                        <img style="height: 100%;width: 100%;border-radius: 18px;" src="{{ asset('storage/img/'.$item->UserData->image_path) }}" alt="">
+                        <img style="height: 100%;width: 100%;border-radius: 18px;object-fit: cover;" src="{{ asset('storage/img/'.$item->UserData->image_path) }}" alt="">
                         @endif
                     </div>
                     <div>
@@ -101,7 +106,12 @@
 
     </div>
 
+    @endif
+
     @else
+
+    @if ($item->GroupMessageDeleteAtData->isNotEmpty())
+
     <div class="messagehover receiver_message" id="m{{ $item->id }}" style="position: relative;margin: 18px 14px 14px 14px;display: flex;justify-content: flex-start;">
         <div class="w_message d-flex gap-2" style="position: relative;">
 
@@ -144,8 +154,7 @@
                         <img style="height: 100%;width: 100%;border-radius: 18px;" src="{{ asset('img/female.png') }}" alt="">
                         @endif
                         @else
-                        {{-- <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 22px;" src="{{ asset('storage/img/'.Auth::user()->image_path) }}" alt=""> --}}
-                        <img style="height: 100%;width: 100%;border-radius: 18px;" src="{{ asset('storage/img/'.$item->UserData->image_path) }}" alt="">
+                        <img style="height: 100%;width: 100%;border-radius: 18px;object-fit: cover;" src="{{ asset('storage/img/'.$item->UserData->image_path) }}" alt="">
                         @endif
                     </div>
                     <div>
@@ -178,27 +187,27 @@
 
         <div class="emoji-bar">
             <div class="emoji-reaction" data-reaction="like">
-                <div class="emoji" onclick="emojigetshow(this,'{{ $item->id }}')" data-code="1">👍</div>
+                <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="1">👍</div>
             </div>
             <div class="emoji-reaction" data-reaction="love">
-                <div class="emoji" onclick="emojigetshow(this,'{{ $item->id }}')" data-code="2">❤️</div>
+                <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="2">❤️</div>
             </div>
             <div class="emoji-reaction" data-reaction="haha">
-                <div class="emoji" onclick="emojigetshow(this,'{{ $item->id }}')" data-code="3">😂</div>
+                <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="3">😂</div>
             </div>
             <div class="emoji-reaction" data-reaction="wow">
-                <div class="emoji" onclick="emojigetshow(this,'{{ $item->id }}')" data-code="4">😮</div>
+                <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="4">😮</div>
             </div>
             <div class="emoji-reaction" data-reaction="sad">
-                <div class="emoji" onclick="emojigetshow(this,'{{ $item->id }}')" data-code="5">😢</div>
+                <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="5">😢</div>
             </div>
             <div class="emoji-reaction" data-reaction="angry">
-                <div class="emoji" onclick="emojigetshow(this,'{{ $item->id }}')" data-code="6">😡</div>
+                <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="6">😡</div>
             </div>
-            <div class="emoji-reaction" onclick="removemessagebyone({{ $item->id }})">
+            <div class="emoji-reaction" onclick="removemessagebyoneGroup({{ $item->id }},{{ $item->group_id }})">
                 <div class="emoji">Remove</div>
             </div>
-            <div class="emoji-reaction" onclick="forwordmessage('{{ $item->id }}',`{{ $item->message }}`)">
+            <div class="emoji-reaction" onclick="forwordmessageGroup('{{ $item->id }}',`{{ $item->message }}`)">
                 <div class="emoji"><i class="fa-regular fa-share-from-square"></i></div>
             </div>
 
@@ -212,6 +221,11 @@
 
         </div>
     </div>
+
+    @endif
+    {{-- @endif
+    @endforeach --}}
+
     @endif
 
     @endforeach

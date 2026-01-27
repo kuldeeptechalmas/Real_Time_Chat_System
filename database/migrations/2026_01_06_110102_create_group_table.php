@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('image_path')->nullable();
+            $table->string('response')->nullable();
+            $table->bigInteger('creater_id');
+            $table->foreign('creater_id')->references('id')->on('users');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

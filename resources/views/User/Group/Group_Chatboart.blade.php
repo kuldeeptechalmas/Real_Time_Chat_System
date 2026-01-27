@@ -76,9 +76,16 @@
         <i class="fa-solid fa-ellipsis-vertical" onclick="moreoptionshow()"></i>
         <div id="moreoptiondiv" style="z-index: 999;padding: 16px;display: none;position: absolute;top: 110%;right: 4%;background: lightblue;border-radius: 6px;">
             <i class="fa-solid fa-xmark" onclick="closemanu()" style="position: absolute;top: 3%;right: 3%;"></i>
-            <div onclick="removeallmessage({{ $chatboart_group->id }})" style="margin-top: 4px;padding: 5px;border: #8e8e8e solid;border-radius: 11px;">
+            <div onclick="removeallmessageGroup({{ $chatboart_group->id }})" style="margin-top: 4px;padding: 5px;border: #8e8e8e solid;border-radius: 11px;">
                 Remove All
             </div>
+            @if ($chatboart_group->creater_id==Auth::id())
+
+            <div onclick="addFriendPage('{{ $chatboart_group->id }}')" style="margin-top: 9px;padding: 5px;border: #8e8e8e solid;border-radius: 11px;">
+                Add Friend
+            </div>
+
+            @endif
         </div>
     </div>
     <div style="position: absolute;left: 50%;top: 50%;">
@@ -98,7 +105,7 @@
         <input type="file" class="form-control" name="files[]" multiple id="files" style="display: none">
         <i class="fa-solid fa-paperclip" style="padding-top: 14px;font-size: 19px;align-items: center;display: flex;justify-content: center;" onclick="FilesImageSend()"></i>
         <i class="fa-solid fa-face-smile" id="emoji_id" style="padding-top: 14px;font-size: 19px;align-items: center;display: flex;justify-content: center;padding-left: 25px;"></i>
-        <textarea style="width: 87%;margin-left: 20px; resize: none;" rows="1" oninput="userWriteText(this,{{ $chatboart_group->id }})" autocomplete="off" class="form-control scroll-container" id="messages" placeholder="Type Message Here..." aria-label="Search"></textarea>
+        <textarea style="width: 87%;margin-left: 20px;field-sizing: content;resize: none;max-height: 5lh;" rows="1" oninput="userWriteText(this,{{ $chatboart_group->id }})" autocomplete="off" class="form-control scroll-container" id="messages" placeholder="Type Message Here..." aria-label="Search"></textarea>
 
         {{-- <input type="file" class="form-control" name="images[]" multiple style="display: none" id="upload-img" /> --}}
         <div class="img-thumbs img-thumbs-hidden scroll-container" id="img-preview" style="overflow: scroll;overflow-y: auto;width: 86%;margin: 0px;height: 97px;margin-left:20px"></div>
@@ -181,7 +188,6 @@
                 event.preventDefault();
                 const data_of_message = $('#messages').val().replace(/\s/g, '');
                 const data_message = $('#messages').val();
-                console.log($('#messages').val());
 
                 if (data_of_message.length == 0) {
                     $('#messages').val('');
@@ -192,19 +198,6 @@
                     sendmessagetosenderGroup("{{ $chatboart_group->id }}", data_message);
 
                 }
-            } else {
-                if (inputId.rows == 1) {
-                    inputId.rows = 2;
-                } else if (inputId.rows == 2) {
-                    inputId.rows = 3;
-                } else if (inputId.rows == 3) {
-                    inputId.rows = 4;
-                } else if (inputId.rows == 4) {
-                    inputId.rows = 5;
-                } else {
-                    inputId.rows = 5;
-                }
-
             }
         }
     });

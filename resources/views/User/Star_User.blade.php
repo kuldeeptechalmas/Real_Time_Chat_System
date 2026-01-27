@@ -22,9 +22,9 @@
     {{-- here --}}
     <div class="scroll-container" style="height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;" style="padding: 0px 20px 7px 20px;">
 
-        @if (isset($last_message_send_data))
-
         @if ($last_message_send_data->isNotEmpty())
+
+        @if (isset($last_message_send_data))
         @foreach ($last_message_send_data as $item)
 
         @if (isset($item->StarUserWithMessage))
@@ -32,7 +32,7 @@
         <div class="d-flex bg-white" id="{{ $item->receiver->id }}" style="position: relative;padding: 16px;margin: 4px;">
             <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
                 @if ($item->receiver->image_path!=Null)
-                <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->receiver->name }}','{{ $item->receiver->image_path }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->receiver->image_path) }}" alt="">
+                <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->receiver->name }}','{{ $item->receiver->image_path }}','{{ $item->receiver->phone }}','{{ $item->receiver->email }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->receiver->image_path) }}" alt="">
                 @else
                 @if ($item->receiver->gender=='Men')
                 <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>
@@ -49,7 +49,6 @@
         </div>
         @endif
 
-
         @endforeach
 
         @else
@@ -57,6 +56,11 @@
             Not Found Result
         </div>
         @endif
+
+        @else
+        <div style="display: flex;justify-content: center;margin-top: 25%;">
+            Not Found Result
+        </div>
         @endif
 
     </div>

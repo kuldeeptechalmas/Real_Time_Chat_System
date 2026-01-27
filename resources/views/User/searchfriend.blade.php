@@ -10,7 +10,7 @@ use Carbon\Carbon;
     <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
 
         @if ($item->image_path!=Null)
-        <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->image_path) }}" data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->name }}','{{ $item->image_path }}')" alt="">
+        <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->image_path) }}" data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->name }}','{{ $item->image_path }}','{{ $item->phone }}','{{ $item->email }}')" alt="">
         @else
         @if ($item->gender=='Men')
         <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>
@@ -37,11 +37,13 @@ use Carbon\Carbon;
 
 @if ($last_message_send_data->isNotEmpty())
 @foreach ($last_message_send_data as $item)
+
 @if ($item->receive_id==Auth::id())
+
 <div class="d-flex bg-white" id="{{ $item->sender->id }}" style="position: relative;padding: 16px;margin: 4px;">
     <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
         @if ($item->sender->image_path!=Null)
-        <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->sender->name }}','{{ $item->user_data_to_message->image_path }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->user_data_to_message->image_path) }}" alt="">
+        <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->sender->name }}','{{ $item->user_data_to_message->image_path }}','{{ $item->user_data_to_message->phone }}','{{ $item->user_data_to_message->email }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->user_data_to_message->image_path) }}" alt="">
         @else
         @if ($item->sender->gender=='Men')
         <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>
@@ -62,7 +64,7 @@ use Carbon\Carbon;
 <div class="d-flex bg-white" id="{{ $item->user_data_to_message->id }}" style="position: relative;padding: 16px;margin: 4px;">
     <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
         @if ($item->user_data_to_message->image_path!=Null)
-        <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->user_data_to_message->name }}','{{ $item->user_data_to_message->image_path }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->user_data_to_message->image_path) }}" alt="">
+        <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->user_data_to_message->name }}','{{ $item->user_data_to_message->image_path }}','{{ $item->user_data_to_message->phone }}','{{ $item->user_data_to_message->email }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->user_data_to_message->image_path) }}" alt="">
         @else
         @if ($item->user_data_to_message->gender=='Men')
         <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>

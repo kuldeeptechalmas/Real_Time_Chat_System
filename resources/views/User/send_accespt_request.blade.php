@@ -11,7 +11,7 @@
             <img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt="">
             @endif
             @else
-            <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $users_data->name }}','{{ $users_data->image_path }}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('storage/img/'.$users_data->image_path) }}" alt="">
+            <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $users_data->name }}','{{ $users_data->image_path }}','{{ $users_data->phone }}','{{ $users_data->email }}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('storage/img/'.$users_data->image_path) }}" alt="">
             @endif
 
         </div>

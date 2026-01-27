@@ -27,7 +27,7 @@
         <div class="d-flex bg-white" style="padding: 16px;margin: 4px;position: relative;">
             <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
                 @if ($item->sendersData->image_path!=Null)
-                <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->sendersData->image_path) }}" data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->sendersData->name }}','{{ $item->sendersData->image_path }}')" alt="">
+                <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->sendersData->image_path) }}" data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->sendersData->name }}','{{ $item->sendersData->image_path }}','{{$item->sendersData->phone}}','{{$item->sendersData->email}}')" alt="">
                 @else
                 @if ($item->sendersData->gender=='Men')
                 <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>

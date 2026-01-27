@@ -10,9 +10,11 @@ use App\Events\ViewToReceiver;
 use App\Models\Friendship;
 use App\Models\Group;
 use App\Models\GroupUser;
+use App\Models\HelpMessagesTable;
 use App\Models\Message;
 use App\Models\StarUser;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File as FacadesFile;
@@ -124,7 +126,9 @@ class UserController extends Controller
     {
         if ($request->searchdata != '') {
             $user_Find_Data = User::where('name', 'like', "%" . $request->searchdata . "%")
-                ->where('id', '!=', Auth::id())->get();
+                ->where('id', '!=', Auth::id())
+                ->where('email', '!=', "admin12@yopmail.com")
+                ->get();
             if (isset($user_Find_Data)) {
 
                 return view('User.searchfriend', ["user_data" => $user_Find_Data]);
@@ -137,9 +141,12 @@ class UserController extends Controller
                 ->selectRaw('MAX(created_at) as last_message_time')
                 ->where('send_id', Auth::user()->id)
                 ->orWhere('receive_id', Auth::user()->id)
+                ->where('send_id', '!=', 3)
+                ->where('receive_id', '!=', 3)
                 ->groupBy('send_id', 'receive_id')
                 ->orderByDesc('last_message_time')
                 ->get();
+
             $extra_collect = $message_data_order;
 
             for ($i = 0; $i < $message_data_order->count(); $i++) {
@@ -165,9 +172,14 @@ class UserController extends Controller
             });
 
             $finalUserList = $uniqueConversations->values();
-            if (isset($finalUserList)) {
 
-                return view('User.searchfriend', ["last_message_send_data" => $finalUserList]);
+            $filtered = $finalUserList->filter(function ($value) {
+                return $value->receive_id != 3;
+            });
+
+            if (isset($filtered)) {
+
+                return view('User.searchfriend', ["last_message_send_data" => $filtered]);
             } else {
                 return redirect()->route('main_error');
             }
@@ -188,46 +200,78 @@ class UserController extends Controller
                 ->where('status', 1);
         })->first();
 
+        if (Auth::id() == 3) {
+            $user_Select_to_show = User::find($request->select_user_id);
+
+            if ($user_Select_to_show) {
+                $message_view_ok = Message::where('send_id', $request->select_user_id)->where('receive_id', Auth::id())->get();
+
+                if (isset($message_view_ok)) {
+                    foreach ($message_view_ok as $item) {
+                        $item->status = 'view';
+                        $item->save();
+                    }
+                }
+
+                $data = array('send_id' => $request->select_user_id, 'receive_id' => Auth::id());
+                event(new ViewToReceiver($data));
+
+                if (isset($user_Select_to_show)) {
+                    Session::put('chatboart_user_id', $user_Select_to_show->id);
+
+                    return view('User.chatboard', ['user_send_user_data' => $user_Select_to_show]);
+                } else {
+
+                    return response()->json(['error' => 'not found data for user']);
+                }
+            } else {
+                return response()->json(['error' => "Not found user data"]);
+            }
+        }
         // This in User Receive message then Update status
         if (!isset($check_this_friend)) {
+            if ($request->select_user_id != 3) {
 
-            if (isset($check_this_friend_receiver)) {
-                $user_Select_to_show = User::with(['starUserFind' => function ($query) {
-                    $query->where('current_user_id', 1);
-                }])->find($request->select_user_id);
+                if (isset($check_this_friend_receiver)) {
+                    $user_Select_to_show = User::with(['starUserFind' => function ($query) {
+                        $query->where('current_user_id', Auth::id());
+                    }])->find($request->select_user_id);
+                    // dd($user_Select_to_show->toArray());
 
-                if ($user_Select_to_show) {
-                    $message_view_ok = Message::where('send_id', $request->select_user_id)->where('receive_id', Auth::id())->get();
-                    if (isset($message_view_ok)) {
-                        foreach ($message_view_ok as $item) {
-                            $item->status = 'view';
-                            $item->save();
+
+                    if ($user_Select_to_show) {
+                        $message_view_ok = Message::where('send_id', $request->select_user_id)->where('receive_id', Auth::id())->get();
+                        if (isset($message_view_ok)) {
+                            foreach ($message_view_ok as $item) {
+                                $item->status = 'view';
+                                $item->save();
+                            }
                         }
-                    }
 
-                    $data = array('send_id' => $request->select_user_id, 'receive_id' => Auth::id());
-                    event(new ViewToReceiver($data));
+                        $data = array('send_id' => $request->select_user_id, 'receive_id' => Auth::id());
+                        event(new ViewToReceiver($data));
 
-                    if (isset($user_Select_to_show)) {
-                        Session::put('chatboart_user_id', $user_Select_to_show->id);
+                        if (isset($user_Select_to_show)) {
+                            Session::put('chatboart_user_id', $user_Select_to_show->id);
 
-                        return view('User.chatboard', ['user_send_user_data' => $user_Select_to_show]);
+                            return view('User.chatboard', ['user_send_user_data' => $user_Select_to_show]);
+                        } else {
+
+                            return response()->json(['error' => 'not found data for user']);
+                        }
                     } else {
-
-                        return response()->json(['error' => 'not found data for user']);
+                        return response()->json(['error' => "Not found user data"]);
                     }
-                } else {
-                    return response()->json(['error' => "Not found user data"]);
                 }
+                $select_user_data = User::where('id', $request->select_user_id)->first();
+
+                $check_select_user_give_request = Friendship::where(function ($query) use ($select_user_id) {
+                    $query->where('receiver_user_id', Auth::id())
+                        ->where('sender_user_id', $select_user_id);
+                })->first();
+
+                return view('User.send_accespt_request', ['users_data' => $select_user_data, 'user_can_request' => $check_select_user_give_request]);
             }
-            $select_user_data = User::where('id', $request->select_user_id)->first();
-
-            $check_select_user_give_request = Friendship::where(function ($query) use ($select_user_id) {
-                $query->where('receiver_user_id', Auth::id())
-                    ->where('sender_user_id', $select_user_id);
-            })->first();
-
-            return view('User.send_accespt_request', ['users_data' => $select_user_data, 'user_can_request' => $check_select_user_give_request]);
         } else {
             if ($check_this_friend->status == 0) {
 
@@ -315,23 +359,74 @@ class UserController extends Controller
     public function message_send_specific_user(Request $request)
     {
         if (Auth::check()) {
-            if ($files = $request->file('files')) {
-                foreach ($files as $file) {
-                    $file->storeAs('public/img', $file->getClientOriginalName());
-                    $message_data = new Message();
-                    $message_data->message = $file->getClientOriginalName();
-                    $message_data->send_id = Auth::user()->id;
-                    $message_data->receive_id = $request->receive_data_id;
-                    $message_data->status = 'send';
-                    $message_data->save();
-                }
-            } else {
-                $message_data = new Message();
+            // edit message then user 
+            if (isset($request->edit_message_id)) {
+                $message_data = Message::where('id', $request->edit_message_id)
+                    ->first();
+
                 $message_data->message = $request->message;
-                $message_data->send_id = Auth::user()->id;
-                $message_data->receive_id = $request->receive_data_id;
-                $message_data->status = 'send';
                 $message_data->save();
+            } else {
+
+                // forword message then user
+                if (isset($request->receive_data_id_array)) {
+                    foreach ($request->receive_data_id_array as $data) {
+
+                        if ($files = $request->file('files')) {
+
+                            foreach ($files as $file) {
+                                $file->storeAs('public/img', $file->getClientOriginalName());
+                                $message_data = new Message();
+                                $message_data->message = $file->getClientOriginalName();
+                                $message_data->send_id = Auth::user()->id;
+                                $message_data->receive_id = $data;
+                                $message_data->status = 'send';
+                                $message_data->save();
+                                // dd($message_data->toArray());
+                            }
+                        } else {
+                            try {
+                                $message_data = new Message();
+                                $message_data->message = $request->message;
+                                $message_data->send_id = Auth::user()->id;
+                                $message_data->receive_id = $request->receive_data_id;
+                                $message_data->status = 'send';
+                                $message_data->save();
+                                dd($message_data);
+                            } catch (Exception $e) {
+                                return response()->json([
+                                    'error' => 'String To Be Long'
+                                ]);
+                            }
+                        }
+                    }
+                } else {
+
+                    if ($files = $request->file('files')) {
+                        foreach ($files as $file) {
+                            $file->storeAs('public/img', $file->getClientOriginalName());
+                            $message_data = new Message();
+                            $message_data->message = $file->getClientOriginalName();
+                            $message_data->send_id = Auth::user()->id;
+                            $message_data->receive_id = $request->receive_data_id;
+                            $message_data->status = 'send';
+                            $message_data->save();
+                        }
+                    } else {
+                        try {
+                            $message_data = new Message();
+                            $message_data->message = $request->message;
+                            $message_data->send_id = Auth::user()->id;
+                            $message_data->receive_id = $request->receive_data_id;
+                            $message_data->status = 'send';
+                            $message_data->save();
+                        } catch (Exception $e) {
+                            return response()->json([
+                                'error' => 'String To Be Long'
+                            ]);
+                        }
+                    }
+                }
             }
 
             $message_data['name'] = $message_data->user_data_to_message->name;
@@ -375,11 +470,50 @@ class UserController extends Controller
             $query->where('send_id', $selectuserid)
                 ->where('receive_id', $userid)->whereNull('receiver_deleted_at');
         })->orderBy('created_at', "asc")->get();
-        // dd($message_data_to_show->toArray());
+
         if (isset($message_data_to_show)) {
             return view('User.show_message', ['message' => $message_data_to_show]);
         } else {
             return response()->json(['error' => 'not found data for user messages']);
+        }
+    }
+
+    // Message Clean of All
+    public function message_clean(Request $request)
+    {
+        $message_data = Message::find($request->message_id);
+        $sender_id = $message_data->receive_id;
+        if (isset($message_data)) {
+            $message_data->message = "This Message is Deleted";
+            $message_data->status = 'send';
+            $message_data->save();
+
+            $userid = $message_data->send_id;
+            $selectuserid = $message_data->receive_id;
+
+            $get_with_message_user = Message::with('sender')->find($message_data->id);
+
+            if (isset($get_with_message_user)) {
+                event(new SendMeesages($get_with_message_user->toArray()));
+            }
+
+            $message_data_to_show = Message::where(function ($query) use ($userid, $selectuserid) {
+                $query->where('send_id', $userid)->whereNull('sender_deleted_at')
+                    ->where('receive_id', $selectuserid);
+            })->orWhere(function ($query) use ($userid, $selectuserid) {
+                $query->where('send_id', $selectuserid)
+                    ->where('receive_id', $userid)->whereNull('receiver_deleted_at');
+            })->orderBy('created_at', "asc")->get();
+
+            if (isset($message_data_to_show)) {
+                return view('User.show_message', ['message' => $message_data_to_show]);
+            } else {
+                return response()->json(['error' => 'message data not show']);
+            }
+
+            return response()->json(['message_user' => $sender_id]);
+        } else {
+            return response()->json(['data' => "not found data"]);
         }
     }
 
@@ -440,9 +574,12 @@ class UserController extends Controller
             ->selectRaw('MAX(created_at) as last_message_time')
             ->where('send_id', Auth::user()->id)
             ->orWhere('receive_id', Auth::user()->id)
+            ->where('send_id', '!=', 3)
+            ->where('receive_id', '!=', 3)
             ->groupBy('send_id', 'receive_id')
             ->orderByDesc('last_message_time')
             ->get();
+
         $extra_collect = $message_data_order;
 
         for ($i = 0; $i < $message_data_order->count(); $i++) {
@@ -469,9 +606,13 @@ class UserController extends Controller
 
         $finalUserList = $uniqueConversations->values();
 
+        $filtered = $finalUserList->filter(function ($value) {
+            return $value->receive_id != 3;
+        });
+
         if (isset($message_data_order)) {
 
-            return view('User.searchfriend', ["last_message_send_data" => $finalUserList]);
+            return view('User.searchfriend', ["last_message_send_data" => $filtered]);
         } else {
             return response()->json(['data' => "data is not found"]);
         }
@@ -603,42 +744,15 @@ class UserController extends Controller
 
     public function user_forword_message(Request $request)
     {
-        $message_data_order = Message::select('send_id', 'receive_id')
-            ->selectRaw('MAX(created_at) as last_message_time')
-            ->where('send_id', Auth::user()->id)
-            ->orWhere('receive_id', Auth::user()->id)
-            ->groupBy('send_id', 'receive_id')
-            ->orderByDesc('last_message_time')
-            ->get();
-        $extra_collect = $message_data_order;
+        $friendList = Friendship::with('sendersData', 'receiverData')->where(function ($query) {
+            $query->where('sender_user_id', Auth::id())
+                ->orWhere('receiver_user_id', Auth::id());
+        })->where('status', 1)
+            ->orderByDesc('created_at')->get();
 
-        for ($i = 0; $i < $message_data_order->count(); $i++) {
-            $fresh_send_id = $message_data_order[$i]->send_id;
-            $fresh_receive_id = $message_data_order[$i]->receive_id;
-            $fresh_ct = $message_data_order[$i]->last_message_time;
+        if (isset($friendList)) {
 
-            for ($j = 0; $j < $extra_collect->count(); $j++) {
-                if ($fresh_send_id == $extra_collect[$j]->receive_id && $fresh_receive_id == $extra_collect[$j]->send_id) {
-                    if ($fresh_receive_id == Auth::id()) {
-                        $message_data_order[$i]->send_id = $extra_collect[$j]->send_id;
-                        $message_data_order[$i]->receive_id = $extra_collect[$j]->receive_id;
-                        $message_data_order[$j]->last_message_time = $fresh_ct;
-                    }
-                }
-            }
-        }
-
-        $uniqueConversations = $message_data_order->unique(function ($item) {
-            $participants = [$item->send_id, $item->receive_id];
-            sort($participants);
-            return implode('-', $participants);
-        });
-
-        $finalUserList = $uniqueConversations->values();
-
-        if (isset($message_data_order)) {
-
-            return view('User.Forword_Message', ["last_message_send_data" => $finalUserList]);
+            return view('User.Forword_Message', ["friendList" => $friendList]);
         } else {
             return response()->json(['data' => "data is not found"]);
         }
@@ -714,13 +828,13 @@ class UserController extends Controller
             $query->where('current_user_id', Auth::id());
         }])
             ->select('send_id', 'receive_id')
-            // ->whereNotNull('StarUserWithMessage')
             ->selectRaw('MAX(created_at) as last_message_time')
             ->where('send_id', Auth::user()->id)
             ->orWhere('receive_id', Auth::user()->id)
             ->groupBy('send_id', 'receive_id')
             ->orderByDesc('last_message_time')
             ->get();
+
 
 
         $extra_collect = $message_data_order;
@@ -741,18 +855,8 @@ class UserController extends Controller
             }
         }
 
-        $uniqueConversations = $message_data_order->unique(function ($item) {
-            $participants = [$item->send_id, $item->receive_id];
-            sort($participants);
-            return implode('-', $participants);
-        });
-
-        $finalUserList = $uniqueConversations->values();
-
-        // dd($finalUserList->toArray());
         if (isset($message_data_order)) {
-
-            return view('User.Star_User', ["last_message_send_data" => $finalUserList]);
+            return view('User.Star_User', ["last_message_send_data" => $message_data_order]);
         } else {
             return redirect()->route('main_error');
         }

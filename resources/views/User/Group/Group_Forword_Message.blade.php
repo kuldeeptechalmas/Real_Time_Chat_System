@@ -8,8 +8,8 @@
 @foreach ($friendList as $item)
 
 @if ($item->sender_user_id==Auth::id())
-{{-- <div class="d-flex" onclick="ForwordMessageUserSelect({{ $item->receiverData->id }})" data-id="{{ $item->receiverData->id }}" style="background-color: white;position: relative;padding: 16px;margin: 4px;"> --}}
-<div class="d-flex" onclick="SelectedForwordUser(this)" data-id="{{ $item->receiverData->id }}" style="background-color: white;position: relative;padding: 16px;margin: 4px;">
+{{-- <div class="d-flex" onclick="ForwordMessageUserSelectGroup({{ $item->receiverData->id }})" data-id="{{ $item->receiverData->id }}" style="background-color: white;position: relative;padding: 16px;margin: 4px;"> --}}
+<div class="d-flex" onclick="SelectedForwordUserGroup(this)" data-id="{{ $item->receiverData->id }}" style="background-color: white;position: relative;padding: 16px;margin: 4px;">
     <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
 
         @if ($item->receiverData->image_path!=Null)
@@ -29,8 +29,8 @@
     </div>
 </div>
 @else
-{{-- <div class="d-flex" onclick="ForwordMessageUserSelect({{ $item->sendersData->id }})" data-id="{{ $item->sendersData->id }}" style="background-color: white;position: relative;padding: 16px;margin: 4px;"> --}}
-<div class="d-flex" onclick="SelectedForwordUser(this)" data-id="{{ $item->sendersData->id }}" style="background-color: white;position: relative;padding: 16px;margin: 4px;">
+{{-- <div class="d-flex" onclick="ForwordMessageUserSelectGroup({{ $item->sendersData->id }})" data-id="{{ $item->sendersData->id }}" style="background-color: white;position: relative;padding: 16px;margin: 4px;"> --}}
+<div class="d-flex" onclick="SelectedForwordUserGroup(this)" data-id="{{ $item->sendersData->id }}" style="background-color: white;position: relative;padding: 16px;margin: 4px;">
     <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
 
         @if ($item->sendersData->image_path!=Null)
@@ -52,7 +52,7 @@
 @endif
 
 @endforeach
-<div onclick="ForwordMessageUserSelect()" style="position: absolute;right: 3%;bottom: 8%;height: 50px;width: 50px;display: flex;background: #007c00ba;justify-content: center;align-items: center;border-radius: 50px;">
+<div onclick="ForwordMessageUserSelectGroup()" style="position: absolute;right: 3%;bottom: 8%;height: 50px;width: 50px;display: flex;background: #007c00ba;justify-content: center;align-items: center;border-radius: 50px;">
     <i class="fa-solid fa-paper-plane" style="color:white;"></i>
 </div>
 @else

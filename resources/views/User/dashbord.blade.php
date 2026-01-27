@@ -15,6 +15,13 @@
 
 </head>
 <body style="height: 100vh;overflow: hidden;cursor: default;">
+
+    <div style="position: absolute;height: 100%;width: 100%;display:none;" id="loader">
+
+        <div class="spinner" style="position: absolute;top: 42%;left: 68%;">
+            <div class="spinner1"></div>
+        </div>
+    </div>
     <div class="row" style="margin: 0px;width: 100%;height: 100%;border-radius: 8px;">
 
         {{-- first side manu --}}
@@ -68,6 +75,14 @@
                     Starred
                 </div>
             </a>
+            @if (Auth::id()!=3)
+
+            <a href="{{ route('help.page') }}" style="color: black;text-decoration: none;">
+                <div class="row" style="padding: 15px;background: #f9d8c9;margin-top: 4px;">
+                    Help
+                </div>
+            </a>
+            @endif
             <div style="position: fixed;bottom: 11px;">
                 <a href="{{ route('logout') }}"><button type="button" style="background: #fbdfd2;" class="btn btn-info">Logout</button></a>
             </div>
@@ -115,9 +130,9 @@
     <div class="modal fade" id="imageshowmodel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog mt-0 mb-0">
             <div class="modal-content text-white" style="height: 551px;background: white;width: 100%;">
-                <div class="modal-header">
-                    <h3 class="modal-title fs-5" id="ImageShowUserName"></h3>
-                    <button style="color: #f9d8c9" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div style="display: flex;padding: 19px;">
+                    <h3 class="modal-title fs-5 text-dark" id="ImageShowUserName"></h3>
+                    <button style="color: #f9d8c9;position: absolute;right: 25px;" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="height: 254px;width: 100%;">
                     <div id="ImageShowUserImage_path" style="height: 100%;width: 100%;">
@@ -148,7 +163,7 @@
 
                                 let img = "";
                                 if (element['image_path'] != null) {
-                                    img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
+                                    img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
                                 } else {
                                     if (element['gender'] == "Men") {
                                         img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
@@ -176,7 +191,7 @@
 
                         if (member['name'] == $(`#${member['name']}`).html().trim()) {
                             if (member['image_path'] != null) {
-                                img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','${member['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${member['image_path']}" alt="">`;
+                                img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','${member['image_path']}','${member['phone']}','${member['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${member['image_path']}" alt="">`;
                             } else {
                                 if (member['gender'] == "Men") {
                                     img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
@@ -202,7 +217,7 @@
 
                         if (member['name'] == $(`#${member['name']}`).html().trim()) {
                             if (member['image_path'] != null) {
-                                img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','${member['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${member['image_path']}" alt="">`;
+                                img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','${member['image_path']}','${member['phone']}','${member['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${member['image_path']}" alt="">`;
                             } else {
                                 if (member['gender'] == "Men") {
                                     img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
@@ -243,11 +258,14 @@
                     }
                 })
                 .listen(".send-event", (e) => {
-                    if ("{{ Auth::user()->id }}" == e.message['receive_id'] && "{{ URL::full() }}" == "http://127.0.0.1:8000/dashboard") {
+
+
+                    if ("{{ Auth::user()->id }}" == e.message['receive_id'] && "{{ URL::full() }}" == "http://127.0.0.1:8000/dashboard" || "{{ URL::full() }}" == "http://127.0.0.1:8000/Help") {
 
                         userfriendlist();
 
                         if (localStorage.getItem('current_user_chatboard') == e.message['send_id']) {
+
                             const data = e.message['message'].replace(/(?:\r\n|\r|\n)/g, '<br>');
 
                             // data convertion
@@ -261,42 +279,55 @@
                             };
                             const formattedTime = dateObject.toLocaleString('en-US', options);
 
-                            // old message get
-                            var scrollbardiv = $("#scrollbarid").html();
-                            var addhtmldiv = `<div class="messagehover" style="margin: 14px;display: flex;justify-content: flex-start;">
-                            <div class=w_message d-flex gap-2"><div style="position: relative;min-width: 66px;background: #fbdfd2;padding: 28px 7px 7px 7px;border-radius: 0px 10px 10px;cursor: default;">
-                            ${data}
-                            <div style="position: absolute;top: 0px;right: 16px;">
-                            <span style="font-size: 11px;">${formattedTime}</span>
-                            </div></div></div><div class="messagehovercontent" onclick="removemessagebyone(${e.message['id']})" style="background-color: #d28fa8;height: 32px;color: white;border-radius: 11px;margin-left: 13px;padding: 4px;cursor: default;">Remove</div></div>`;
-                            $("#scrollbarid").html(scrollbardiv + addhtmldiv);
+                            if ($(`#m${e.message['id']}`).html() != null) {
 
-                            const element = document.getElementById("scrollbarid");
-                            element.scrollTop = element.scrollHeight;
+                                $($(`#m${e.message['id']}`).find('div.w_message').children()[0]).html(`This Message is Deleted
+                                <div style="position: absolute;top: 0px;right: 16px;">
+                                <span style="font-size: 11px;">${formattedTime}</span>
+                                </div>`);
 
+                            } else {
+                                // old message get
+                                var scrollbardiv = $("#scrollbarid").html();
+                                var addhtmldiv = `<div class="messagehover" style="margin: 14px;display: flex;justify-content: flex-start;">
+                                <div class=w_message d-flex gap-2"><div style="position: relative;min-width: 66px;background: #fbdfd2;padding: 28px 7px 7px 7px;border-radius: 0px 10px 10px;cursor: default;">
+                                ${data}
+                                <div style="position: absolute;top: 0px;right: 16px;">
+                                <span style="font-size: 11px;">${formattedTime}</span>
+                                </div></div></div><div class="messagehovercontent" onclick="removemessagebyone(${e.message['id']})" style="background-color: #d28fa8;height: 32px;color: white;border-radius: 11px;margin-left: 13px;padding: 4px;cursor: default;">Remove</div></div>`;
+                                $("#scrollbarid").html(scrollbardiv + addhtmldiv);
+
+                                const element = document.getElementById("scrollbarid");
+                                element.scrollTop = element.scrollHeight;
+                            }
                             userfriendlist();
                             viewNotRefresh(e.message['send_id']);
-                            message_show(e.message['send_id']);
+                            // message_show(e.message['send_id']);
                         } else {
 
-                            Toastify({
-                                text: `${e.message['sender']['name']} Send Message to ${e.message['message']}`
-                                , duration: 5000
-                                , gravity: "top"
-                                , position: "center"
-                                , style: {
-                                    background: '#fbdfd2'
-                                    , color: "black"
-                                }
-                                , stopOnFocus: true
-                            , }).showToast();
+                            console.log(e);
+                            if (e.message['receive_id'] != 3) {
+
+                                Toastify({
+                                    text: `${e.message['sender']['name']} Send Message to ${e.message['message']}`
+                                    , duration: 5000
+                                    , gravity: "top"
+                                    , position: "center"
+                                    , style: {
+                                        background: '#fbdfd2'
+                                        , color: "black"
+                                    }
+                                    , stopOnFocus: true
+                                , }).showToast();
+                            }
 
                             if ($(`#${e.message['send_id']}`).html() != null) {
 
                                 if (e.message['sender']['name'] == $(`#${e.message['sender']['name']}`).html().trim()) {
+                                    console.log(e);
 
                                     $(`#${e.message['sender']['id']}`).html(`<div style="height: 37px;width: 37px;">
-                                        <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${e.message['sender']['name']}','${e.message['sender']['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${e.message['sender']['image_path']}" alt="">
+                                        <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${e.message['sender']['name']}','${e.message['sender']['image_path']}','${e.message['sender']['phone']}','${e.message['sender']['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${e.message['sender']['image_path']}" alt="">
                                         </div>
                                         <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
                                         <div style="width: 100%;" onclick="setsenduser( ${e.message['sender']['id']} )">
@@ -323,25 +354,29 @@
             Echo.private('typing-channel')
                 .listenForWhisper('typing', (e) => {
 
-                    console.log(e);
-
-                    console.log(e.user + ' is typing...');
                     if ("{{ Auth::user()->id }}" == e.user_id && "{{ URL::full() }}" == "http://127.0.0.1:8000/dashboard") {
-                        if ($('.typing').html() == null) {
-                            var scrollbardiv = $("#scrollbarid").html();
-                            var addhtmldiv = `<div style="background: #fbdfd2;width: 33px;display: flex;justify-content: center;border-radius: 18px;"" class='typing'><span>...</span></div>`;
-                            $("#scrollbarid").html(scrollbardiv + addhtmldiv);
-                            const element = document.getElementById("scrollbarid");
-                            element.scrollTop = element.scrollHeight;
-                            totalTimeType += 1000;
 
-                        } else {
-                            totalTimeType += 1000;
+                        if (e.user == localStorage.getItem('cuurentCatboard')) {
+
+
+
+                            // localStorage.getItem('cuurentCatboard')
+                            if ($('.typing').html() == null) {
+                                var scrollbardiv = $("#scrollbarid").html();
+                                var addhtmldiv = `<div style="background: #fbdfd2;width: 33px;display: flex;justify-content: center;border-radius: 18px;"" class='typing'><span>...</span></div>`;
+                                $("#scrollbarid").html(scrollbardiv + addhtmldiv);
+                                const element = document.getElementById("scrollbarid");
+                                element.scrollTop = element.scrollHeight;
+                                totalTimeType += 1000;
+
+                            } else {
+                                totalTimeType += 1000;
+                            }
+                            setTimeout(() => {
+                                $('.typing').css('display', 'none');
+                                $('.typing').remove();
+                            }, totalTimeType);
                         }
-                        setTimeout(() => {
-                            $('.typing').css('display', 'none');
-                            $('.typing').remove();
-                        }, totalTimeType)
                     }
 
                 });
@@ -459,11 +494,34 @@
             $('#files').click();
         }
 
-        function imagesetshow(name, image_path) {
-            $('#ImageShowUserName').html(name);
-            $('#ImageShowUserImage_path').html(`
+        function imagesetshow(name, image_path, phone, email) {
+            if (phone != null && email != null) {
+
+                $('#ImageShowUserName').html("User Profile");
+                $('#ImageShowUserImage_path').html(`
+                <div style="display: flex;justify-content: center;">
+                <div style="height: 228px;width: 232px;">
+            <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 126px;" src="storage/img/${image_path}" alt="">
+            </div>
+            </div>
+            <div style="color: black;display: flex;justify-content: center;padding: 19px;font-size: 20px;" id='userid'>
+                </div>
+            <div style="color: black;display: flex;justify-content: center;padding: 10px;" id='userphone'>
+                </div>
+            <div style="color: black;display: flex;justify-content: center;padding: 10px;" id='useremail'>
+                </div>
+            `);
+                $('#userid').html(name);
+                $('#userphone').html(phone);
+                $('#useremail').html(email);
+
+            } else {
+
+                $('#ImageShowUserName').html(name);
+                $('#ImageShowUserImage_path').html(`
             <img style="height: 100%;width: 100%;object-fit: contain;" src="storage/img/${image_path}" alt="">
             `);
+            }
         }
 
         // Remove messages
@@ -509,7 +567,7 @@
 
         // Manu Show and Hide
         function closemanu() {
-            $('#moreoptiondiv').css('display', 'none')
+            $('#moreoptiondiv').css('display', 'none');
         }
 
         function moreoptionshow() {
@@ -537,7 +595,7 @@
 
                             if (element['name'] == $(`#${element['name']}`).html().trim()) {
                                 if (element['image_path'] != null) {
-                                    img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
+                                    img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
                                 } else {
                                     if (element['gender'] == "Men") {
                                         img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
@@ -590,6 +648,9 @@
 
         // Message Send 
         function sendmessagetosender(senduserid, message) {
+
+            // localStorage.setItem('editMessageId', 0);
+
             document.getElementById('messages').rows = 1;
             if (message == null) {
 
@@ -609,13 +670,31 @@
 
                 var formData = new FormData();
                 formData.append('message', message_data);
+
+                console.log(localStorage.getItem('editMessageId'));
+
+                if (localStorage.getItem('editMessageId') != 0) {
+
+                    console.log(localStorage.getItem('editMessageId'));
+                    formData.append('edit_message_id', localStorage.getItem('editMessageId'));
+                }
                 formData.append('receive_data_id', senduserid);
+
+                // formData.append('receive_data_id', senduserid);
 
             }
             if (message_data == null && document.getElementById('files').files.length != 0) {
 
                 var formData = new FormData();
                 formData.append('message', message_data);
+
+                console.log(localStorage.getItem('editMessageId'));
+
+                if (localStorage.getItem('editMessageId') != 0) {
+
+                    console.log(localStorage.getItem('editMessageId'));
+                    formData.append('edit_message_id', localStorage.getItem('editMessageId'));
+                }
                 formData.append('receive_data_id', senduserid);
 
                 $("#messages").css('display', "block")
@@ -638,7 +717,7 @@
                             $('#messages').val('');
                             $('#messages').attr('placeholder', 'Type Message Here...').prop('readonly', false);
                             Toastify({
-                                text: `Enter Image is Only png or jpg Images Allows`
+                                text: `Enter Image is Only png or jpg or svg or pdf Images Allows`
                                 , duration: 5000
                                 , gravity: "top"
                                 , position: "center"
@@ -666,18 +745,41 @@
                     , contentType: false
                     , processData: false
                     , success: function(res) {
-                        $('#message_to_show').html(res);
-                        $('#messages').val('');
-                        $('#files').val('');
+                        console.log(res['error']);
+                        if (res['error']) {
+                            Toastify({
+                                text: `${res['error']}`
+                                , duration: 5000
+                                , gravity: "top"
+                                , position: "center"
+                                , style: {
+                                    background: '#fbdfd2'
+                                    , color: "black"
+                                }
+                                , stopOnFocus: true
+                            , }).showToast();
+                            $('#messages').val('');
+                            $('#messages').prop('readonly', false).attr('placeholder', 'Type Message Here...');
+                            localStorage.setItem('editMessageId', 0);
+                        } else {
 
-                        $('#img-preview').html('');
-                        $('#messages').css('display', 'block');
-                        $('#img-preview').css('display', 'none');
-                        $('#messages').prop('readonly', false).attr('placeholder', 'Type Message Here...')
-                        userfriendlist();
 
-                        const element = document.getElementById("scrollbarid");
-                        element.scrollTop = element.scrollHeight;
+                            $('#message_to_show').html(res);
+                            $('#messages').val('');
+                            $('#files').val('');
+                            $('#emoji_picker').css('display', 'none');
+                            $('#img-preview').html('');
+                            $('#messages').css('display', 'block');
+                            $('#img-preview').css('display', 'none');
+
+                            $('#messages').prop('readonly', false).attr('placeholder', 'Type Message Here...');
+                            userfriendlist();
+
+                            localStorage.setItem('editMessageId', 0);
+
+                            const element = document.getElementById("scrollbarid");
+                            element.scrollTop = element.scrollHeight;
+                        }
                     }
                     , error: function(e) {
                         console.log(e);
@@ -771,7 +873,7 @@
 
                             if (element['name'] == $(`#${element['name']}`).html().trim()) {
                                 if (element['image_path'] != null) {
-                                    img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
+                                    img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
                                 } else {
                                     if (element['gender'] == "Men") {
                                         img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
@@ -874,8 +976,13 @@
                     , user_id: id
                     , typing: true
                 });
+            if ($('#messages').val() == null) {
+                localStorage.setItem('editMessageId', 0);
 
-            // console.log(current);
+                console.log(localStorage.getItem('editMessageId'));
+            }
+
+
         }
 
         // Get Emoji And Show
@@ -946,32 +1053,42 @@
 
         }
 
-        function ForwordMessageUserSelect(user_id) {
-            console.log(user_id);
-            var formData = new FormData();
-            formData.append('message', localStorage.getItem('m_message'));
-            formData.append('receive_data_id', user_id);
+        let Select_User_Array_Forword = new Array();
+
+        function SelectedForwordUser(thisdiv) {
+
+            if ($(thisdiv).css('background-color') == 'rgba(208, 242, 208, 0.5)') {
+                $(thisdiv).css('background-color', 'rgb(255, 255, 255)');
+
+                const index = Select_User_Array_Forword.indexOf($(thisdiv).data('id'));
+                Select_User_Array_Forword.splice(index, 1);
+
+            } else {
+                $(thisdiv).css('background-color', 'rgba(208, 242, 208, 0.5)');
+                Select_User_Array_Forword.push($(thisdiv).data('id'));
+            }
+        }
+
+        function ForwordMessageUserSelect() {
+
+            $('#chatboardofreceiver').html('');
+            $('#loader').css('display', 'block');
+
             $.ajax({
                 type: 'post'
                 , headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
                 , url: "{{ route('message_send_specific_user') }}"
-                , data: formData
-                , contentType: false
-                , processData: false
+                , data: {
+                    message: localStorage.getItem('m_message')
+                    , receive_data_id_array: Select_User_Array_Forword
+                }
                 , success: function(res) {
-                    setsenduser(user_id);
-                    $('#message_to_show').html(res);
-                    $('#messages').val('');
-                    $('#files').val('');
-
-                    $('#img-preview').html('');
-                    $('#messages').css('display', 'block');
-                    $('#img-preview').css('display', 'none');
-                    $('#messages').prop('readonly', false).attr('placeholder', 'Type Message Here...')
+                    setsenduser(Select_User_Array_Forword[0]);
                     userfriendlist();
-
+                    Select_User_Array_Forword.length = 0;
+                    $('#loader').css('display', 'none');
                 }
                 , error: function(e) {
                     console.log(e);
@@ -999,9 +1116,6 @@
         let Select_User_Array = new Array();
 
         function SelectedGroupUser(thisdiv) {
-            // console.log(thisdiv);
-
-            // console.log($(thisdiv).css('background-color'));
 
             if ($(thisdiv).css('background-color') == 'rgba(208, 242, 208, 0.5)') {
                 $(thisdiv).css('background-color', 'rgb(255, 255, 255)');
@@ -1017,23 +1131,10 @@
 
         function FinalCreateGroup() {
             const data_of_group_name = $('#group_name').val().replace(/\s/g, '');
-            if (Select_User_Array.length == 0) {
-                Toastify({
-                    text: `Select you friend...`
-                    , duration: 5000
-                    , gravity: "top"
-                    , position: "center"
-                    , style: {
-                        background: '#fbdfd2'
-                        , color: "black"
-                    }
-                    , stopOnFocus: true
-                , }).showToast();
-            } else
             if (data_of_group_name.length == 0) {
                 Toastify({
                     text: `Enter Group Name !...`
-                    , duration: 5000
+                    , duration: 1000
                     , gravity: "top"
                     , position: "center"
                     , style: {
@@ -1068,6 +1169,30 @@
                     }
                 });
             }
+        }
+
+        function ClearMessageByOne(message_id) {
+            console.log(message_id);
+            $.ajax({
+                type: 'post'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , url: "{{ route('message.clean') }}"
+                , data: {
+                    message_id: message_id
+                }
+                , success: function(res) {
+
+                    $('#message_to_show').html(res);
+                    const element = document.getElementById("scrollbarid");
+                    element.scrollTop = element.scrollHeight;
+
+                }
+                , error: function(e) {
+                    console.log(e);
+                }
+            });
         }
 
     </script>
