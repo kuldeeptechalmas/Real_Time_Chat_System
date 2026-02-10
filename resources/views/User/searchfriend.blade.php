@@ -6,7 +6,7 @@ use Carbon\Carbon;
 @if ($user_data->isNotEmpty())
 
 @foreach ($user_data as $item)
-<div class="d-flex bg-white" id="{{ $item->id }}" style="position: relative;padding: 16px;margin: 4px;">
+<div class="d-flex bg-dark text-white" id="{{ $item->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
     <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
 
         @if ($item->image_path!=Null)
@@ -40,10 +40,11 @@ use Carbon\Carbon;
 
 @if ($item->receive_id==Auth::id())
 
-<div class="d-flex bg-white" id="{{ $item->sender->id }}" style="position: relative;padding: 16px;margin: 4px;">
+<div class="d-flex bg-dark text-white" id="{{ $item->sender->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
     <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
         @if ($item->sender->image_path!=Null)
-        <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->sender->name }}','{{ $item->user_data_to_message->image_path }}','{{ $item->user_data_to_message->phone }}','{{ $item->user_data_to_message->email }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->user_data_to_message->image_path) }}" alt="">
+
+        <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->sender->name }}','{{ $item->sender->image_path }}','{{ $item->sender->phone }}','{{ $item->sender->email }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->sender->image_path) }}" alt="">
         @else
         @if ($item->sender->gender=='Men')
         <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>
@@ -61,7 +62,7 @@ use Carbon\Carbon;
 
 @else
 
-<div class="d-flex bg-white" id="{{ $item->user_data_to_message->id }}" style="position: relative;padding: 16px;margin: 4px;">
+<div class="d-flex bg-dark text-white" id="{{ $item->user_data_to_message->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
     <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
         @if ($item->user_data_to_message->image_path!=Null)
         <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->user_data_to_message->name }}','{{ $item->user_data_to_message->image_path }}','{{ $item->user_data_to_message->phone }}','{{ $item->user_data_to_message->email }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->user_data_to_message->image_path) }}" alt="">
@@ -73,7 +74,7 @@ use Carbon\Carbon;
         @endif
         @endif
     </div>
-    <div style="width: 100%;display: flex;" onclick="setsenduser({{ $item->user_data_to_message->id }})">
+    <div style="width: 100%;display: flex;height: 37px;" onclick="setsenduser({{ $item->user_data_to_message->id }})">
         <div style="margin-left: 21px;display: flex;" id="{{ $item->user_data_to_message->name }}">
             {{ $item->user_data_to_message->name }}
             {{-- {{ $item }} --}}
@@ -86,7 +87,14 @@ use Carbon\Carbon;
         $current = Carbon::now();
         $diff = $old_time->diff($current);
         @endphp
-        <div style="font-size: 12px;position: absolute;top: 29%;right: 6%;">
+        @if ($item->message_count!=0)
+        <div style="top: 20px;right: 68px;position: absolute;background: lightblue;height: 20px;width: 20px;display: flex;justify-content: center;border-radius: 14px;align-items: center;">
+            {{ $item->message_count }}
+        </div>
+
+        @endif
+
+        <div class="TimeOldOnline" style="font-size: 12px;position: absolute;top: 29%;right: 6%;">
 
             @if ($old_time->diffInMinutes($current)>60)
             @if ($old_time->diffInHours($current)>24)

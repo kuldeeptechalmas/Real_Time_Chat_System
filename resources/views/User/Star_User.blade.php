@@ -3,8 +3,8 @@
 @section('content')
 
 {{-- star and show user --}}
-<div class="col-4 bg-light" style="padding: 0px;">
-    <div style="padding: 21px;background-color: #fbdfd2">
+<div class="col-4 " style="padding: 0px;width: 36.333333%;border-right: 1px solid #504f4f;">
+    <div class="text-white" style="padding: 21px;background-color: #1d1f1f">
         <div class="d-flex">
             <div style="height: 26px;width: 49px;">
                 <img style="height: 100%;width: 100%;" src="{{ asset('img/logo.png') }}" alt="">
@@ -14,13 +14,13 @@
             </div>
         </div>
     </div>
-    <div class="row" style="padding: 15px;">
+    <div class="row text-white" style="padding: 15px;margin: 0px;">
         <div style="display: flex;justify-content: center;">Show Star User</div>
         {{-- <input style="width: 87%;margin-left: 20px;" autocomplete="off" id="searchfriendname" oninput="Searchfriend()" class="form-control" type="search" placeholder="Search" aria-label="Search" /> --}}
     </div>
 
     {{-- here --}}
-    <div class="scroll-container" style="height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;" style="padding: 0px 20px 7px 20px;">
+    <div class="scroll-container" style="padding: 0px 20px 7px 20px;height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;" style="padding: 0px 20px 7px 20px;">
 
         @if ($last_message_send_data->isNotEmpty())
 
@@ -29,7 +29,7 @@
 
         @if (isset($item->StarUserWithMessage))
 
-        <div class="d-flex bg-white" id="{{ $item->receiver->id }}" style="position: relative;padding: 16px;margin: 4px;">
+        <div class="d-flex bg-dark text-white" id="{{ $item->receiver->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
             <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
                 @if ($item->receiver->image_path!=Null)
                 <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->receiver->name }}','{{ $item->receiver->image_path }}','{{ $item->receiver->phone }}','{{ $item->receiver->email }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->receiver->image_path) }}" alt="">
@@ -66,7 +66,7 @@
     </div>
 
 </div>
-<div class="col-7" style="background: white;padding: 0px;" id="chatboardofreceiver">
+<div class="col-7" style="background: #1d1f1f;padding: 0px;" id="chatboardofreceiver">
     <div style="width: 292px;height: 283px;margin-left: 250px;margin-top: 92px;">
         <img src="{{ asset('img/messages.png') }}" style="height: 100%;width: 100%;" alt="">
     </div>

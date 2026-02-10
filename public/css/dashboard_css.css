@@ -1,261 +1,277 @@
- .scroll-container {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-            overflow-y: scroll;
-        }
+.scroll-container1 {
+    scrollbar-color: #2e2f2f black;
+    overflow-y: scroll;
+}
+.scroll-container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    overflow-y: scroll;
+}
 
-        .scroll-container::-webkit-scrollbar {
-            display: none;
-        }
+.scroll-container::-webkit-scrollbar {
+    display: none;
+}
 
-        .messagehovercontent {
-            display: none;
-        }
+.messagehovercontent {
+    display: none;
+}
 
-        .messagehover:hover .messagehovercontent {
-            display: block;
-        }
+.messagehover:hover .messagehovercontent {
+    display: block;
+}
 
-        .w_message {
-            max-width: 60%;
-            /* overflow-wrap: break-word; */
-            overflow-wrap: anywhere;
-        }
+.w_message {
+    max-width: 60%;
+    /* overflow-wrap: break-word; */
+    overflow-wrap: anywhere;
+}
 
-        .loader {
-            width: 15px;
-            aspect-ratio: 1;
-            border-radius: 50%;
-            animation: l5 1s infinite linear alternate;
-        }
+.loader {
+    width: 15px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    animation: l5 1s infinite linear alternate;
+}
 
-        @keyframes l5 {
-            0% {
-                box-shadow: 20px 0 #000, -20px 0 #0002;
-                background: #000
-            }
+@keyframes l5 {
+    0% {
+        box-shadow:
+            20px 0 #000,
+            -20px 0 #0002;
+        background: #000;
+    }
 
-            33% {
-                box-shadow: 20px 0 #000, -20px 0 #0002;
-                background: #0002
-            }
+    33% {
+        box-shadow:
+            20px 0 #000,
+            -20px 0 #0002;
+        background: #0002;
+    }
 
-            66% {
-                box-shadow: 20px 0 #0002, -20px 0 #000;
-                background: #0002
-            }
+    66% {
+        box-shadow:
+            20px 0 #0002,
+            -20px 0 #000;
+        background: #0002;
+    }
 
-            100% {
-                box-shadow: 20px 0 #0002, -20px 0 #000;
-                background: #000
-            }
-        }
+    100% {
+        box-shadow:
+            20px 0 #0002,
+            -20px 0 #000;
+        background: #000;
+    }
+}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        .container {
-            width: 100%;
-            max-width: 500px;
-        }
+.container {
+    width: 100%;
+    max-width: 500px;
+}
 
-        .post {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin: 20px 10px;
-        }
+.post {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px 10px;
+}
 
-        .post-content {
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e4e6eb;
-            margin-bottom: 10px;
-        }
+.post-content {
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e4e6eb;
+    margin-bottom: 10px;
+}
 
-        .post-content h2 {
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: #1c1e21;
-        }
+.post-content h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #1c1e21;
+}
 
-        .post-content p {
-            font-size: 15px;
-            line-height: 1.4;
-            color: #65676b;
-        }
+.post-content p {
+    font-size: 15px;
+    line-height: 1.4;
+    color: #65676b;
+}
 
-        .reaction-container {
-            position: relative;
-            display: inline-block;
-        }
+.reaction-container {
+    position: relative;
+    display: inline-block;
+}
 
-        .reaction-button {
-            display: flex;
-            align-items: center;
-            background: none;
-            border: none;
-            border-radius: 4px;
-            padding: 6px 12px;
-            cursor: pointer;
-            font-size: 15px;
-            color: #65676b;
-            font-weight: 600;
-            transition: background-color 0.2s;
-        }
+.reaction-button {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #65676b;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
 
-        .reaction-text {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
+.reaction-text {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
 
-        .reaction-button:hover {
-            background-color: #f0f2f5;
-        }
+.reaction-button:hover {
+    background-color: #f0f2f5;
+}
 
-        .reaction-count {
-            margin-left: 5px;
-            font-size: 14px;
-            color: #65676b;
-        }
+.reaction-count {
+    margin-left: 5px;
+    font-size: 14px;
+    color: #65676b;
+}
 
-        /* Emoji Bar Styles */
-        .emoji-bar {
-            position: absolute;
-            left: 36%;
-            top: 15%;
-            transform: translateX(-50%) scale(0.5);
-            display: flex;
-            background-color: white;
-            border-radius: 30px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            padding: 8px;
-            z-index: 10;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s ease;
-            transform-origin: bottom center;
-        }
+/* Emoji Bar Styles */
+.emoji-bar {
+    position: absolute;
+    left: 36%;
+    top: 15%;
+    transform: translateX(-50%) scale(0.5);
+    display: flex;
+    background-color: white;
+    border-radius: 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 8px;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    transform-origin: bottom center;
+}
 
-        .receiver_message:hover .emoji-bar {
-            height: 50px;
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) scale(1);
-        }
-        .sender_message:hover .emoji-bar {
-            height: 50px;
-            opacity: 1;
-            left: 52%;
-            visibility: visible;
-            transform: translateX(-50%) scale(1);
-        }
+.receiver_message:hover .emoji-bar {
+    height: 50px;
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) scale(1);
+}
+.sender_message:hover .emoji-bar {
+    height: 50px;
+    opacity: 1;
+    left: 52%;
+    visibility: visible;
+    transform: translateX(-50%) scale(1);
+}
 
-        .emoji-reaction {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0 4px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
+.emoji-reaction {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 4px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
 
-        .emoji-reaction:hover {
-            transform: scale(1.2) translateY(-5px);
-        }
+.emoji-reaction:hover {
+    transform: scale(1.2) translateY(-5px);
+}
 
-        .emoji {
-            font-size: 16px;
-            padding: 8px;
-            border-radius: 50%;
-            background-color: white;
-            transition: transform 0.2s, background-color 0.2s;
-        }
+.emoji {
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 50%;
+    background-color: white;
+    transition:
+        transform 0.2s,
+        background-color 0.2s;
+}
 
-        .emoji-label {
-            font-size: 11px;
-            margin-top: 4px;
-            opacity: 0;
-            transition: opacity 0.2s;
-            color: #1c1e21;
-            font-weight: 500;
-        }
+.emoji-label {
+    font-size: 11px;
+    margin-top: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    color: #1c1e21;
+    font-weight: 500;
+}
 
-        .emoji-reaction:hover .emoji-label {
-            opacity: 1;
-        }
+.emoji-reaction:hover .emoji-label {
+    opacity: 1;
+}
 
-        /* Active Reaction Styles */
-        .reaction-button.liked {
-            color: #2078f4;
-        }
+/* Active Reaction Styles */
+.reaction-button.liked {
+    color: #2078f4;
+}
 
-        .reaction-button.loved {
-            color: #f33e58;
-        }
+.reaction-button.loved {
+    color: #f33e58;
+}
 
-        .reaction-button.haha {
-            color: #f7b125;
-        }
+.reaction-button.haha {
+    color: #f7b125;
+}
 
-        .reaction-button.wow {
-            color: #f7b125;
-        }
+.reaction-button.wow {
+    color: #f7b125;
+}
 
-        .reaction-button.sad {
-            color: #f7b125;
-        }
+.reaction-button.sad {
+    color: #f7b125;
+}
 
-        .reaction-button.angry {
-            color: #e9710f;
-        }
+.reaction-button.angry {
+    color: #e9710f;
+}
 
-        /* Animations */
-        @keyframes pop {
-            0% {
-                transform: scale(0.8);
-            }
+/* Animations */
+@keyframes pop {
+    0% {
+        transform: scale(0.8);
+    }
 
-            50% {
-                transform: scale(1.2);
-            }
+    50% {
+        transform: scale(1.2);
+    }
 
-            100% {
-                transform: scale(1);
-            }
-        }
+    100% {
+        transform: scale(1);
+    }
+}
 
-        .emoji-reaction.active .emoji {
-            animation: pop 0.3s ease forwards;
-        }
+.emoji-reaction.active .emoji {
+    animation: pop 0.3s ease forwards;
+}
 
-        /* loader css */
-        .spinner {
-            background-image: linear-gradient(rgb(186, 66, 255) 35%, rgb(0, 225, 255));
-            width: 100px;
-            height: 100px;
-            animation: spinning82341 1.7s linear infinite;
-            text-align: center;
-            border-radius: 50px;
-            filter: blur(1px);
-            box-shadow: 0px -5px 20px 0px rgb(186, 66, 255), 0px 5px 20px 0px rgb(0, 225, 255);
-        }
+/* loader css */
+.spinner {
+    background-image: linear-gradient(rgb(186, 66, 255) 35%, rgb(0, 225, 255));
+    width: 100px;
+    height: 100px;
+    animation: spinning82341 1.7s linear infinite;
+    text-align: center;
+    border-radius: 50px;
+    filter: blur(1px);
+    box-shadow:
+        0px -5px 20px 0px rgb(186, 66, 255),
+        0px 5px 20px 0px rgb(0, 225, 255);
+}
 
-        .spinner1 {
-            background-color: rgb(36, 36, 36);
-            width: 100px;
-            height: 100px;
-            border-radius: 50px;
-            filter: blur(10px);
-        }
+.spinner1 {
+    background-color: rgb(36 36 36 / 51%);
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    filter: blur(10px);
+}
 
-        @keyframes spinning82341 {
-            to {
-                transform: rotate(360deg);
-            }
-        }
+@keyframes spinning82341 {
+    to {
+        transform: rotate(360deg);
+    }
+}

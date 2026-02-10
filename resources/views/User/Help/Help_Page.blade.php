@@ -2,13 +2,9 @@
 
 @section('content')
 {{-- searching and show user --}}
-<div class="col-4 bg-light" style="padding: 0px;">
+<div class="col-4 text-white" style="padding: 0px;width: 36.333333%;border-right: 1px solid #504f4f;">
 
-    <div onclick="CreateGroupDiv()" style="display: flex;justify-content: center;align-items: center;font-size: 21px;position: absolute;background: #828CAC;border-radius: 27px;bottom: 20px;right: 61%;z-index: 99;height: 40px;width: 40px;">
-        <i class="fa-solid fa-plus" style="color: white;"></i>
-    </div>
-
-    <div style="padding: 21px;background-color: #fbdfd2">
+    <div style="padding: 21px;background-color: #1d1f1f">
         <div class="d-flex">
             <div style="height: 26px;width: 49px;">
                 <img style="height: 100%;width: 100%;" src="{{ asset('img/logo.png') }}" alt="">
@@ -18,13 +14,13 @@
             </div>
         </div>
     </div>
-    <div class="row" style="padding: 15px;">
+    {{-- <div class="row" style="padding: 15px;">
         <input style="width: 87%;margin-left: 20px;" autocomplete="off" id="searchfriendname" oninput="Searchfriend()" class="form-control" type="search" placeholder="Search" aria-label="Search" />
-    </div>
+    </div> --}}
 
     {{-- here --}}
-    <div class="scroll-container" style="height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;" style="padding: 0px 20px 7px 20px;">
-        <div class="d-flex bg-white" style="position: relative;padding: 16px;margin: 4px;">
+    <div class="scroll-container" style="padding: 0px 20px 7px 20px;height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;" style="padding: 0px 20px 7px 20px;">
+        <div class="d-flex bg-dark text-white" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
             <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
                 @if ($help_user->image_path!=Null)
                 <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $help_user->name }}','{{ $help_user->image_path }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$help_user->image_path) }}" alt="">
@@ -46,7 +42,7 @@
 </div>
 
 {{-- chatboard --}}
-<div class="col-7" style="background: white;padding: 0px;" id="chatboardofreceiverHelpUser">
+<div class="col-7" style="background: #1d1f1f;padding: 0px;" id="chatboardofreceiverHelpUser">
     <div style="width: 292px;height: 283px;margin-left: 250px;margin-top: 92px;">
         <img src="{{ asset('img/messages.png') }}" style="height: 100%;width: 100%;" alt="">
     </div>
@@ -55,15 +51,12 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
     $(document).ready(function() {
-        console.log("hello");
-        console.log($($('.fa-solid.fa-plus').parent()[0]).css('display', 'none'));
-
+        setsenduserHelpuser(3);
         $('.fa-solid.fa-plus').css('display', 'none');
     });
 
     function setsenduserHelpuser(helpuser_id) {
 
-        console.log(helpuser_id);
         $.ajax({
             type: 'post'
             , headers: {

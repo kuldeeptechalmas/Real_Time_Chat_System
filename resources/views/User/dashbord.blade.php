@@ -12,9 +12,61 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/dashboard_css.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="icon" type="image/png" href="{{ asset('img/logo1.png') }}" sizes="50x27">
+    <style>
+        input::placeholder {
+            color: #a5a5a5 !important;
+        }
+
+        textarea::placeholder {
+            color: #a5a5a5 !important;
+        }
+
+        .manu_chatbord_top_userDetails {
+            transition: 0.3s ease-in-out;
+            color: white;
+        }
+
+        .manu_chatbord_top_userDetails:hover {
+            background-color: #2e2f2f;
+
+        }
+
+        .hover_change_all {
+            transition: 0.3s ease-in-out;
+        }
+
+        .hover_change_all:hover {
+            background-color: #2e2f2f;
+        }
+
+        .tooltip .tooltip-arrow {
+            display: none !important;
+        }
+
+        .custom-tooltip-style {
+            --bs-tooltip-bg: white;
+            --bs-tooltip-color: dark;
+            --bs-tooltip-border-radius: .5rem;
+        }
+
+        .custom-tooltip-style .tooltip-inner {
+            max-width: 300px;
+            height: 25px;
+            font-size: 13px;
+            text-align: left;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+    </style>
+
 
 </head>
-<body style="height: 100vh;overflow: hidden;cursor: default;">
+<body style="height: 100vh;overflow: hidden;cursor: default;background: #1c1d1d;">
 
     <div style="position: absolute;height: 100%;width: 100%;display:none;" id="loader">
 
@@ -25,99 +77,128 @@
     <div class="row" style="margin: 0px;width: 100%;height: 100%;border-radius: 8px;">
 
         {{-- first side manu --}}
-        <div class="col-1" style="position: relative;">
-            <div class="row" style="padding: 15px;background: #f9d8c9;">
-                <a href="{{ route('user_profiles') }}" style="color: black;">
+        <div class="col-1" style="border-right: 1px solid #504f4f;position: relative;width: 5.333333%;background: #1d1f1f;color: #a5a5a5;">
+            <div class="d-flex justify-content-center">
+                <div class="row" style="padding: 15px 0px 15px 0px;">
+                    <a href="{{ route('user_profiles') }}">
 
-                    @if (Auth::user()->image_path==Null)
-                    @if (Auth::user()->gender=='Men')
-                    <div style="height: 37px;width: 37px;">
-                        <img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt="">
-                    </div>
-                    @else
-                    <div style="height: 37px;width: 37px;">
-                        <img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt="">
-                    </div>
-                    @endif
-                    @else
-                    <div style="height: 37px;width: 37px;">
-                        <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 22px;" src="{{ asset('storage/img/'.Auth::user()->image_path) }}" alt="">
-                    </div>
-                    @endif
-                </a>
+                        @if (Auth::user()->image_path==Null)
+                        @if (Auth::user()->gender=='Men')
+                        <div style="height: 37px;width: 37px;">
+                            <img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt="">
+                        </div>
+                        @else
+                        <div style="height: 37px;width: 37px;">
+                            <img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt="">
+                        </div>
+                        @endif
+                        @else
+                        <div style="height: 37px;width: 37px;">
+                            <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 22px;" src="{{ asset('storage/img/'.Auth::user()->image_path) }}" alt="">
+                        </div>
+                        @endif
+                    </a>
+                </div>
             </div>
 
-            <a href="{{ route('dashboard') }}" style="color: black;text-decoration: none;">
-                <div class="row" style="padding: 15px;background: #f9d8c9;margin-top: 4px;">
-                    Home
+            <a href="{{ route('dashboard') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Chats" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="margin-top: 11px;color: #a5a5a5;text-decoration: none;border-radius: 50px;">
+                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                    <i class="col-4 fa-solid fa-house " style="padding: 3px;"></i>
+
                 </div>
 
             </a>
-            <a href="{{ route('group.show') }}" style="color: black;text-decoration: none;">
-                <div class="row" style="padding: 15px;background: #f9d8c9;margin-top: 4px;">
-                    Groups
-                </div>
 
-            </a>
-            <a href="{{ route('user_friendlist_show') }}" style="color: black;text-decoration: none;">
-                <div class="row" style="padding: 15px;background: #f9d8c9;margin-top: 4px;">
-                    FriendList
-                </div>
-
-            </a>
-            <a href="{{ route('user_show_notification') }}" style="color: black;text-decoration: none;">
-                <div class="row" style="padding: 15px;background: #f9d8c9;margin-top: 4px;">
-                    Notification
-                </div>
-            </a>
-            <a href="{{ route('user.star.show') }}" style="color: black;text-decoration: none;">
-                <div class="row" style="padding: 15px;background: #f9d8c9;margin-top: 4px;">
-                    Starred
-                </div>
-            </a>
             @if (Auth::id()!=3)
 
-            <a href="{{ route('help.page') }}" style="color: black;text-decoration: none;">
-                <div class="row" style="padding: 15px;background: #f9d8c9;margin-top: 4px;">
-                    Help
+            <a href="{{ route('group.show') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Groups" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center border-radius-circle" style="margin-top: 11px;color: #a5a5a5;text-decoration: none;border-radius: 50px;">
+                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                    <i class="col-4 fa-solid fa-user-group" style="padding: 3px;"></i>
+
                 </div>
+
+            </a>
+            <a href="{{ route('user_friendlist_show') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Friend List" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;">
+                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                    <i class="col-4 fa-solid fa-address-card" style="padding: 3px;"></i>
+
+                </div>
+
+            </a>
+            <a href="{{ route('user_show_notification') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Notifications" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;">
+                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                    <i class="col-4 fa-solid fa-bell" style="padding: 3px;"></i>
+
+                </div>
+
+            </a>
+            <a href="{{ route('user.star.show') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Star Friend" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;">
+                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                    <i class="col-4 fa-solid fa-star" style="padding: 3px;"></i>
+
+                </div>
+
+            </a>
+
+            <a href="{{ route('help.page') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Helps" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;">
+                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                    <i class="col-4 fa-solid fa-circle-info" style="padding: 3px;"></i>
+
+                </div>
+
             </a>
             @endif
-            <div style="position: fixed;bottom: 11px;">
-                <a href="{{ route('logout') }}"><button type="button" style="background: #fbdfd2;" class="btn btn-info">Logout</button></a>
+            <div style="position: fixed;bottom: 11px;left: 10px;">
+                <a class="btn btn-info" href="{{ route('logout') }}">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
             </div>
         </div>
         @if (isset($dashboardshow))
 
         {{-- searching and show user --}}
-        <div class="col-4 bg-light" style="padding: 0px;">
+        <div class="col-4 bg-light" style="border-right: 1px solid #504f4f;padding: 0px;width: 36.333333%;">
 
-            <div onclick="CreateGroupDiv()" style="display: flex;justify-content: center;align-items: center;font-size: 21px;position: absolute;background: #828CAC;border-radius: 27px;bottom: 20px;right: 61%;z-index: 99;height: 40px;width: 40px;">
+            {{-- @if (Auth::id()!=3) --}}
+            {{-- <div onclick="CreateGroupDiv()" style="display: flex;justify-content: center;align-items: center;font-size: 21px;position: absolute;background: #828CAC;border-radius: 27px;bottom: 20px;right: 61%;z-index: 99;height: 40px;width: 40px;">
                 <i class="fa-solid fa-plus" style="color: white;"></i>
-            </div>
-
-            <div style="padding: 21px;background-color: #fbdfd2">
+            </div> --}}
+            {{-- @endif --}}
+            <div style="padding: 21px;background-color: #1c1d1d;position: relative;">
                 <div class="d-flex">
                     <div style="height: 26px;width: 49px;">
                         <img style="height: 100%;width: 100%;" src="{{ asset('img/logo.png') }}" alt="">
                     </div>
-                    <div style="display: flex;align-items: center;margin-left: 20px;">
+                    <div style="display: flex;align-items: center;margin-left: 20px;color: white;">
                         Real Time Chat
+                    </div>
+                    <div style="position: absolute;right: 7%;">
+                        <i class="fa-solid fa-ellipsis-vertical text-white" id="showMenuId" onclick="MainMoreOpetionShow()"></i>
+                    </div>
+                    <div id="moreOptionDivMain" style="border: 1px solid rgb(94 89 89);z-index: 999;padding: 6px;display: none;position: absolute;top: 97%;right: 3%;background-color: #161717;color:white;border-radius: 18px;">
+                        <div style="padding: 5px;">
+                            <div class="d-flex">
+                                <i class="fa-solid fa-circle-minus d-flex justify-content-center align-items-center"></i>
+                                <div style="padding-left: 5px;" onclick="CreateGroupDiv()">
+                                    New Group
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="row" style="padding: 15px;">
-                <input style="width: 87%;margin-left: 20px;" autocomplete="off" id="searchfriendname" oninput="Searchfriend()" class="form-control" type="search" placeholder="Search" aria-label="Search" />
+            <div class="row" style="padding: 15px 0px 15px 0px;background: #1c1d1d;margin: 0px;">
+                <input style="color: white;width: 91%;margin-left: 20px;background-color: #2e2f2f;border-radius: 20px;border: none;" autocomplete="off" id="searchfriendname" oninput="Searchfriend()" class="form-control" type="search" placeholder="Search" aria-label="Search" />
             </div>
 
             {{-- here --}}
-            <div class="scroll-container" style="height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;" id="search_data" style="padding: 0px 20px 7px 20px;">
+            <div class="scroll-container" style="padding: 0px 20px 7px 20px;height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;background: #1c1d1d;" id="search_data" style="padding: 0px 20px 7px 20px;">
 
             </div>
         </div>
 
         {{-- chatboard --}}
-        <div class="col-7" style="background: white;padding: 0px;" id="chatboardofreceiver">
+        <div class="col-7 chatboardofreceiver" style="background: white;padding: 0px;background: #161717;" id="chatboardofreceiver">
             <div style="width: 292px;height: 283px;margin-left: 250px;margin-top: 92px;">
                 <img src="{{ asset('img/messages.png') }}" style="height: 100%;width: 100%;" alt="">
             </div>
@@ -128,7 +209,7 @@
 
     <!-- Image Modal -->
     <div class="modal fade" id="imageshowmodel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog mt-0 mb-0">
+        <div class="modal-dialog modal-fullscreen mt-0 mb-0" id="imageDivforUserid">
             <div class="modal-content text-white" style="height: 551px;background: white;width: 100%;">
                 <div style="display: flex;padding: 19px;">
                     <h3 class="modal-title fs-5 text-dark" id="ImageShowUserName"></h3>
@@ -142,14 +223,30 @@
             </div>
         </div>
     </div>
-    @stack('script')
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script type="module" src="https://unpkg.com/emoji-picker-element"></script>
+
+    @stack('script')
+    @once
+    <script>
+        $(document).ready(function() {
+
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            console.log(tooltipTriggerList);
+
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+        });
+
+    </script>
+    @endonce
     <script>
         var totalTimeType = 0;
         $(document).ready(function() {
+
+
 
             userfriendlist();
             // Pusher.logToConsole = true;
@@ -173,16 +270,18 @@
                                     }
                                 }
 
-                                $(`#${element['id']}`).html(`<div style="height: 37px;width: 37px;">
-                                        ${img}
-                                        </div>
-                                        <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
-                                        <div style="width: 100%;" onclick="setsenduser( ${element['id']} )">
-                                        <div style="margin-left: 21px;" id="${element['name']}">
-                                             ${element['name']} 
-                                        </div>
-                                        </div>
-                                        `);
+                                $(`#${element['id']}`).append(`<div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>`);
+                                $($(`#${element['id']}`).find('.TimeOldOnline')[0]).remove();
+
+                                // $(`#${element['id']}`).html(`<div style="height: 37px;width: 37px;">
+                                //         ${img}
+                                //         </div>
+                                //         <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
+                                //         <div style="width: 100%;" onclick="setsenduser( ${element['id']} )">
+                                //         <div style="margin-left: 21px;" id="${element['name']}">
+                                //              ${element['name']} 
+                                //         </div>
+                                //         </div>`);
                             }
                         }
                     });
@@ -200,15 +299,9 @@
                                     img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
                                 }
                             }
-                            $(`#${member['id']}`).html(`<div style="height: 37px;width: 37px;">
-                                        ${ img }
-                                        </div>
-                                        <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
-                                        <div style="width: 100%;" onclick="setsenduser( ${member['id']} )">
-                                        <div style="margin-left: 21px;" id="${member['name']}">
-                                             ${member['name']} 
-                                        </div>
-                                        </div>`);
+                            $(`#${member['id']}`).append(`<div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>`);
+                            $($(`#${member['id']}`).find('.TimeOldOnline')[0]).remove();
+
                         }
                     }
 
@@ -246,7 +339,6 @@
                                     leav_id: member['id']
                                 }
                                 , success: function(res) {
-                                    // console.log(res);
 
                                 }
                                 , error: function(e) {
@@ -257,10 +349,27 @@
                         }
                     }
                 })
+
                 .listen(".send-event", (e) => {
 
+                    if ("{{ URL::full() }}" == "http://127.0.0.1:8000/groups") {
+                        if ("{{ Auth::user()->id }}" == e.message['receive_id'] && "{{ URL::full() }}" != "http://127.0.0.1:8000/dashboard") {
 
-                    if ("{{ Auth::user()->id }}" == e.message['receive_id'] && "{{ URL::full() }}" == "http://127.0.0.1:8000/dashboard" || "{{ URL::full() }}" == "http://127.0.0.1:8000/Help") {
+                            Toastify({
+                                text: `${e.message['sender']['name']} Send Message to ${e.message['message']}`
+                                , duration: 5000
+                                , gravity: "top"
+                                , position: "center"
+                                , style: {
+                                    background: '#fbdfd2'
+                                    , color: "black"
+                                }
+                                , stopOnFocus: true
+                            , }).showToast();
+                        }
+                    }
+
+                    if ("{{ Auth::user()->id }}" == e.message['receive_id'] && "{{ URL::full() }}" == "http://127.0.0.1:8000/dashboard" || "{{ URL::full() }}" == "http://127.0.0.1:8000/help") {
 
                         userfriendlist();
 
@@ -281,20 +390,78 @@
 
                             if ($(`#m${e.message['id']}`).html() != null) {
 
-                                $($(`#m${e.message['id']}`).find('div.w_message').children()[0]).html(`This Message is Deleted
+                                $($(`#m${e.message['id']}`).find('div.w_message').children()[0]).html(`${data}
                                 <div style="position: absolute;top: 0px;right: 16px;">
                                 <span style="font-size: 11px;">${formattedTime}</span>
                                 </div>`);
 
                             } else {
+
                                 // old message get
                                 var scrollbardiv = $("#scrollbarid").html();
-                                var addhtmldiv = `<div class="messagehover" style="margin: 14px;display: flex;justify-content: flex-start;">
-                                <div class=w_message d-flex gap-2"><div style="position: relative;min-width: 66px;background: #fbdfd2;padding: 28px 7px 7px 7px;border-radius: 0px 10px 10px;cursor: default;">
-                                ${data}
-                                <div style="position: absolute;top: 0px;right: 16px;">
-                                <span style="font-size: 11px;">${formattedTime}</span>
-                                </div></div></div><div class="messagehovercontent" onclick="removemessagebyone(${e.message['id']})" style="background-color: #d28fa8;height: 32px;color: white;border-radius: 11px;margin-left: 13px;padding: 4px;cursor: default;">Remove</div></div>`;
+
+                                var extentionOfImage = data.split('.');
+
+                                var addhtmldiv = `
+                                        <div class="messagehover receiver_message" id="m${e.message['id']}" style="position: relative;margin: 18px 14px 14px 14px;display: flex;justify-content: flex-start;">
+                                            <div class="w_message d-flex gap-2" style="position: relative;">
+                                                <div style="min-width: 66px;position: relative;background: #fbdfd2;padding: 28px 7px 7px 7px;border-radius: 0px 10px 10px;cursor: default;">
+                                                ${extentionOfImage[1]=='jpg' || extentionOfImage[1]=='svg'|| extentionOfImage[1]=='pdf' || extentionOfImage[1]=='png' ? 
+                                                `${extentionOfImage[1]=='pdf' ? `
+                                                <div style="height: 210px;width: 239px;">
+                                                <a href="/pdf-view/${data}" target="_blank">
+                                                    <img style="height: 89%;width: 100%;object-fit: cover;border-radius: 22px;" src="storage/img/pdf_image.png" alt="">
+                                                </a>
+                                                <div style="padding-left: 16px;">${data}</div>
+                                            </div>
+                                                ` : `<div style="height: 192px;width: 239px;">
+                                                    <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${e.message['id']}','${e.message['message']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 22px;" src="storage/img/${data}" alt="">
+                                                </div>`} 
+                                                `
+                                                 : data
+                                                 }
+                                                <div style="position: absolute;top: 0px;right: 16px;">
+                                                    <span style="font-size: 11px;">${formattedTime}</span>
+                                                </div>
+                                                </div>
+                                            </div>
+
+                                                <div class="emoji-bar">
+                                                    <div class="emoji-reaction" data-reaction="like">
+                                                        <div class="emoji" onclick="emojigetshow(this,'${e.message['id']}')" data-code="1">👍</div>
+                                                    </div>
+                                                    <div class="emoji-reaction" data-reaction="love">
+                                                        <div class="emoji" onclick="emojigetshow(this,'${e.message['id']}')" data-code="2">❤️</div>
+                                                    </div>
+                                                    <div class="emoji-reaction" data-reaction="haha">
+                                                        <div class="emoji" onclick="emojigetshow(this,'${e.message['id']}')" data-code="3">😂</div>
+                                                    </div>
+                                                    <div class="emoji-reaction" data-reaction="wow">
+                                                        <div class="emoji" onclick="emojigetshow(this,'${e.message['id']}')" data-code="4">😮</div>
+                                                    </div>
+                                                    <div class="emoji-reaction" data-reaction="sad">
+                                                        <div class="emoji" onclick="emojigetshow(this,'${e.message['id']}')" data-code="5">😢</div>
+                                                    </div>
+                                                    <div class="emoji-reaction" data-reaction="angry">
+                                                        <div class="emoji" onclick="emojigetshow(this,'${e.message['id']}')" data-code="6">😡</div>
+                                                    </div>
+                                                    <div class="emoji-reaction" onclick="removemessagebyone(${e.message['id']})">
+                                                        <div class="emoji">Remove</div>
+                                                    </div>
+                                                    <div class="emoji-reaction" onclick="forwordmessage('${e.message['id']}',${e.message['message']})">
+                                                        <div class="emoji"><i class="fa-regular fa-share-from-square"></i></div>
+                                                    </div>
+                                                    ${extentionOfImage[1]=='jpg' || extentionOfImage[1]=='svg'|| extentionOfImage[1]=='pdf' || extentionOfImage[1]=='png' ?`
+                                                    <div class="emoji-reaction">
+                                                       <a href="/pdf-download/${data}" style="color: black;" rel="noopener noreferrer">
+                                                           <div class="emoji"><i class="fa-solid fa-download"></i></div>
+                                                       </a>
+                                                   </div>
+                                                   
+                                                    `:''}
+                                                    </div>
+                                            `;
+
                                 $("#scrollbarid").html(scrollbardiv + addhtmldiv);
 
                                 const element = document.getElementById("scrollbarid");
@@ -305,7 +472,6 @@
                             // message_show(e.message['send_id']);
                         } else {
 
-                            console.log(e);
                             if (e.message['receive_id'] != 3) {
 
                                 Toastify({
@@ -321,24 +487,62 @@
                                 , }).showToast();
                             }
 
-                            if ($(`#${e.message['send_id']}`).html() != null) {
+                            // Get Not View Messages Count
 
-                                if (e.message['sender']['name'] == $(`#${e.message['sender']['name']}`).html().trim()) {
-                                    console.log(e);
+                            setTimeout(GetMessageCount, 5000);
 
-                                    $(`#${e.message['sender']['id']}`).html(`<div style="height: 37px;width: 37px;">
-                                        <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${e.message['sender']['name']}','${e.message['sender']['image_path']}','${e.message['sender']['phone']}','${e.message['sender']['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${e.message['sender']['image_path']}" alt="">
+                            function GetMessageCount() {
+
+                                $.ajax({
+                                    type: 'post'
+                                    , headers: {
+                                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                    }
+                                    , url: "{{ route('get.message.not.view.count') }}"
+                                    , data: {
+                                        User_id: e.message['sender']['id']
+                                    }
+                                    , success: function(res) {
+                                        console.log(res["count_message"]);
+
+                                        $(`#${e.message['sender']['id']}`).html(`<div style = "height: 37px;width: 37px;">
+                                                <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${e.message['sender']['name']}','${e.message['sender']['image_path']}','${e.message['sender']['phone']}','${e.message['sender']['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${e.message['sender']['image_path']}" alt="">
                                         </div>
                                         <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
                                         <div style="width: 100%;" onclick="setsenduser( ${e.message['sender']['id']} )">
-                                        <div style="margin-left: 21px;font-weight: bold;" id="${e.message['sender']['name']}">
-                                             ${e.message['sender']['name']} 
+                                        <div style="margin-left: 21px;" id="${e.message['sender']['name']}">
+                                             ${e.message['sender']['name']}
                                         </div>
+                                      ${res["count_message"]!=0 ? `<div style="top: 20px;right: 68px;position: absolute;background: lightblue;height: 20px;width: 20px;display: flex;justify-content: center;border-radius: 14px;align-items: center;">
+                                                ${res["count_message"]}
+                                            </div>`:''}
                                         </div>
                                         `);
-                                }
-
+                                    }
+                                    , error: function(e) {
+                                        console.log(e);
+                                    }
+                                });
                             }
+
+
+                            // if ($(`#${e.message['send_id']}`).html() != null) {
+
+                            //     if (e.message['sender']['name'] == $(`#${e.message['sender']['name']}`).html().trim()) {
+
+                            //         $(`#${e.message['sender']['id']}`).html(`<div style = "height: 37px;width: 37px;">
+                            //                     <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${e.message['sender']['name']}','${e.message['sender']['image_path']}','${e.message['sender']['phone']}','${e.message['sender']['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${e.message['sender']['image_path']}" alt="">
+                            //             </div>
+                            //             <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
+                            //             <div style="width: 100%;" onclick="setsenduser( ${e.message['sender']['id']} )">
+                            //             <div style="margin-left: 21px;font-weight: bold;" id="${e.message['sender']['name']}">
+                            //                  ${e.message['sender']['name']} 
+                            //             </div>
+                            //             </div>
+                            //             `);
+                            //     }
+
+                            // }
                         }
                     }
                 });
@@ -346,12 +550,13 @@
             window.Echo.channel("receive-channel")
                 .listen(".receive-event", (e) => {
 
-                    if ("{{ Auth::id() }}" == e.users_data['send_id']) {
+                    if ("{{ Auth::id() }}" == e.users_data['send_id'] && "{{ URL::full() }}" == "http://127.0.0.1:8000/dashboard") {
+
                         message_show(e.users_data['receive_id']);
                     }
                 });
 
-            Echo.private('typing-channel')
+            window.Echo.private('typing-channel')
                 .listenForWhisper('typing', (e) => {
 
                     if ("{{ Auth::user()->id }}" == e.user_id && "{{ URL::full() }}" == "http://127.0.0.1:8000/dashboard") {
@@ -381,15 +586,69 @@
 
                 });
 
-            Echo.channel('emoji-channel')
+            window.Echo.channel('emoji-channel')
                 .listen('.emoji-event', (e) => {
+                    // Group Messages
+                    if ("{{ Auth::user()->id }}" == e.message['user_id'] && "{{ URL::full() }}" == "http://127.0.0.1:8000/groups") {
+                        if (localStorage.getItem('current_group_chatboard') == e.message['group_id']) {
+                            console.log(e);
+
+                            if ($("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html() == null) {
+
+                                var message_div = $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message');
+
+                                if (e.message['response'] == 1) {
+                                    var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>👍</div>");
+                                }
+                                if (e.message['response'] == 2) {
+                                    var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>❤️</div>");
+                                }
+                                if (e.message['response'] == 3) {
+                                    var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😂</div>");
+                                }
+                                if (e.message['response'] == 4) {
+                                    var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😮</div>");
+                                }
+                                if (e.message['response'] == 5) {
+                                    var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😢</div>");
+                                }
+                                if (e.message['response'] == 6) {
+                                    var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😡</div>");
+                                }
+
+                                $(message_div).append(newdiv);
+
+                            } else {
+
+                                if (e.message['response'] == 1) {
+                                    $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("👍");
+                                } else
+                                if (e.message['response'] == 2) {
+                                    $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("❤️");
+                                } else
+                                if (e.message['response'] == 3) {
+                                    $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("😂");
+                                } else
+                                if (e.message['response'] == 4) {
+                                    $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("😮");
+                                } else
+                                if (e.message['response'] == 5) {
+                                    $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("😢");
+                                } else
+                                if (e.message['response'] == 6) {
+                                    $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("😡");
+                                }
+                            }
+                        }
+                    }
+
+                    // User Messages
                     if ("{{ Auth::user()->id }}" == e.message['send_id'] && "{{ URL::full() }}" == "http://127.0.0.1:8000/dashboard") {
                         if (localStorage.getItem('current_user_chatboard') == e.message['receive_id']) {
 
                             if ($("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html() == null) {
 
                                 var message_div = $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message');
-                                console.log(message_div);
 
                                 if (e.message['response'] == 1) {
                                     var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>👍</div>");
@@ -455,6 +714,7 @@
                                 }
                                 , stopOnFocus: true
                             , }).showToast();
+
                         } else {
 
                             Toastify({
@@ -468,7 +728,29 @@
                                 }
                                 , stopOnFocus: true
                             , }).showToast();
+
                         }
+                        setsenduser(localStorage.getItem('current_user_chatboard'), 'notloader');
+                    }
+                });
+
+            window.Echo.channel("groups-channel")
+                .listen(".groups-event", (e) => {
+
+                    if (localStorage.getItem('current_group_chatboard') == e.message && "{{ URL::full() }}" == "http://127.0.0.1:8000/groups") {
+                        message_show_group(e.message)
+                    } else {
+                        Toastify({
+                            text: `${e.user['name']} Send Message in Group`
+                            , duration: 5000
+                            , gravity: "top"
+                            , position: "center"
+                            , style: {
+                                background: '#fbdfd2'
+                                , color: "black"
+                            }
+                            , stopOnFocus: true
+                        , }).showToast();
                     }
                 });
 
@@ -478,6 +760,25 @@
                 if ("{{ isset($last_send_message_user)?$last_send_message_user:''!=Auth::id() }}") {
                     localStorage.setItem('current_user_chatboard', "{{ isset($last_send_message_user)?$last_send_message_user:'' }}");
                     setsenduser("{{ isset($last_send_message_user)?$last_send_message_user:'' }}");
+                }
+            }
+        });
+
+        // Close div to Menu 
+        const myDivMore = document.getElementById('moreOptionDivMain');
+        const menuId = document.getElementById('showMenuId');
+
+        document.addEventListener('click', function(event) {
+            if (myDivMore) {
+
+                const isClickOutSideDiv = myDivMore.contains(event.target);
+                const isClickButton = menuId.contains(event.target);
+
+                if (!isClickOutSideDiv && !isClickButton) {
+                    if ($('#moreOptionDivMain').css('display') == 'block') {
+                        $('#moreOptionDivMain').css('display', 'none');
+                    }
+
                 }
             }
         });
@@ -496,6 +797,9 @@
 
         function imagesetshow(name, image_path, phone, email) {
             if (phone != null && email != null) {
+
+                const element = document.getElementById("imageDivforUserid");
+                element.classList.remove("modal-fullscreen");
 
                 $('#ImageShowUserName').html("User Profile");
                 $('#ImageShowUserImage_path').html(`
@@ -517,7 +821,9 @@
 
             } else {
 
-                $('#ImageShowUserName').html(name);
+                const element = document.getElementById("imageDivforUserid");
+                element.classList.add("modal-fullscreen");
+                $('#ImageShowUserName').html("");
                 $('#ImageShowUserImage_path').html(`
             <img style="height: 100%;width: 100%;object-fit: contain;" src="storage/img/${image_path}" alt="">
             `);
@@ -570,8 +876,23 @@
             $('#moreoptiondiv').css('display', 'none');
         }
 
+        function MainMoreOpetionShow() {
+            if ($('#moreOptionDivMain').css('display') == 'block') {
+                $('#moreOptionDivMain').css('display', 'none');
+            } else {
+                $('#moreOptionDivMain').css('display', 'block');
+            }
+
+        }
+
         function moreoptionshow() {
-            $('#moreoptiondiv').css('display', 'block');
+
+            if ($('#moreoptiondiv').css('display') == 'block') {
+                $('#moreoptiondiv').css('display', 'none');
+            } else {
+                $('#moreoptiondiv').css('display', 'block');
+            }
+
         }
 
         // Search user
@@ -624,7 +945,12 @@
         }
 
         // ChatBort set user
-        function setsenduser(user_id) {
+        function setsenduser(user_id, notloader) {
+            $('#chatboardofreceiver').html('');
+            if (notloader != 'notloader') {
+
+                $('#loader').css('display', 'block');
+            }
 
             $.ajax({
                 type: 'post'
@@ -639,6 +965,9 @@
                     localStorage.setItem('current_user_chatboard', user_id);
                     $('#chatboardofreceiver').html(res);
                     message_show(user_id);
+                    $('#loader').css('display', 'none');
+                    userfriendlist();
+                    Tolltip_Intialization();
                 }
                 , error: function(e) {
                     console.log(e);
@@ -649,7 +978,8 @@
         // Message Send 
         function sendmessagetosender(senduserid, message) {
 
-            // localStorage.setItem('editMessageId', 0);
+            $("#sendmessageid").css('background-color', 'rgb(33, 37, 41)');
+            $('#emoji_picker').css('display', 'none');
 
             document.getElementById('messages').rows = 1;
             if (message == null) {
@@ -671,16 +1001,11 @@
                 var formData = new FormData();
                 formData.append('message', message_data);
 
-                console.log(localStorage.getItem('editMessageId'));
+                if (localStorage.getItem('editMessageId') != null) {
 
-                if (localStorage.getItem('editMessageId') != 0) {
-
-                    console.log(localStorage.getItem('editMessageId'));
                     formData.append('edit_message_id', localStorage.getItem('editMessageId'));
                 }
                 formData.append('receive_data_id', senduserid);
-
-                // formData.append('receive_data_id', senduserid);
 
             }
             if (message_data == null && document.getElementById('files').files.length != 0) {
@@ -688,11 +1013,8 @@
                 var formData = new FormData();
                 formData.append('message', message_data);
 
-                console.log(localStorage.getItem('editMessageId'));
+                if (localStorage.getItem('editMessageId') != null) {
 
-                if (localStorage.getItem('editMessageId') != 0) {
-
-                    console.log(localStorage.getItem('editMessageId'));
                     formData.append('edit_message_id', localStorage.getItem('editMessageId'));
                 }
                 formData.append('receive_data_id', senduserid);
@@ -745,7 +1067,7 @@
                     , contentType: false
                     , processData: false
                     , success: function(res) {
-                        console.log(res['error']);
+
                         if (res['error']) {
                             Toastify({
                                 text: `${res['error']}`
@@ -760,9 +1082,9 @@
                             , }).showToast();
                             $('#messages').val('');
                             $('#messages').prop('readonly', false).attr('placeholder', 'Type Message Here...');
-                            localStorage.setItem('editMessageId', 0);
-                        } else {
 
+                            localStorage.removeItem('editMessageId');
+                        } else {
 
                             $('#message_to_show').html(res);
                             $('#messages').val('');
@@ -775,7 +1097,7 @@
                             $('#messages').prop('readonly', false).attr('placeholder', 'Type Message Here...');
                             userfriendlist();
 
-                            localStorage.setItem('editMessageId', 0);
+                            localStorage.removeItem('editMessageId');
 
                             const element = document.getElementById("scrollbarid");
                             element.scrollTop = element.scrollHeight;
@@ -882,14 +1204,9 @@
                                         img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
                                     }
                                 }
-                                $(`#${element['id']}`).html(`<div style="height: 37px;width: 37px;">
-                                        ${img}
-                                        </div>
-                                        <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
-                                        <div style="width: 100%;" onclick="setsenduser( ${element['id']} )">
-                                        <div style="margin-left: 21px;" id="${element['name']}">
-                                             ${element['name']} 
-                                        </div></div>`);
+                                $(`#${element['id']}`).append(`<div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>`);
+                                $($(`#${element['id']}`).find('.TimeOldOnline')[0]).remove();
+
                             }
                         }
                     });
@@ -936,7 +1253,7 @@
                     select_user_id: select_user_id
                 }
                 , success: function(res) {
-                    divthis.textContent = 'Following';
+                    // divthis.textContent = 'Following';
                     setsenduser(select_user_id);
 
                 }
@@ -967,8 +1284,21 @@
             });
         }
 
+        function closeMoreOption() {
+            $('#moreoptiondiv').css('display', 'none')
+        }
+
         // User Write Text
         function userWriteText(current, id) {
+            if ($('#messages').val() != "") {
+                if ($("#sendmessageid").css('background-color') == "rgb(33, 37, 41)") {
+                    $("#sendmessageid").css('background-color', 'green');
+                }
+            } else {
+                if ($("#sendmessageid").css('background-color') == "rgb(0, 128, 0)") {
+                    $("#sendmessageid").css('background-color', 'rgb(33, 37, 41)');
+                }
+            }
 
             Echo.private('typing-channel')
                 .whisper('typing', {
@@ -977,9 +1307,9 @@
                     , typing: true
                 });
             if ($('#messages').val() == null) {
-                localStorage.setItem('editMessageId', 0);
 
-                console.log(localStorage.getItem('editMessageId'));
+                localStorage.removeItem('editMessageId');
+
             }
 
 
@@ -1021,7 +1351,6 @@
                     , message_id: message_id
                 }
                 , success: function(res) {
-                    // console.log(res);
 
                 }
                 , error: function(e) {
@@ -1033,8 +1362,6 @@
 
         // Forword Message
         function forwordmessage(mid, mmessage) {
-            console.log(mid);
-            console.log(mmessage);
             localStorage.setItem('m_message', mmessage);
 
             $.ajax({
@@ -1097,6 +1424,8 @@
         }
 
         function CreateGroupDiv() {
+            $('#moreOptionDivMain').css('display', 'none');
+
             $.ajax({
                 type: 'post'
                 , headers: {
@@ -1117,8 +1446,11 @@
 
         function SelectedGroupUser(thisdiv) {
 
+            console.log($(thisdiv).css('background-color'));
+
             if ($(thisdiv).css('background-color') == 'rgba(208, 242, 208, 0.5)') {
-                $(thisdiv).css('background-color', 'rgb(255, 255, 255)');
+                // $(thisdiv).css('background-color', 'rgb(255, 255, 255)');
+                $(thisdiv).css('background-color', '#212529');
 
                 const index = Select_User_Array.indexOf($(thisdiv).data('id'));
                 Select_User_Array.splice(index, 1);
@@ -1145,9 +1477,6 @@
                 , }).showToast();
 
             } else {
-                console.log($('#group_name').val());
-
-                console.log(Select_User_Array);
 
                 $.ajax({
                     type: 'post'
@@ -1161,7 +1490,7 @@
                     }
                     , success: function(res) {
                         Select_User_Array.length = 0;
-                        window.location.href = "http://127.0.0.1:8000/Groups";
+                        window.location.href = "http://127.0.0.1:8000/groups";
                         // $('#chatboardofreceiver').html(res);
                     }
                     , error: function(e) {
@@ -1172,7 +1501,6 @@
         }
 
         function ClearMessageByOne(message_id) {
-            console.log(message_id);
             $.ajax({
                 type: 'post'
                 , headers: {
@@ -1193,6 +1521,11 @@
                     console.log(e);
                 }
             });
+        }
+
+        function Tolltip_Intialization() {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
         }
 
     </script>

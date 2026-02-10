@@ -2,23 +2,23 @@
 
 @section('content')
 {{-- searching and show user --}}
-<div class="col-4 bg-light" style="padding: 0px;">
-    <div style="padding: 21px;background-color: #fbdfd2">
+<div class="col-4 bg-light" style="padding: 0px;width: 36.333333%;border-right: 1px solid #504f4f;">
+    <div style="padding: 21px;background-color: #1c1d1d">
         <div class="d-flex">
             <div style="height: 26px;width: 49px;">
                 <img style="height: 100%;width: 100%;" src="{{ asset('img/logo.png') }}" alt="">
             </div>
-            <div style="display: flex;align-items: center;margin-left: 20px;">
+            <div class="text-white" style="display: flex;align-items: center;margin-left: 20px;">
                 Real Time Chat
             </div>
         </div>
     </div>
-    <div class="row" style="padding: 15px;display: flex;justify-content: center;">
+    <div class="row" style="margin: 0px;padding: 15px;display: flex;justify-content: center;background: #1c1d1d;color: white;">
         Friend List
     </div>
 
     {{-- here --}}
-    <div class="scroll-container" style="height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;" style="padding: 0px 20px 7px 20px;">
+    <div class="scroll-container" style="padding: 0px 20px 7px 20px;background: #1c1d1d;height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;" style="padding: 0px 20px 7px 20px;">
         @if (isset($friendList))
         @if ($friendList->isNotEmpty())
 
@@ -27,7 +27,7 @@
         @foreach ($friendList as $item)
 
         @if ($item->sender_user_id==Auth::id())
-        <div class="d-flex bg-white" style="position: relative;padding: 16px;margin: 4px;">
+        <div class="d-flex bg-dark text-white" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
             <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
 
                 @if ($item->receiverData->image_path!=Null)
@@ -48,7 +48,7 @@
             <button style="position: absolute;right: 4%;" type="button" onclick="unfollowbyid('{{ $item->id }}',this)" class="btn btn-primary">UnFollow</button>
         </div>
         @else
-        <div class="d-flex bg-white" style="position: relative;padding: 16px;margin: 4px;">
+        <div class="d-flex bg-dark text-white" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
             <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
                 @if (isset($item->sendersData->image_path))
 
@@ -91,7 +91,7 @@
 </div>
 
 {{-- chatboard --}}
-<div class="col-7" style="background: white;padding: 0px;" id="chatboardofreceiver">
+<div class="col-7" style="background: #1c1d1d;color: white;padding: 0px;" id="chatboardofreceiver">
     <div style="width: 292px;height: 283px;margin-left: 250px;margin-top: 92px;">
         <img src="{{ asset('img/messages.png') }}" style="height: 100%;width: 100%;" alt="">
     </div>

@@ -1,8 +1,52 @@
-<div class="scroll-container" style="height: 500px;overflow: scroll; padding-bottom: 90px;overflow-y: auto;" id="scrollbarid">
+{{-- <div class="scroll-container" style="height: 500px;overflow: scroll; padding-bottom: 90px;overflow-y: auto;" id="scrollbarid"> --}}
+<div class="scroll-container1" style="height: 409px;overflow: scroll;overflow-x: hidden;" id="scrollbarid">
+
+    @php
+    $previosDate = null;
+    @endphp
+
     @foreach ($message as $item)
+
+    {{-- Date Show Code --}}
+    @if ($previosDate!=$item->created_at->format('l, j F'))
+
+    @if ($item->created_at->format('l, j F')==now()->format('l, j F'))
+
+    <div style="position: relative">
+        <hr>
+        <div style="padding: 0px 20px;background: white;position: absolute;top: -14px;left: 44%;height: 30px;display: flex;justify-content: center;border: 1px solid #cbbbbb;border-radius: 20px;">
+            Today
+        </div>
+    </div>
+
+    @elseif($item->created_at->format('l, j F')==now()->yesterday()->format('l, j F'))
+
+    <div style="position: relative">
+        <hr>
+        <div style="padding: 0px 20px;background: white;position: absolute;top: -14px;left: 44%;height: 30px;display: flex;justify-content: center;border: 1px solid #cbbbbb;border-radius: 20px;">
+            Yesterday
+        </div>
+    </div>
+
+    @else
+    <div style="position: relative">
+        <hr>
+        <div style="padding: 0px 20px;background: white;position: absolute;top: -14px;left: 44%;height: 30px;display: flex;justify-content: center;border: 1px solid #cbbbbb;border-radius: 20px;">
+            {{ $item->created_at->format('l, j F') }}
+        </div>
+    </div>
+
+    @endif
+
+    @php
+    $previosDate = $item->created_at->format('l, j F');
+    @endphp
+    @endif
+
     @php
     $etc = explode('.',$item->message);
     @endphp
+
     @if ($item->user_id==Auth::id())
     @if ($item->GroupMessageDeleteAtData->isNotEmpty())
 
@@ -109,7 +153,7 @@
     @endif
 
     @else
-
+    {{-- Receive Message of Group --}}
     @if ($item->GroupMessageDeleteAtData->isNotEmpty())
 
     <div class="messagehover receiver_message" id="m{{ $item->id }}" style="position: relative;margin: 18px 14px 14px 14px;display: flex;justify-content: flex-start;">

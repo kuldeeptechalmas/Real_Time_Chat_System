@@ -14,7 +14,6 @@ class HelpController extends Controller
     public function Help_Page(Request $request)
     {
         $find_Help_User_Admin = User::where('email', 'admin12@yopmail.com')->first();
-        // dd($find_Help_User_Admin->toArray());
 
         if (isset($find_Help_User_Admin)) {
             return view('User.Help.Help_Page', ['help_user' => $find_Help_User_Admin]);
@@ -25,7 +24,6 @@ class HelpController extends Controller
 
     public function Help_user_select(Request $request)
     {
-        // dd($request->all());
 
         $user_Select_to_show = User::find($request->select_user_id);
 

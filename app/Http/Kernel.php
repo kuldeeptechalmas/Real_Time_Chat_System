@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\AuthCheckExist;
+use App\Http\Middleware\AuthToDashboard;
 use App\Http\Middleware\RegisterUserExist;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -68,5 +69,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'AuthCheckExist' => AuthCheckExist::class,
         'RegisterUserExist' => RegisterUserExist::class,
+        'AuthToDashboard' => AuthToDashboard::class,
     ];
 }

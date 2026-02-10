@@ -133,12 +133,13 @@
             <div class="col-5">
                 @if (isset(Auth::user()->image_path))
                 <div class="d-flex justify-content-center">
-                    <div style="height: 222px;width: 219px;">
-                        <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ Auth::user()->name }}','{{ Auth::user()->image_path }}')" src="{{ asset('storage/img/'.Auth::user()->image_path) }}" style="object-fit: contain;height: 100%;width: 100%;" alt="">
+                    <div style="height: 222px;width: 219px;" class="d-flex justify-content-center">
+                        {{-- <img id="UserImagePreview" data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ Auth::user()->name }}','{{ Auth::user()->image_path }}')" src="{{ asset('storage/img/'.Auth::user()->image_path) }}" style="object-fit: contain;height: 222px;width: 219px;border-radius: 18px;" alt=""> --}}
+                        <img id="UserImagePreview" style="height: 187px;width: 175px;object-fit: cover;border-radius: 18px;" src="{{ asset('storage/img/'.Auth::user()->image_path) }}" alt="">
                     </div>
                 </div>
                 @error('file')
-                <div style="margin: 9px 0px 19px 40px;" class="text-danger">{{ $message }}</div>
+                <div style="margin: px 0px 0px 40px;" class="text-danger">{{ $message }}</div>
                 @enderror
 
                 <div class="d-flex justify-content-center mt-2">
@@ -162,27 +163,33 @@
                 </div>
                 @else
                 <div class="mt-4">
-                    Add Your Images
+                    <div class="text-white" style="display: flex;justify-content: center;margin: 20px;">
+                        Add Your Images
+                    </div>
                     <div class="d-flex justify-content-center">
-                        <div style="height: 222px;width: 219px;">
-                            <img style="height: 187px;width: 175px;" src="{{ asset('img/galleryimg.png') }}" alt="">
+                        <div style="height: 222px;width: 219px;" class="d-flex justify-content-center">
+                            <img id="UserImagePreview" style="border-radius: 18px;height: 187px;width: 175px;object-fit: cover;" src="{{ asset('img/galleryimg.png') }}" alt="">
+
                         </div>
                     </div>
                     @error('file')
-                    <div style="margin: 9px 0px 19px 40px;" class="text-danger">{{ $message }}</div>
+                    <div style="margin: px 0px px 40px;" class="text-danger">{{ $message }}</div>
                     @enderror
-                    <div class="container" style="margin-top: 80px;">
-                        <div class="folder">
-                            <div class="front-side">
-                                <div class="tip"></div>
-                                <div class="cover"></div>
+
+                    <div class="d-flex justify-content-center">
+                        <div class="container" style="margin-top: 80px;">
+                            <div class="folder">
+                                <div class="front-side">
+                                    <div class="tip"></div>
+                                    <div class="cover"></div>
+                                </div>
+                                <div class="back-side cover"></div>
                             </div>
-                            <div class="back-side cover"></div>
+                            <label class="custom-file-upload">
+                                <input class="title" type="file" id="UserImage" name="file" />
+                                Upload a File
+                            </label>
                         </div>
-                        <label class="custom-file-upload">
-                            <input class="title" type="file" name="file" />
-                            Upload a File
-                        </label>
                     </div>
                 </div>
                 @endif
@@ -192,7 +199,7 @@
 
                 @csrf
                 <div class="mb-3">
-                    <label class="form-label ">User Name</label>
+                    <label class="form-label text-white">User Name</label>
                     <input type="text" name="id" value="{{ Auth::id() }}" hidden>
                     <input type="text" class="form-control" name="username" value="{{ old('username',Auth::user()->name) }}">
                     @error('username')
@@ -200,7 +207,7 @@
                     @enderror
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Phone No.</label>
+                    <label class="form-label text-white">Phone No.</label>
                     <input type="text" class="form-control" name="phone" value="{{ old('phone',Auth::user()->phone) }}">
                     @error('phone')
                     <div class="text-danger">{{ $message }}</div>
@@ -208,15 +215,15 @@
                 </div>
                 <div class="mb-3">
 
-                    <label class="form-label">Gender</label> <br>
-                    <input type="radio" name="gender" value="Men" {{ old('gender',Auth::user()->gender)=='Men'?'checked':'' }}>Men
-                    <input type="radio" name="gender" value="Women" {{ old('gender',Auth::user()->gender)=='Women'?'checked':'' }}>Women
+                    <label class="form-label text-white">Gender</label> <br>
+                    <input type="radio" name="gender" value="Men" {{ old('gender',Auth::user()->gender)=='Men'?'checked':'' }}><span class="text-white">Men</span>
+                    <input type="radio" name="gender" value="Women" {{ old('gender',Auth::user()->gender)=='Women'?'checked':'' }}><span class="text-white">Women</span>
                     @error('gender')
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Email Address</label>
+                    <label class="form-label text-white">Email Address</label>
                     <input type="text" class="form-control" name="email" value="{{ old('email',Auth::user()->email) }}">
                     @error('email')
                     <div class="text-danger">{{ $message }}</div>
@@ -231,4 +238,31 @@
 </div>
 </div>
 </div>
+
+
+<script>
+    fileInput = document.getElementById('UserImage');
+    imagePreview = document.getElementById('UserImagePreview');
+
+
+    fileInput.addEventListener('change', function(event) {
+
+        const files = event.target.files;
+
+        if (files && files[0] && files[0].name.split('.')[1] == 'png' || files[0].name.split('.')[1] == 'jpg' || files[0].name.split('.')[1] == 'svg') {
+
+            reader = new FileReader();
+
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                console.log(e.target.result);
+
+            };
+
+            reader.readAsDataURL(files[0]);
+
+        }
+    });
+
+</script>
 @endsection

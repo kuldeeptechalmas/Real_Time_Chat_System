@@ -6,6 +6,7 @@ use App\Events\EmojiResponseEvent;
 use App\Events\SenderTypingEvent;
 use App\Events\SendFollowNotification;
 use App\Events\SendMeesages;
+use App\Events\UserFollowORUnFollowEvent;
 use App\Events\ViewToReceiver;
 use App\Models\Friendship;
 use App\Models\Group;
@@ -190,16 +191,8 @@ class UserController extends Controller
     public function user_select_data(Request $request)
     {
         $select_user_id = $request->select_user_id;
-        $check_this_friend = Friendship::where(function ($query) use ($select_user_id) {
-            $query->where('sender_user_id', Auth::id())
-                ->where('receiver_user_id', $select_user_id);
-        })->first();
-        $check_this_friend_receiver = Friendship::where(function ($query) use ($select_user_id) {
-            $query->where('receiver_user_id', Auth::id())
-                ->where('sender_user_id', $select_user_id)
-                ->where('status', 1);
-        })->first();
 
+        // Help User System use this Code
         if (Auth::id() == 3) {
             $user_Select_to_show = User::find($request->select_user_id);
 
@@ -228,16 +221,27 @@ class UserController extends Controller
                 return response()->json(['error' => "Not found user data"]);
             }
         }
+
+        $check_this_friend = Friendship::where(function ($query) use ($select_user_id) {
+            $query->where('sender_user_id', Auth::id())
+                ->where('receiver_user_id', $select_user_id);
+        })->first();
+
         // This in User Receive message then Update status
         if (!isset($check_this_friend)) {
             if ($request->select_user_id != 3) {
 
+                $check_this_friend_receiver = Friendship::where(function ($query) use ($select_user_id) {
+                    $query->where('receiver_user_id', Auth::id())
+                        ->where('sender_user_id', $select_user_id)
+                        ->where('status', 1);
+                })->first();
+
                 if (isset($check_this_friend_receiver)) {
+
                     $user_Select_to_show = User::with(['starUserFind' => function ($query) {
                         $query->where('current_user_id', Auth::id());
                     }])->find($request->select_user_id);
-                    // dd($user_Select_to_show->toArray());
-
 
                     if ($user_Select_to_show) {
                         $message_view_ok = Message::where('send_id', $request->select_user_id)->where('receive_id', Auth::id())->get();
@@ -249,6 +253,7 @@ class UserController extends Controller
                         }
 
                         $data = array('send_id' => $request->select_user_id, 'receive_id' => Auth::id());
+
                         event(new ViewToReceiver($data));
 
                         if (isset($user_Select_to_show)) {
@@ -279,6 +284,7 @@ class UserController extends Controller
                 return view('User.send_accespt_request', ['users_data' => $select_user_data, 'requested' => 'yes']);
             }
 
+            // Message Show To ViewREceiver Code
             $user_Select_to_show = User::find($request->select_user_id);
 
             if ($user_Select_to_show) {
@@ -348,6 +354,7 @@ class UserController extends Controller
             $unfollow_user = Friendship::find($reqeust->delete_id);
             if (isset($unfollow_user)) {
                 $unfollow_user->delete();
+                // event(new UserFollowORUnFollowEvent());
                 return response()->json(['data' => 'yes']);
             }
         } else {
@@ -359,6 +366,7 @@ class UserController extends Controller
     public function message_send_specific_user(Request $request)
     {
         if (Auth::check()) {
+
             // edit message then user 
             if (isset($request->edit_message_id)) {
                 $message_data = Message::where('id', $request->edit_message_id)
@@ -366,39 +374,25 @@ class UserController extends Controller
 
                 $message_data->message = $request->message;
                 $message_data->save();
+
+                $get_with_message_user = Message::with('sender')->find($message_data->id);
+
+                if (isset($get_with_message_user)) {
+                    event(new SendMeesages($get_with_message_user->toArray()));
+                }
             } else {
 
                 // forword message then user
                 if (isset($request->receive_data_id_array)) {
+
                     foreach ($request->receive_data_id_array as $data) {
 
-                        if ($files = $request->file('files')) {
-
-                            foreach ($files as $file) {
-                                $file->storeAs('public/img', $file->getClientOriginalName());
-                                $message_data = new Message();
-                                $message_data->message = $file->getClientOriginalName();
-                                $message_data->send_id = Auth::user()->id;
-                                $message_data->receive_id = $data;
-                                $message_data->status = 'send';
-                                $message_data->save();
-                                // dd($message_data->toArray());
-                            }
-                        } else {
-                            try {
-                                $message_data = new Message();
-                                $message_data->message = $request->message;
-                                $message_data->send_id = Auth::user()->id;
-                                $message_data->receive_id = $request->receive_data_id;
-                                $message_data->status = 'send';
-                                $message_data->save();
-                                dd($message_data);
-                            } catch (Exception $e) {
-                                return response()->json([
-                                    'error' => 'String To Be Long'
-                                ]);
-                            }
-                        }
+                        $message_data = new Message();
+                        $message_data->message = $request->message;
+                        $message_data->send_id = Auth::user()->id;
+                        $message_data->receive_id = $data;
+                        $message_data->status = 'send';
+                        $message_data->save();
                     }
                 } else {
 
@@ -411,6 +405,12 @@ class UserController extends Controller
                             $message_data->receive_id = $request->receive_data_id;
                             $message_data->status = 'send';
                             $message_data->save();
+
+                            $get_with_message_user = Message::with('sender')->find($message_data->id);
+
+                            if (isset($get_with_message_user)) {
+                                event(new SendMeesages($get_with_message_user->toArray()));
+                            }
                         }
                     } else {
                         try {
@@ -420,6 +420,12 @@ class UserController extends Controller
                             $message_data->receive_id = $request->receive_data_id;
                             $message_data->status = 'send';
                             $message_data->save();
+
+                            $get_with_message_user = Message::with('sender')->find($message_data->id);
+
+                            if (isset($get_with_message_user)) {
+                                event(new SendMeesages($get_with_message_user->toArray()));
+                            }
                         } catch (Exception $e) {
                             return response()->json([
                                 'error' => 'String To Be Long'
@@ -432,12 +438,6 @@ class UserController extends Controller
             $message_data['name'] = $message_data->user_data_to_message->name;
             $userid = Auth::id();
             $selectuserid = $request->receive_data_id;
-
-            $get_with_message_user = Message::with('sender')->find($message_data->id);
-
-            if (isset($get_with_message_user)) {
-                event(new SendMeesages($get_with_message_user->toArray()));
-            }
 
             $message_data_to_show = Message::where(function ($query) use ($userid, $selectuserid) {
                 $query->where('send_id', $userid)->whereNull('sender_deleted_at')
@@ -610,6 +610,14 @@ class UserController extends Controller
             return $value->receive_id != 3;
         });
 
+        foreach ($filtered as  $value) {
+            $Message_Not_View_Count_Data = Message::where('receive_id', $value->send_id)
+                ->where('send_id', $value->receive_id)
+                ->where('status', 'send')
+                ->get();
+            $value['message_count'] = $Message_Not_View_Count_Data->count();
+        }
+
         if (isset($message_data_order)) {
 
             return view('User.searchfriend', ["last_message_send_data" => $filtered]);
@@ -640,6 +648,7 @@ class UserController extends Controller
         }
     }
 
+    // User Remove Request
     public function user_request_remove(Request $request)
     {
         if (Auth::check()) {
@@ -859,6 +868,36 @@ class UserController extends Controller
             return view('User.Star_User', ["last_message_send_data" => $message_data_order]);
         } else {
             return redirect()->route('main_error');
+        }
+    }
+
+    public function Edit_Get_Message(Request $request)
+    {
+        if (isset($request->message_id)) {
+            $group_message = Message::find($request->message_id);
+
+            if (isset($group_message)) {
+                return response()->json(['message' => $group_message->message]);
+            }
+        } else {
+            return response()->json(['data' => 'not found']);
+        }
+        dd($request->all());
+    }
+
+    public function Get_Message_Not_View_Count(Request $request)
+    {
+        // dd($request->all(), Auth::id());
+        if (Auth::check()) {
+            $Message_Not_View_Count_Data = Message::where('send_id', $request->User_id)
+                ->where('receive_id', Auth::id())
+                ->where('status', 'send')
+                ->get();
+            if (!empty($Message_Not_View_Count_Data)) {
+                return response()->json(['count_message' => $Message_Not_View_Count_Data->count()]);
+            }
+        } else {
+            return response()->route('main_error');
         }
     }
 }

@@ -1,6 +1,6 @@
 <div style="position: relative;height: 100vh;" class="bg-light">
     {{-- header of chating user --}}
-    <div style="position: relative;padding: 22px;background-color: #fbdfd26e;">
+    <div style="position: relative;padding: 22px;background-color: #FBDFD1;">
         Group name <span style="font-weight: bold;">{{ $group_data->name }}</span> in Add Friend....
     </div>
     <div class="d-flex mt-2" style="padding: 10px;height: 52px;">

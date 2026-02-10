@@ -1,9 +1,9 @@
-<div style="position: relative;height: 100vh;" class="bg-light">
+<div style="position: relative;height: 100vh;background-color: #1c1d1d;">
     {{-- header of chating user --}}
-    <div style="position: relative;padding: 22px;background-color: #fbdfd26e;display: flex;justify-content: space-between;">
+    <div class="text-white" style="position: relative;padding: 22px;background-color: #1c1d1d;display: flex;justify-content: space-between;">
         Create Group...
     </div>
-    <div class="d-flex mt-2" style="padding: 10px;">
+    <div class="d-flex mt-2 text-white" style="padding: 10px;background-color: #1c1d1d;">
         <input type="text" placeholder="Group Name" class="form-control scroll-container" style="width: 31%;" name="" id="group_name">
         <button type="button" onclick="FinalCreateGroup()" style="position: absolute;background: rgba(208, 242, 208, 0.5);right: 3%;" class="btn btn-info">New Group Create</button>
     </div>
@@ -15,7 +15,7 @@
         @foreach ($friendList as $item)
 
         @if ($item->sender_user_id==Auth::id())
-        <div class="d-flex" onclick="SelectedGroupUser(this)" data-id="{{ $item->receiverData->id }}" style="background-color: white;position: relative;padding: 16px;margin: 4px;">
+        <div class="d-flex text-white" onclick="SelectedGroupUser(this)" data-id="{{ $item->receiverData->id }}" style="background-color:#212529;border-radius: 28px;position: relative;padding: 16px;margin: 4px;">
             <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
 
                 @if ($item->receiverData->image_path!=Null)
@@ -35,7 +35,7 @@
             </div>
         </div>
         @else
-        <div class="d-flex" onclick="SelectedGroupUser(this)" data-id="{{ $item->sendersData->id }}" style="background-color: white;position: relative;padding: 16px;margin: 4px;">
+        <div class="d-flex text-white" onclick="SelectedGroupUser(this)" data-id="{{ $item->sendersData->id }}" style="background-color:#212529;border-radius: 28px;position: relative;padding: 16px;margin: 4px;">
             <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
 
                 @if ($item->sendersData->image_path!=Null)

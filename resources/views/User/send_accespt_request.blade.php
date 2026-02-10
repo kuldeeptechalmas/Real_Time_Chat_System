@@ -1,4 +1,4 @@
-<div style="background: #fbdfd26e;height: 100%;width: 100%;">
+<div style="background: #FBDFD1;height: 100%;width: 100%;">
     {{-- {{ $users_data }} --}}
 
     <div class="d-flex justify-content-center" style="padding-top: 84px;">

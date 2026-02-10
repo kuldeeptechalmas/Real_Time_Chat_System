@@ -18,8 +18,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::redirect('/', '/login');
-Route::match(['get', 'post'], '/login', [MainController::class, 'login'])->name('login');
-Route::match(['get', 'post'], '/registration', [MainController::class, 'registration'])->name('registration');
+
+Route::middleware('AuthToDashboard')->group(function () {
+
+    Route::match(['get', 'post'], '/login', [MainController::class, 'login'])->name('login');
+    Route::match(['get', 'post'], '/registration', [MainController::class, 'registration'])->name('registration');
+});
 Route::match(['get', 'post'], '/forgotpassword', [MainController::class, 'forgotpassword'])->name('forgotpassword');
 Route::match(['get', 'post'], '/logout', [MainController::class, 'logout'])->name('logout');
 Route::match(['get'], '/error', [MainController::class, 'main_error'])->name('main_error');
@@ -66,16 +70,18 @@ Route::middleware('AuthCheckExist')->group(function () {
     Route::match(['get', 'post'], '/message-emoji-add', [UserController::class, 'message_emoji_add'])->name('message_emoji_add');
     Route::match(['get', 'post'], '/user-last-seen-time', [UserController::class, 'user_last_seen_time'])->name('user_last_seen_time');
 
+    Route::match(['get', 'post'], '/edit-get-message', [UserController::class, 'Edit_Get_Message'])->name('edit.get_message');
+
     Route::match(['get', 'post'], '/user-forword-message', [UserController::class, 'user_forword_message'])->name('user_forword_message');
 
     // Star Add and Remove
-    Route::match(['get', 'post'], '/StarUser', [UserController::class, 'user_star_show'])->name('user.star.show');
+    Route::match(['get', 'post'], '/star-friend', [UserController::class, 'user_star_show'])->name('user.star.show');
 
     Route::match(['get', 'post'], '/user-star-add', [UserController::class, 'user_star_add'])->name('user.star.add');
     Route::match(['get', 'post'], '/user-star-remove', [UserController::class, 'user_star_remove'])->name('user.star.remove');
 
     // Create Group
-    Route::match(['get', 'post'], '/Groups', [GroupController::class, 'Group_Show'])->name('group.show');
+    Route::match(['get', 'post'], '/groups', [GroupController::class, 'Group_Show'])->name('group.show');
 
     Route::match(['get', 'post'], '/create-group-final', [GroupController::class, 'create_group_final'])->name('create.group.final');
     Route::match(['get', 'post'], '/create-group', [GroupController::class, 'create_group'])->name('create.group');
@@ -98,8 +104,9 @@ Route::middleware('AuthCheckExist')->group(function () {
     Route::match(['get', 'post'], '/group-image-remove', [GroupController::class, 'Group_Image_Remove'])->name('group.image.remove');
     Route::match(['get', 'post'], '/group-message-clean', [GroupController::class, 'Group_Message_Clean'])->name('group.message.clean');
     Route::match(['get', 'post'], '/group-search', [GroupController::class, 'Group_Search'])->name('group.search');
-    Route::match(['get', 'post'], '/group-get-message', [GroupController::class, 'Group_Get_Message'])->name('group.get_message');
 
-    Route::match(['get', 'post'], '/Help', [HelpController::class, 'Help_Page'])->name('help.page');
+    Route::match(['get', 'post'], '/help', [HelpController::class, 'Help_Page'])->name('help.page');
     Route::match(['get', 'post'], '/help-user-select', [HelpController::class, 'Help_user_select'])->name('help.user.select');
+
+    Route::match(['get', 'post'], '/Get_Message_Not_View_Count', [UserController::class, 'Get_Message_Not_View_Count'])->name('get.message.not.view.count');
 });

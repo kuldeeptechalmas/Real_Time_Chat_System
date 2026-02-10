@@ -91,6 +91,7 @@ class GroupController extends Controller
 
     public function Group_Send_Message(Request $request)
     {
+        // dd($request->all());
         if (Auth::check()) {
             $files = $request->file('files');
             if (isset($files)) {
@@ -101,6 +102,17 @@ class GroupController extends Controller
                     $group_message->group_id = $request->group_id;
                     $group_message->message = $file->getClientOriginalName();
                     $group_message->save();
+
+                    $get_group_message_user = GroupUser::where('group_id', $group_message->group_id)->get();
+
+                    foreach ($get_group_message_user as $item) {
+
+                        $message_add_delete_at = new GroupMessageDeleteAt();
+                        $message_add_delete_at->message_id = $group_message->id;
+                        $message_add_delete_at->user_id = $item->user_id;
+                        $message_add_delete_at->group_id  = $group_message->group_id;
+                        $message_add_delete_at->save();
+                    }
                 }
             } else {
                 $group_message = new GroupMessage();
@@ -108,20 +120,21 @@ class GroupController extends Controller
                 $group_message->group_id = $request->group_id;
                 $group_message->message = $request->message;
                 $group_message->save();
+
+                $get_group_message_user = GroupUser::where('group_id', $group_message->group_id)->get();
+
+                foreach ($get_group_message_user as $item) {
+
+                    $message_add_delete_at = new GroupMessageDeleteAt();
+                    $message_add_delete_at->message_id = $group_message->id;
+                    $message_add_delete_at->user_id = $item->user_id;
+                    $message_add_delete_at->group_id  = $group_message->group_id;
+                    $message_add_delete_at->save();
+                }
             }
 
-            $get_group_message_user = GroupUser::where('group_id', $group_message->group_id)->get();
 
-            foreach ($get_group_message_user as $item) {
-
-                $message_add_delete_at = new GroupMessageDeleteAt();
-                $message_add_delete_at->message_id = $group_message->id;
-                $message_add_delete_at->user_id = $item->user_id;
-                $message_add_delete_at->group_id  = $group_message->group_id;
-                $message_add_delete_at->save();
-            }
-
-            event(new GroupMessageEvent($request->group_id));
+            event(new GroupMessageEvent($request->group_id, Auth::user()));
 
             $message_data_to_show = GroupMessage::with('UserData')->where('group_id', $request->group_id)->orderBy('created_at', "asc")->get();
 
@@ -375,19 +388,5 @@ class GroupController extends Controller
             // dd($request->all()); 
             return view('User.Group.Group_Search', ['group' => $Group_Data]);
         }
-    }
-
-    public function Group_Get_Message(Request $request)
-    {
-        if (isset($request->message_id)) {
-            $group_message = Message::find($request->message_id);
-
-            if (isset($group_message)) {
-                return response()->json(['message' => $group_message->message]);
-            }
-        } else {
-            return response()->json(['data' => 'not found']);
-        }
-        dd($request->all());
     }
 }

@@ -1,38 +1,46 @@
 @extends('User.dashbord')
 
 @section('content')
-<div class="col-4 bg-light" style="padding: 0px;">
+<div class="col-4 bg-light" style="padding: 0px;width: 36.333333%;border-right: 1px solid #504f4f;">
 
-    <div style="padding: 21px;background-color: #fbdfd2">
+    <div style="padding: 21px;background-color: #1c1d1d;position: relative;">
         <div class="d-flex">
             <div style="height: 26px;width: 49px;">
                 <img style="height: 100%;width: 100%;" src="{{ asset('img/logo.png') }}" alt="">
             </div>
-            <div style="display: flex;align-items: center;margin-left: 20px;">
+            <div style="position: absolute;right: 7%;">
+                <i class="fa-solid fa-ellipsis-vertical text-white" id="showMenuId" onclick="MainMoreOpetionShow()"></i>
+            </div>
+            <div id="moreOptionDivMain" style="border: 1px solid rgb(94 89 89);z-index: 999;padding: 6px;display: none;position: absolute;top: 97%;right: 3%;background-color: #161717;color:white;border-radius: 18px;">
+                <div style="padding: 5px;">
+                    <div class="d-flex">
+                        <i class="fa-solid fa-circle-minus d-flex justify-content-center align-items-center"></i>
+                        <div style="padding-left: 5px;" onclick="CreateGroupDiv()">
+                            New Group
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-white" style="display: flex;align-items: center;margin-left: 20px;">
                 Real Time Chat
             </div>
         </div>
     </div>
-    <div class="row" style="padding: 15px;">
-        <input style="width: 87%;margin-left: 20px;" autocomplete="off" id="searchfriendnameGroup" oninput="SearchGroup()" class="form-control" type="search" placeholder="Search" aria-label="Search" />
+    <div class="row" style="padding: 15px;background-color: #1c1d1d;margin: 0px;">
+        <input style="color: white;width: 91%;margin-left: 20px;background-color: #2e2f2f;border-radius: 20px;border: none;" autocomplete="off" id="searchfriendnameGroup" oninput="SearchGroup()" class="form-control" type="search" placeholder="Search" aria-label="Search" />
     </div>
 
     {{-- here --}}
-    <div class="scroll-container" style="height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;" style="padding: 0px 20px 7px 20px;">
+    <div class="scroll-container" style="padding: 0px 20px 7px 20px;background-color: #1c1d1d;height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;padding: 0px 20px 7px 20px;">
 
-        <div onclick="CreateGroupDiv()" style="display: flex;justify-content: center;align-items: center;font-size: 21px;position: absolute;background: #828CAC;border-radius: 27px;bottom: 20px;right: 61%;z-index: 99;height: 40px;width: 40px;">
-            <i class="fa-solid fa-plus" style="color: white;"></i>
-        </div>
         <div id="searchDiv">
 
-
             @if ($group->isNotEmpty())
-
 
             @if (isset($group))
             @foreach ($group as $item)
 
-            <div class="d-flex bg-white" id="{{ $item->GroupData->id }}" style="position: relative;padding: 16px;margin: 4px;">
+            <div class="d-flex bg-dark text-white" id="{{ $item->GroupData->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
                 <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
                     @if ($item->GroupData->image_path!=Null)
                     <img data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="imagesetshowGroup('{{ $item->GroupData->id }}','{{ $item->GroupData->name }}','{{ $item->GroupData->image_path }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->GroupData->image_path) }}" alt="">
@@ -59,7 +67,7 @@
 </div>
 
 {{-- chatboard --}}
-<div class="col-7" style="background: white;padding: 0px;" id="chatboardofreceiverGroup">
+<div class="col-7" style="background: white;padding: 0px;background: #161717;background-image: url({{ asset('img/background_image_message.png') }})" id="chatboardofreceiverGroup">
     <div style="width: 292px;height: 283px;margin-left: 250px;margin-top: 92px;">
         <img src="{{ asset('img/messages.png') }}" style="height: 100%;width: 100%;" alt="">
     </div>
@@ -85,10 +93,7 @@
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
-    
-
     function SearchGroup() {
-        console.log($('#searchfriendnameGroup').val());
         $.ajax({
             type: 'post'
             , headers: {
@@ -111,7 +116,6 @@
 
     // Clean Message in Group
     function ClearMessageByOneGroup(message_id, group_id) {
-        console.log(message_id);
         $.ajax({
             type: 'post'
             , headers: {
@@ -124,9 +128,6 @@
             }
             , success: function(res) {
                 message_show_group(groupid)
-                // $('#message_to_show').html(res);
-                // const element = document.getElementById("scrollbarid");
-                // element.scrollTop = element.scrollHeight;
 
             }
             , error: function(e) {
@@ -160,7 +161,7 @@
                     , processData: false
                     , success: function(res) {
                         console.log(res);
-                        window.location.href = "http://127.0.0.1:8000/Groups";
+                        window.location.href = "http://127.0.0.1:8000/groups";
                     }
                     , error: function(e) {
                         console.log(e);
@@ -186,7 +187,6 @@
     }
 
     function RemoveGroupImage(gid) {
-        console.log(gid);
         $.ajax({
             type: 'post'
             , headers: {
@@ -198,7 +198,7 @@
             }
             , success: function(res) {
                 console.log(res);
-                window.location.href = "http://127.0.0.1:8000/Groups";
+                window.location.href = "http://127.0.0.1:8000/groups";
 
             }
             , error: function(e) {
@@ -244,8 +244,6 @@
             , }).showToast();
         } else {
 
-            console.log(Select_User_Array);
-
             $.ajax({
                 type: 'post'
                 , headers: {
@@ -258,7 +256,7 @@
                 }
                 , success: function(res) {
                     Select_User_Array.length = 0;
-                    window.location.href = "http://127.0.0.1:8000/Groups";
+                    window.location.href = "http://127.0.0.1:8000/groups";
                 }
                 , error: function(e) {
                     console.log(e);
@@ -300,9 +298,6 @@
             $(thisdiv).css('background-color', 'rgba(208, 242, 208, 0.5)');
             Select_User_Array_Forword_Group.push($(thisdiv).data('id'));
         }
-
-        console.log(Select_User_Array_Forword_Group);
-
 
     }
 
@@ -416,7 +411,6 @@
                 , message_id: message_id
             }
             , success: function(res) {
-                // console.log(res);
 
             }
             , error: function(e) {
@@ -439,7 +433,7 @@
             }
             , success: function(res) {
                 // $('#userOfGroup').html(res);
-                window.location.href = "http://127.0.0.1:8000/Groups";
+                window.location.href = "http://127.0.0.1:8000/groups";
             }
             , error: function(e) {
                 console.log(e);
@@ -475,7 +469,6 @@
 
     // Remove Group User
     function RemoveGroupUser(groupuserid) {
-        console.log(groupuserid);
 
         $.ajax({
             type: 'post'
@@ -487,7 +480,6 @@
                 groupuserid: groupuserid
             }
             , success: function(res) {
-                console.log(res['group_id']);
 
                 $.ajax({
                     type: 'post'
@@ -515,73 +507,9 @@
 
     $(document).ready(function() {
 
-        // Pusher.logToConsole = true;
-        Pusher.logToConsole = false;
-        window.Echo.channel("groups-channel")
-            .listen(".groups-event", (e) => {
-
-                if (localStorage.getItem('current_group_chatboard') == e.message) {
-                    message_show_group(e.message)
-                }
-            });
-
-        Echo.channel('emoji-channel')
-            .listen('.emoji-event', (e) => {
-                if ("{{ Auth::user()->id }}" == e.message['user_id'] && "{{ URL::full() }}" == "http://127.0.0.1:8000/Groups") {
-                    if (localStorage.getItem('current_group_chatboard') == e.message['group_id']) {
-                        console.log(e);
-
-                        if ($("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html() == null) {
-
-                            var message_div = $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message');
-                            console.log(message_div);
-
-                            if (e.message['response'] == 1) {
-                                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>👍</div>");
-                            }
-                            if (e.message['response'] == 2) {
-                                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>❤️</div>");
-                            }
-                            if (e.message['response'] == 3) {
-                                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😂</div>");
-                            }
-                            if (e.message['response'] == 4) {
-                                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😮</div>");
-                            }
-                            if (e.message['response'] == 5) {
-                                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😢</div>");
-                            }
-                            if (e.message['response'] == 6) {
-                                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😡</div>");
-                            }
-
-                            $(message_div).append(newdiv);
-
-                        } else {
-
-                            if (e.message['response'] == 1) {
-                                $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("👍");
-                            } else
-                            if (e.message['response'] == 2) {
-                                $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("❤️");
-                            } else
-                            if (e.message['response'] == 3) {
-                                $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("😂");
-                            } else
-                            if (e.message['response'] == 4) {
-                                $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("😮");
-                            } else
-                            if (e.message['response'] == 5) {
-                                $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("😢");
-                            } else
-                            if (e.message['response'] == 6) {
-                                $("#scrollbarid").find(`#m${e.message['id']}`).find('.w_message').find('.sub-w_message').find('.emoji-div').html("😡");
-                            }
-                        }
-                    }
-                }
-
-            });
+        if ("{{ isset($group[0]->group_id) }}") {
+            setsendGroupMessage("{{ isset($group[0]->group_id)?$group[0]->group_id:'' }}");
+        }
     });
 
     function message_show_group(gid) {
@@ -608,6 +536,9 @@
     }
 
     function sendmessagetosenderGroup(gid, message) {
+
+        $("#sendmessageid").css('background-color', 'rgb(33, 37, 41)');
+
         document.getElementById('messages').rows = 1;
         if (message == null) {
 
@@ -673,7 +604,6 @@
 
         if (message_data != null || document.getElementById('files').files.length != 0) {
 
-
             $.ajax({
                 type: 'post'
                 , headers: {
@@ -718,15 +648,20 @@
             , success: function(res) {
                 localStorage.setItem('current_group_chatboard', gid);
                 $('#chatboardofreceiverGroup').html(res);
-                // message_show(user_id);
                 message_show_group(gid);
                 Select_User_Array_Forword_Group.length = 0;
+                Tolltip_Intialization_Group();
             }
             , error: function(e) {
                 console.log(e);
             }
         });
 
+    }
+
+    function Tolltip_Intialization_Group() {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
     }
 
 </script>

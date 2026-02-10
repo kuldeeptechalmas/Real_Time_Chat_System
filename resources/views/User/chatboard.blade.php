@@ -55,43 +55,77 @@
         transition: all .3s ease-in-out;
     }
 
+    .tooltip .tooltip-arrow {
+        display: none !important;
+    }
+
+    .custom-tooltip-style {
+        --bs-tooltip-bg: white;
+        --bs-tooltip-color: dark;
+        --bs-tooltip-border-radius: .5rem;
+    }
+
+    .custom-tooltip-style .tooltip-inner {
+        max-width: 300px;
+        height: 25px;
+        font-size: 13px;
+        text-align: left;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+    }
+
 </style>
 
-<div style="position: relative;height: 100vh;">
+<div style="position: relative;height: 100vh;background-image: url({{ asset('img/background_image_message.png') }})">
     {{-- header of chating user --}}
-    <div style="position: relative;padding: 15px;background-color: #fbdfd26e;display: flex;justify-content: space-between;">
+    <div style="position: relative;padding: 15px;display: flex;justify-content: space-between;background: #1c1d1d;">
 
         <div style="height: 37px;width: 66px;display: flex;align-items: center;">
-            {{-- {{ $user_send_user_data->starUserFind }} --}}
+
+            @if (Auth::id()!=3)
             @if (isset($user_send_user_data->starUserFind))
-            <i id="showStar" class="fa-solid fa-star" style="padding-right: 27px;"></i>
-            <i id="addStar" class="fa-regular fa-star" style="padding-right: 27px;display:none"></i>
+            <i id="showStar" class="fa-solid fa-star" style="padding-right: 27px;color:#fbdfd2"></i>
+            <i id="addStar" class="fa-solid fa-star" style="padding-right: 27px;display:none;color:#2e2f2f"></i>
             @else
-            <i id="showStar" class="fa-solid fa-star" style="padding-right: 27px;display:none"></i>
-            <i id="addStar" class="fa-regular fa-star" style="padding-right: 27px;"></i>
+            <i id="showStar" class="fa-solid fa-star" style="padding-right: 27px;display:none;color:#fbdfd2"></i>
+            <i id="addStar" class="fa-solid fa-star" style="padding-right: 27px;color:#2e2f2f"></i>
             @endif
-            <div style="height: 37px;width: 37px;">
+            @endif
+            <div>
 
-                @if ($user_send_user_data->image_path!=Null)
-                <img style="object-fit: cover;height: 100%;width: 100%;border-radius: 20px;" src="{{ asset('storage/img/'.$user_send_user_data->image_path) }}" alt="">
-                @else
-                @if ($user_send_user_data->gender=='Men')
-                <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>
-                @else
                 <div style="height: 37px;width: 37px;">
-                    <img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt="">
-                </div>
-                @endif
-                @endif
-            </div>
-        </div>
-        <div>{{ $user_send_user_data->name }}</div>
 
-        <i class="fa-solid fa-ellipsis-vertical" onclick="moreoptionshow()"></i>
-        <div id="moreoptiondiv" style="z-index: 999;padding: 16px;display: none;position: absolute;top: 110%;right: 4%;background: lightblue;border-radius: 6px;">
-            <i class="fa-solid fa-xmark" onclick="closemanu()" style="position: absolute;top: 3%;right: 3%;"></i>
-            <div onclick="removeallmessage({{ $user_send_user_data->id }})" style="margin-top: 4px;padding: 5px;border: #8e8e8e solid;border-radius: 11px;">
-                Remove All
+                    @if ($user_send_user_data->image_path!=Null)
+                    <img style="object-fit: cover;height: 100%;width: 100%;border-radius: 20px;" src="{{ asset('storage/img/'.$user_send_user_data->image_path) }}" alt="">
+                    @else
+                    @if ($user_send_user_data->gender=='Men')
+                    <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>
+                    @else
+                    <div style="height: 37px;width: 37px;">
+                        <img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt="">
+                    </div>
+                    @endif
+                    @endif
+                </div>
+            </div>
+            <div style="color: white;padding-left: 27px;">{{ $user_send_user_data->name }}</div>
+        </div>
+
+        <div data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Menu" data-bs-custom-class="custom-tooltip-style" data-bs-placement="left" class="manu_chatbord_top_userDetails d-flex justify-content-center align-items-center size-9 rounded-[50px]">
+            <i class="fa-solid fa-ellipsis-vertical" id="toggleId" onclick="moreoptionshow()"></i>
+        </div>
+
+
+        <div id="moreoptiondiv" style="border: 1px solid rgb(94 89 89);z-index: 999;padding: 6px;display: none;position: absolute;top: 97%;right: 3%;background-color: #161717;color:white;border-radius: 18px;">
+            <div style="padding: 5px;">
+                <div class="d-flex">
+                    <i class="fa-solid fa-circle-minus d-flex justify-content-center align-items-center"></i>
+                    <div onclick="removeallmessage({{ $user_send_user_data->id }})" style="padding-left: 5px;">
+                        Remove All
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -105,22 +139,23 @@
 
     {{-- message input --}}
     <emoji-picker id="emoji_picker" class="light" no-search style="display:none;width: 339px;height: 247px;position: absolute;bottom: 14%;"></emoji-picker>
-    <div class="bg-light" style="position: absolute;bottom: 1px;padding: 16px;width: 100%;display: flex;border-radius: 129px;">
+    <div class="bg-dark" style="margin: 10px;color: white;position: absolute;bottom: 1px;padding: 16px;width: 96%;display: flex;border-radius: 129px;">
 
         <input type="file" class="form-control" name="oldfiles[]" multiple id="oldfiles" style="display: none" hidden>
         <input type="file" class="form-control" name="files[]" multiple id="files" style="display: none">
         <i class="fa-solid fa-paperclip" style="padding-top: 14px;font-size: 19px;align-items: center;display: flex;justify-content: center;" onclick="FilesImageSend()"></i>
         <i class="fa-solid fa-face-smile" id="emoji_id" style="padding-top: 14px;font-size: 19px;align-items: center;display: flex;justify-content: center;padding-left: 25px;"></i>
 
-        <textarea style="width: 87%;margin-left: 20px;field-sizing: content;resize: none;max-height: 5lh;" rows="1" oninput="userWriteText(this,{{ $user_send_user_data->id }})" autocomplete="off" class="form-control scroll-container" id="messages" placeholder="Type Message Here..." aria-label="Search"></textarea>
+        <textarea style="color: white;border: none;background-color: #212529;width: 87%;margin-left: 28px;field-sizing: content;resize: none;max-height: 5lh;" rows="1" onclick="closeMoreOption()" oninput="userWriteText(this,{{ $user_send_user_data->id }})" autocomplete="off" class="form-control shadow-none scroll-container" id="messages" placeholder="Type a message" aria-label="Search"></textarea>
 
-        {{-- <input type="file" class="form-control" name="images[]" multiple style="display: none" id="upload-img" /> --}}
         <div class="img-thumbs img-thumbs-hidden scroll-container" id="img-preview" style="overflow: scroll;overflow-y: auto;width: 86%;margin: 0px;height: 97px;margin-left:20px"></div>
 
-        <input type="submit" value="" hidden>
-        <i type class="fa-solid fa-paper-plane" onclick="sendmessagetosender({{ $user_send_user_data->id }})" style="align-items: center;display: flex;justify-content: center;padding-top: 9px;margin-left: 15px;font-size: 20px;"></i>
+        <div class="d-flex justify-content-center align-items-center">
+            <i id="sendmessageid" class="fa-solid fa-paper-plane" onclick="sendmessagetosender({{ $user_send_user_data->id }})" style="height: 40px;align-items: center;display: flex;justify-content: center;font-size: 20px;background: #212529;width: 42px;border-radius: 44px;padding-top: 4px;"></i>
+        </div>
     </div>
 </div>
+@once
 <script>
     localStorage.setItem('cuurentCatboard', "{{ $user_send_user_data->name}}");
 
@@ -147,6 +182,7 @@
         });
 
     });
+
     $('#showStar').on('click', function() {
         $('#showStar').css('display', 'none');
         $('#addStar').css('display', 'block');
@@ -170,9 +206,47 @@
         });
     });
 
+    // Close div to Menu 
+    var myDiv = document.getElementById('moreoptiondiv');
+    var myDivEmoji = document.getElementById('emoji_picker');
+    var toggleButton = document.getElementById('toggleId');
+    var emojiButton = document.getElementById('emoji_id');
+    var messages = document.getElementById('messages');
+
+    document.addEventListener('click', function(event) {
+        var isClickInsideDiv = myDiv.contains(event.target);
+        var isClickOnButton = toggleButton.contains(event.target);
+        var isClickOnEmojiButton = emojiButton.contains(event.target);
+        var isClickOnEmojiDiv = myDivEmoji.contains(event.target);
+        var messageTextarea = messages.contains(event.target);
+
+        if (!isClickInsideDiv && !isClickOnButton) {
+            if ($('#moreoptiondiv').css('display') == 'block') {
+                $('#moreoptiondiv').css('display', 'none');
+            }
+
+        }
+        if (!isClickOnEmojiButton && !isClickOnEmojiDiv && !messageTextarea) {
+            if ($('#emoji_picker').css('display') == 'block') {
+                $('#emoji_picker').css('display', 'none');
+            }
+        }
+    });
+
+    // Emoji Picker
     document.querySelector('emoji-picker').addEventListener('emoji-click', event => {
-        const data_message = $('#messages').val();
-        $('#messages').val(data_message + event.detail.unicode);
+
+        const inputField = document.getElementById('messages');
+        var startPos = inputField.selectionStart;
+        var endPos = inputField.selectionEnd;
+
+        inputField.value = inputField.value.substring(0, startPos) + event.detail.unicode + inputField.value.substring(endPos, inputField.value.length)
+        inputField.focus();
+        inputField.setSelectionRange(startPos + event.detail.unicode.length, startPos + event.detail.unicode.length);
+
+        if ($("#sendmessageid").css('background-color') == "rgb(33, 37, 41)") {
+            $("#sendmessageid").css('background-color', 'green');
+        }
     });
 
     $('#emoji_id').on('click', function() {
@@ -183,9 +257,7 @@
             if ($('#emoji_picker').css('display') == 'block') {
                 $('#emoji_picker').css('display', 'none');
             }
-
         }
-
 
     });
 
@@ -263,7 +335,6 @@
 
         $('#img-preview').html('');
         var imgUpload = document.getElementById('files');
-        console.log(imgUpload.files);
 
         totalFiles = imgUpload.files.length;
 
@@ -318,3 +389,5 @@
     }
 
 </script>
+
+@endonce

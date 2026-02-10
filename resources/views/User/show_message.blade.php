@@ -1,8 +1,52 @@
-<div class="scroll-container" style="height: 500px;overflow: scroll; padding-bottom: 90px;overflow-y: auto;" id="scrollbarid">
+{{-- <div class="scroll-container" style="height: 500px;overflow: scroll; padding-bottom: 90px;overflow-y: auto;" id="scrollbarid"> --}}
+{{-- <div class="scroll-container" style="height: 500px;overflow: scroll; padding-bottom: 90px;overflow-y: auto;" id="scrollbarid"> --}}
+<div class="scroll-container1" style="height: 409px;overflow: scroll;overflow-x: hidden;" id="scrollbarid">
+
+    @php
+    $previosDate = null;
+    @endphp
+
     @foreach ($message as $item)
 
-    @if ($item->send_id==Auth::user()->id)
+    {{-- Date Show Code --}}
+    @if ($previosDate!=$item->created_at->format('l, j F'))
 
+    @if ($item->created_at->format('l, j F')==now()->format('l, j F'))
+
+    <div style="position: relative">
+        <hr>
+        <div style="padding: 0px 20px;background: white;position: absolute;top: -14px;left: 44%;height: 30px;display: flex;justify-content: center;border: 1px solid #cbbbbb;border-radius: 20px;">
+            Today
+        </div>
+    </div>
+
+    @elseif($item->created_at->format('l, j F')==now()->yesterday()->format('l, j F'))
+
+    <div style="position: relative">
+        <hr>
+        <div style="padding: 0px 20px;background: white;position: absolute;top: -14px;left: 44%;height: 30px;display: flex;justify-content: center;border: 1px solid #cbbbbb;border-radius: 20px;">
+            Yesterday
+        </div>
+    </div>
+
+    @else
+    <div style="position: relative">
+        <hr>
+        <div style="padding: 0px 20px;background: white;position: absolute;top: -14px;left: 44%;height: 30px;display: flex;justify-content: center;border: 1px solid #cbbbbb;border-radius: 20px;">
+            {{ $item->created_at->format('l, j F') }}
+        </div>
+    </div>
+
+    @endif
+
+    @php
+    $previosDate = $item->created_at->format('l, j F');
+    @endphp
+    @endif
+
+    {{-- Message show User --}}
+    {{-- Message Receive then condition is True --}}
+    @if ($item->send_id==Auth::user()->id)
     @php
     $etc = explode('.',$item->message);
     @endphp
@@ -14,9 +58,21 @@
             </div>
             @if ($item->message!='This Message is Deleted')
 
+            @if (isset($etc[1]))
+            @if ($etc[1]!='png' || $etc[1]!='jpg' || $etc[1]!='svg'|| $etc[1]!='pdf')
+
+            @else
             <div class="emoji-reaction" onclick="editmessagebyone('{{ $item->id }}')">
                 <div class="emoji">Edit</div>
             </div>
+
+            @endif
+            @else
+            <div class="emoji-reaction" onclick="editmessagebyone('{{ $item->id }}')">
+                <div class="emoji">Edit</div>
+            </div>
+            @endif
+
             <div class="emoji-reaction" onclick="ClearMessageByOne({{ $item->id }})">
                 <div class="emoji">Clear</div>
             </div>
@@ -24,6 +80,7 @@
             <div class="emoji-reaction" onclick="forwordmessage('{{ $item->id }}',`{{ $item->message }}`)">
                 <div class="emoji"><i class="fa-regular fa-share-from-square"></i></div>
             </div>
+
             @endif
 
 
@@ -100,7 +157,9 @@
         </div>
 
     </div>
+
     @else
+    {{-- Message Send then condition is True --}}
 
     <div class="messagehover receiver_message" id="m{{ $item->id }}" style="position: relative;margin: 18px 14px 14px 14px;display: flex;justify-content: flex-start;">
         <div class="w_message d-flex gap-2" style="position: relative;">
@@ -209,23 +268,13 @@
             , headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
-            , url: "{{ route('group.get_message') }}"
+            , url: "{{ route('edit.get_message') }}"
             , data: {
                 message_id: message_id
             }
             , success: function(res) {
                 $("#messages").val(res['message']);
                 localStorage.setItem('editMessageId', message_id);
-                console.log(localStorage.getItem('editMessageId'));
-
-                // var iconElement = document.querySelector('.fa-solid.fa-paper-plane');
-                // if (iconElement) {
-                //     iconElement.removeAttribute('onclick');
-                // }
-                // iconElement.setAttribute('onclick', `sendmessagetosender(${message_id})`);
-
-                // $($('.fa-solid.fa-paper-plane')[0]).removeAttribute('onclick');
-
 
             }
             , error: function(e) {
