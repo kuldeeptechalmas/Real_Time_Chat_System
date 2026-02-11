@@ -82,7 +82,7 @@
     {{-- header of chating user --}}
     <div style="position: relative;padding: 15px;display: flex;justify-content: space-between;background: #1c1d1d;">
 
-        <div style="height: 37px;width: 66px;display: flex;align-items: center;">
+        <div style="height: 37px;width: 66px;display: flex;align-items: center;cursor: pointer;">
 
             @if (Auth::id()!=3)
             @if (isset($user_send_user_data->starUserFind))
@@ -93,8 +93,7 @@
             <i id="addStar" class="fa-solid fa-star" style="padding-right: 27px;color:#2e2f2f"></i>
             @endif
             @endif
-            <div>
-
+            <div onclick="showContactInfo({{ $user_send_user_data->id }})">
                 <div style="height: 37px;width: 37px;">
 
                     @if ($user_send_user_data->image_path!=Null)
@@ -110,7 +109,7 @@
                     @endif
                 </div>
             </div>
-            <div style="color: white;padding-left: 27px;">{{ $user_send_user_data->name }}</div>
+            <div onclick="showContactInfo({{ $user_send_user_data->id }})" style="color: white;padding-left: 27px;">{{ $user_send_user_data->name }}</div>
         </div>
 
         <div data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Menu" data-bs-custom-class="custom-tooltip-style" data-bs-placement="left" class="manu_chatbord_top_userDetails d-flex justify-content-center align-items-center size-9 rounded-[50px]">
@@ -119,11 +118,19 @@
 
 
         <div id="moreoptiondiv" style="border: 1px solid rgb(94 89 89);z-index: 999;padding: 6px;display: none;position: absolute;top: 97%;right: 3%;background-color: #161717;color:white;border-radius: 18px;">
-            <div style="padding: 5px;">
+            <div class="hover_change_all" style="padding: 5px;cursor: pointer;border-radius: 11px;">
+                <div class="d-flex">
+                    <i class="fa-solid fa-circle-info d-flex justify-content-center align-items-center"></i>
+                    <div onclick="showContactInfo({{ $user_send_user_data->id }})" style="padding-left: 10px;">
+                        Contact info
+                    </div>
+                </div>
+            </div>
+            <div class="hover_change_all hover_change_all_remove" style="padding: 5px;cursor: pointer;border-radius: 11px;">
                 <div class="d-flex">
                     <i class="fa-solid fa-circle-minus d-flex justify-content-center align-items-center"></i>
-                    <div onclick="removeallmessage({{ $user_send_user_data->id }})" style="padding-left: 5px;">
-                        Remove All
+                    <div onclick="removeallmessage({{ $user_send_user_data->id }})" style="padding-left: 10px;">
+                        Delete Chat
                     </div>
                 </div>
             </div>
@@ -173,7 +180,7 @@
                 star_user_id: "{{ $user_send_user_data->id }}"
             }
             , success: function(res) {
-                console.log(res);
+                // console.log(res);
 
             }
             , error: function(e) {
@@ -197,7 +204,7 @@
                 star_user_id: "{{ $user_send_user_data->id }}"
             }
             , success: function(res) {
-                console.log(res);
+                // console.log(res);
 
             }
             , error: function(e) {

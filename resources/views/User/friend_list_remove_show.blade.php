@@ -34,9 +34,9 @@
                 <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->receiverData->image_path) }}" data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->receiverData->name }}','{{ $item->receiverData->image_path }}','{{ $item->receiverData->phone }}','{{ $item->receiverData->email }}')" alt="">
                 @else
                 @if ($item->receiverData->gender=='Men')
-                <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>
+                <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->receiverData->name }}','male.png','{{ $item->receiverData->phone }}','{{ $item->receiverData->email }}')" src="{{ asset('img/male.png') }}" alt=""></div>
                 @else
-                <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>
+                <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->receiverData->name }}','female.png','{{ $item->receiverData->phone }}','{{ $item->receiverData->email }}')" src="{{ asset('img/female.png') }}" alt=""></div>
                 @endif
                 @endif
             </div>
@@ -51,21 +51,17 @@
         <div class="d-flex bg-dark text-white" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
             <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
                 @if (isset($item->sendersData->image_path))
-
-
-                {{-- @if ($item->sendersData->image_path!=Null) --}}
                 <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->sendersData->image_path) }}" data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->sendersData->name }}','{{ $item->sendersData->image_path }}','{{ $item->sendersData->phone }}','{{ $item->sendersData->email }}')" alt="">
                 @else
                 @if ($item->sendersData->gender=='Men')
-                <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>
+                <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->sendersData->name }}','male.png','{{ $item->sendersData->phone }}','{{ $item->sendersData->email }}')" src="{{ asset('img/male.png') }}" alt=""></div>
                 @else
-                <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>
+                <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->sendersData->name }}','female.png','{{ $item->sendersData->phone }}','{{ $item->sendersData->email }}')" alt=""></div>
                 @endif
                 @endif
-                {{-- @endif --}}
 
             </div>
-            {{-- <div style="width: 100%;" onclick="setsenduser({{ $item->sendersData->id }})"> --}}
+
             <div style="width: 100%;">
                 <div style="margin-left: 21px;" id="{{ $item->sendersData->name }}">
                     {{ $item->sendersData->name }}
@@ -77,14 +73,14 @@
 
         @endforeach
         @else
-        <div style="display: flex;justify-content: center;margin-top: 25%;">
-            Not Found Result
+        <div class="text-white" style="display: flex;justify-content: center;margin-top: 25%;">
+            Result Not found
         </div>
         @endif
 
         @else
-        <div style="display: flex;justify-content: center;margin-top: 25%;">
-            Not Found Result
+        <div class="text-white" style="display: flex;justify-content: center;margin-top: 25%;">
+            Result Not found
         </div>
         @endif
     </div>

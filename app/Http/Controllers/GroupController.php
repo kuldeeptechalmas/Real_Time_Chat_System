@@ -70,7 +70,10 @@ class GroupController extends Controller
 
     public function Group_Show(Request $request)
     {
-        $group_of_user_name = GroupUser::with('UserData', 'GroupData')->where('user_id', Auth::id())->get();
+        $group_of_user_name = GroupUser::with(['NotViewData' => function ($query) {
+            $query->where('status', 'send')
+                ->where('user_id', Auth::id());
+        }], 'UserData', 'GroupData')->where('user_id', Auth::id())->get();
 
         if (isset($group_of_user_name)) {
             return view('User.Group.Group_Show', ['group' => $group_of_user_name]);
@@ -82,6 +85,17 @@ class GroupController extends Controller
     public function Group_Chatbort(Request $request)
     {
         $group_select_data = Group::find($request->group_id);
+
+        $View_Message_Current_User = GroupMessageDeleteAt::where('group_id', $request->group_id)
+            ->where('user_id', Auth::id())
+            ->where('status', 'send')
+            ->get();
+
+        foreach ($View_Message_Current_User as  $value) {
+            $value->status = "view";
+            $value->save();
+        }
+
         if (isset($group_select_data)) {
             return view('User.Group.Group_Chatboart', ['chatboart_group' => $group_select_data]);
         } else {
@@ -111,6 +125,7 @@ class GroupController extends Controller
                         $message_add_delete_at->message_id = $group_message->id;
                         $message_add_delete_at->user_id = $item->user_id;
                         $message_add_delete_at->group_id  = $group_message->group_id;
+                        $message_add_delete_at->status  = "send";
                         $message_add_delete_at->save();
                     }
                 }
@@ -129,6 +144,7 @@ class GroupController extends Controller
                     $message_add_delete_at->message_id = $group_message->id;
                     $message_add_delete_at->user_id = $item->user_id;
                     $message_add_delete_at->group_id  = $group_message->group_id;
+                    $message_add_delete_at->status  = "send";
                     $message_add_delete_at->save();
                 }
             }
@@ -367,7 +383,7 @@ class GroupController extends Controller
             $group_message_data->message = 'This Message is Deleted';
             $group_message_data->save();
 
-            event(new GroupMessageEvent($request->group_id));
+            event(new GroupMessageEvent($request->group_id, Auth::id()));
 
             return response()->json(['data' => 'message Clean']);
         } else {
@@ -388,5 +404,21 @@ class GroupController extends Controller
             // dd($request->all()); 
             return view('User.Group.Group_Search', ['group' => $Group_Data]);
         }
+    }
+
+    public function Group_Message_View_Pusher(Request $request)
+    {
+        $group_select_data = Group::find($request->group_id);
+
+        $View_Message_Current_User = GroupMessageDeleteAt::where('group_id', $request->group_id)
+            ->where('user_id', Auth::id())
+            ->where('status', 'send')
+            ->get();
+
+        foreach ($View_Message_Current_User as  $value) {
+            $value->status = "view";
+            $value->save();
+        }
+        return response()->json(['data' => 'done']);
     }
 }

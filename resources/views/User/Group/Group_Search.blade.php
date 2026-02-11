@@ -24,8 +24,8 @@
 @endif
 @endforeach
 @else
-<div style="padding: 144px 20px 20px 20px;display: flex;justify-content: center;">Group Data is Not found</div>
+<div class="text-white" style="padding: 144px 20px 20px 20px;display: flex;justify-content: center;">Group Data is Not found</div>
 @endif
 @else
-<div style="padding: 144px 20px 20px 20px;display: flex;justify-content: center;">Group Data is Not found</div>
+<div class="text-white" style="padding: 144px 20px 20px 20px;display: flex;justify-content: center;">Group Data is Not found</div>
 @endif

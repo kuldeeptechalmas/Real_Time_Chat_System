@@ -40,7 +40,7 @@
             @if (isset($group))
             @foreach ($group as $item)
 
-            <div class="d-flex bg-dark text-white" id="{{ $item->GroupData->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
+            <div class="d-flex bg-dark text-white" id="g{{ $item->GroupData->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
                 <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
                     @if ($item->GroupData->image_path!=Null)
                     <img data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="imagesetshowGroup('{{ $item->GroupData->id }}','{{ $item->GroupData->name }}','{{ $item->GroupData->image_path }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->GroupData->image_path) }}" alt="">
@@ -54,13 +54,30 @@
                         {{ $item->GroupData->name }}
                     </div>
                 </div>
+                @if ($item->NotViewData->count()!=0)
+
+                <div id="gc{{ $item->GroupData->id }}">
+                    <div class="d-flex justify-content-center align-items-center" style="color: black;background: white;height: 21px;width: 21px;border-radius: 20px;">
+                        {{ $item->NotViewData->count() }}
+                    </div>
+                </div>
+                @else
+
+                <div id="gc{{ $item->GroupData->id }}" style="display: none">
+                    <div class="d-flex justify-content-center align-items-center" style="color: black;background: white;height: 21px;width: 21px;border-radius: 20px;">
+                        {{ $item->NotViewData->count() }}
+                    </div>
+                </div>
+
+                @endif
+
             </div>
             @endforeach
             @else
-            <div style="padding: 144px 20px 20px 20px;display: flex;justify-content: center;">Group Data is Not found</div>
+            <div class="text-white" style="padding: 144px 20px 20px 20px;display: flex;justify-content: center;">Group Data is Not found</div>
             @endif
             @else
-            <div style="padding: 144px 20px 20px 20px;display: flex;justify-content: center;">Group Data is Not found</div>
+            <div class="text-white" style="padding: 144px 20px 20px 20px;display: flex;justify-content: center;">Group Data is Not found</div>
             @endif
         </div>
     </div>
@@ -105,7 +122,7 @@
             }
             , success: function(res) {
                 $('#searchDiv').html(res);
-                console.log(res);
+                // console.log(res);
 
             }
             , error: function(e) {
@@ -160,7 +177,7 @@
                     , contentType: false
                     , processData: false
                     , success: function(res) {
-                        console.log(res);
+                        // console.log(res);
                         window.location.href = "http://127.0.0.1:8000/groups";
                     }
                     , error: function(e) {
@@ -197,7 +214,7 @@
                 group_id: gid
             }
             , success: function(res) {
-                console.log(res);
+                // console.log(res);
                 window.location.href = "http://127.0.0.1:8000/groups";
 
             }
@@ -648,9 +665,12 @@
             , success: function(res) {
                 localStorage.setItem('current_group_chatboard', gid);
                 $('#chatboardofreceiverGroup').html(res);
+                $($(`#gc${gid}`).children()[0]).html(0);
+                $(`#gc${gid}`).css("display", "none");
                 message_show_group(gid);
                 Select_User_Array_Forword_Group.length = 0;
                 Tolltip_Intialization_Group();
+                CountNotificationMessages();
             }
             , error: function(e) {
                 console.log(e);

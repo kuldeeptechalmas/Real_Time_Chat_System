@@ -14,9 +14,6 @@
             </div>
         </div>
     </div>
-    {{-- <div class="row" style="padding: 15px;">
-        <input style="width: 87%;margin-left: 20px;" autocomplete="off" id="searchfriendname" oninput="Searchfriend()" class="form-control" type="search" placeholder="Search" aria-label="Search" />
-    </div> --}}
 
     {{-- here --}}
     <div class="scroll-container" style="padding: 0px 20px 7px 20px;height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;" style="padding: 0px 20px 7px 20px;">

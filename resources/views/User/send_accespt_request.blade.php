@@ -1,4 +1,4 @@
-<div style="background: #FBDFD1;height: 100%;width: 100%;">
+<div style="height: 100%;width: 100%;">
     {{-- {{ $users_data }} --}}
 
     <div class="d-flex justify-content-center" style="padding-top: 84px;">
@@ -16,7 +16,7 @@
 
         </div>
     </div>
-    <div class="d-flex justify-content-center mt-2" style="font-size: 21px;">{{ $users_data->name }}</div>
+    <div class="d-flex justify-content-center mt-2 text-white" style="font-size: 21px;">{{ $users_data->name }}</div>
     <div class="d-flex justify-content-evenly mt-3">
         @if (isset($requested))
         <div id="requestedid"><button type="button" class="btn btn-primary">Following</button></div>

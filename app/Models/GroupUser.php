@@ -20,4 +20,9 @@ class GroupUser extends Model
     {
         return $this->hasOne(Group::class, 'id', 'group_id');
     }
+
+    public function NotViewData()
+    {
+        return $this->hasMany(GroupMessageDeleteAt::class, 'group_id', 'group_id');
+    }
 }

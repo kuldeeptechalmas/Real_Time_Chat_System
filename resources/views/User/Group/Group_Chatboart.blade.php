@@ -144,7 +144,7 @@
                 star_user_id: "{{ $chatboart_group->id }}"
             }
             , success: function(res) {
-                console.log(res);
+                // console.log(res);
 
             }
             , error: function(e) {
@@ -167,7 +167,7 @@
                 star_user_id: "{{ $chatboart_group->id }}"
             }
             , success: function(res) {
-                console.log(res);
+                // console.log(res);
 
             }
             , error: function(e) {

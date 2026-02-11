@@ -21,9 +21,9 @@
                 <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->receiverData->image_path) }}" data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->receiverData->name }}','{{ $item->receiverData->image_path }}','{{ $item->receiverData->phone }}','{{ $item->receiverData->email }}')" alt="">
                 @else
                 @if ($item->receiverData->gender=='Men')
-                <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>
+                <div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->receiverData->name }}','male.png','{{ $item->receiverData->phone }}','{{ $item->receiverData->email }}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>
                 @else
-                <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>
+                <div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->receiverData->name }}','female.png','{{ $item->receiverData->phone }}','{{ $item->receiverData->email }}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>
                 @endif
                 @endif
             </div>
@@ -43,7 +43,7 @@
                 @if ($item->sendersData->gender=='Men')
                 <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>
                 @else
-                <div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>
+
                 @endif
                 @endif
             </div>
@@ -57,14 +57,14 @@
 
         @endforeach
         @else
-        <div style="display: flex;justify-content: center;margin-top: 25%;">
-            Not Found Result
+        <div class="text-white" style="display: flex;justify-content: center;margin-top: 25%;">
+            Result Not found
         </div>
         @endif
 
         @else
-        <div style="display: flex;justify-content: center;margin-top: 25%;">
-            Not Found Result
+        <div class="text-white" style="display: flex;justify-content: center;margin-top: 25%;">
+            Result Not found
         </div>
         @endif
     </div>

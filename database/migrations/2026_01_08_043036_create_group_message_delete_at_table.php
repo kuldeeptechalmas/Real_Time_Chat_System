@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('group_messages');
             $table->bigInteger('group_id');
             $table->foreign('group_id')->references('id')->on('group_messages');
+            $table->string('status');
             $table->softDeletes();
             $table->timestamps();
         });

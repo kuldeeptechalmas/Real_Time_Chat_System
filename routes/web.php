@@ -40,6 +40,7 @@ Route::middleware('AuthCheckExist')->group(function () {
     Route::match(['get', 'post'], '/dashboard', [MainController::class, 'dashboard'])->name('dashboard');
     Route::match(['get', 'post'], '/user-profile', [UserController::class, 'User_Profiles'])->name('user_profiles');
     Route::match(['get', 'post'], '/user-profile-image-remove', [UserController::class, 'user_profiles_image_remove'])->name('user_profiles_image_remove');
+    Route::match(['get', 'post'], '/show-contact-info', [UserController::class, 'Show_Contact_Info'])->name('show.contact.info');
 
     // Pdf View and Download -> Not Ajax
     Route::match(['get', 'post'], '/pdf-view/{filename}', [UserController::class, 'pdf_view'])->name('pdf.view');
@@ -104,6 +105,8 @@ Route::middleware('AuthCheckExist')->group(function () {
     Route::match(['get', 'post'], '/group-image-remove', [GroupController::class, 'Group_Image_Remove'])->name('group.image.remove');
     Route::match(['get', 'post'], '/group-message-clean', [GroupController::class, 'Group_Message_Clean'])->name('group.message.clean');
     Route::match(['get', 'post'], '/group-search', [GroupController::class, 'Group_Search'])->name('group.search');
+
+    Route::match(['get', 'post'], '/group-message-view-pusher', [GroupController::class, 'Group_Message_View_Pusher'])->name('group.message.view.pusher');
 
     Route::match(['get', 'post'], '/help', [HelpController::class, 'Help_Page'])->name('help.page');
     Route::match(['get', 'post'], '/help-user-select', [HelpController::class, 'Help_user_select'])->name('help.user.select');

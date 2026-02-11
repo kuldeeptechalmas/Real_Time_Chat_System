@@ -168,7 +168,7 @@
                     </div>
                     <div class="d-flex justify-content-center">
                         <div style="height: 222px;width: 219px;" class="d-flex justify-content-center">
-                            <img id="UserImagePreview" style="border-radius: 18px;height: 187px;width: 175px;object-fit: cover;" src="{{ asset('img/galleryimg.png') }}" alt="">
+                            <img id="UserImagePreview" style="border-radius: 18px;height: 187px;width: 175px;object-fit: cover;" src="{{ asset('img/galleryimg01.png') }}" alt="">
 
                         </div>
                     </div>
@@ -201,14 +201,14 @@
                 <div class="mb-3">
                     <label class="form-label text-white">User Name</label>
                     <input type="text" name="id" value="{{ Auth::id() }}" hidden>
-                    <input type="text" class="form-control" name="username" value="{{ old('username',Auth::user()->name) }}">
+                    <input type="text" class="form-control profile-input-border" name="username" value="{{ old('username',Auth::user()->name) }}">
                     @error('username')
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="mb-3">
                     <label class="form-label text-white">Phone No.</label>
-                    <input type="text" class="form-control" name="phone" value="{{ old('phone',Auth::user()->phone) }}">
+                    <input type="text" class="form-control profile-input-border" name="phone" value="{{ old('phone',Auth::user()->phone) }}">
                     @error('phone')
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -224,7 +224,7 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label text-white">Email Address</label>
-                    <input type="text" class="form-control" name="email" value="{{ old('email',Auth::user()->email) }}">
+                    <input type="text" class="form-control profile-input-border" name="email" value="{{ old('email',Auth::user()->email) }}">
                     @error('email')
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -232,7 +232,7 @@
                 <div class="d-flex justify-content-between">
 
                     <a href="{{ route('dashboard') }}"><button type="button" class="btn btn-primary">Back</button></a>
-                    <button type="submit" class="btn btn-primary">Save Change</button>
+                    <button type="submit" class="btn btn-primary ">Save Change</button>
                 </div>
     </form>
 </div>

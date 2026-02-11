@@ -10,6 +10,7 @@ use App\Events\UserFollowORUnFollowEvent;
 use App\Events\ViewToReceiver;
 use App\Models\Friendship;
 use App\Models\Group;
+use App\Models\GroupMessageDeleteAt;
 use App\Models\GroupUser;
 use App\Models\HelpMessagesTable;
 use App\Models\Message;
@@ -119,6 +120,18 @@ class UserController extends Controller
             return redirect()->route('user_profiles');
         } else {
             return redirect()->route('main_error');
+        }
+    }
+
+    public function Show_Contact_Info(Request $request)
+    {
+        if (Auth::check()) {
+            $get_Select_User_Data = User::find($request->select_user_id);
+            if (!empty($get_Select_User_Data)) {
+                return view('User.Show_Contact_Info', ['select_user_data' => $get_Select_User_Data]);
+            }
+        } else {
+            return response()->json(['not found data']);
         }
     }
 
@@ -882,19 +895,36 @@ class UserController extends Controller
         } else {
             return response()->json(['data' => 'not found']);
         }
-        dd($request->all());
+        // dd($request->all());
     }
 
     public function Get_Message_Not_View_Count(Request $request)
     {
-        // dd($request->all(), Auth::id());
         if (Auth::check()) {
-            $Message_Not_View_Count_Data = Message::where('send_id', $request->User_id)
-                ->where('receive_id', Auth::id())
+            // Count Message Not View
+            $Message_Not_View_Count_Data = Message::where('receive_id', Auth::id())
                 ->where('status', 'send')
                 ->get();
+
+            // Count Group All View
+            $group_of_user_name = GroupUser::with('GroupData')->where('user_id', Auth::id())->get();
+
+            $count_All = 0;
+            foreach ($group_of_user_name as  $value) {
+                $Find_Not_View_Message = GroupMessageDeleteAt::where("user_id", Auth::id())
+                    ->where('group_id', $value->GroupData->id)
+                    ->where('status', 'send')
+                    ->get();
+                if (!empty($Find_Not_View_Message)) {
+                    $count_All += $Find_Not_View_Message->count();
+                }
+            }
+
             if (!empty($Message_Not_View_Count_Data)) {
-                return response()->json(['count_message' => $Message_Not_View_Count_Data->count()]);
+                return response()->json([
+                    'count_message' => $Message_Not_View_Count_Data->count(),
+                    'group_count_message' => $count_All,
+                ]);
             }
         } else {
             return response()->route('main_error');

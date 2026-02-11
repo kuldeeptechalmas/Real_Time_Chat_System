@@ -41,6 +41,14 @@
             background-color: #2e2f2f;
         }
 
+        .hover_change_all_remove {
+            transition: 0.3s ease-in-out;
+        }
+
+        .hover_change_all_remove:hover {
+            color: #fa99a4;
+        }
+
         .tooltip .tooltip-arrow {
             display: none !important;
         }
@@ -60,6 +68,10 @@
             justify-content: center;
             align-items: center;
 
+        }
+
+        .profile-input-border {
+            border: 1.5px solid blue;
         }
 
     </style>
@@ -101,12 +113,16 @@
                 </div>
             </div>
 
-            <a href="{{ route('dashboard') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Chats" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="margin-top: 11px;color: #a5a5a5;text-decoration: none;border-radius: 50px;">
+            <a href="{{ route('dashboard') }}" id="chatsMenu" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Chats" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="position: relative;margin-top: 11px;color: #a5a5a5;text-decoration: none;border-radius: 50px;">
                 <div class="row" style="padding: 9px;height: 42px;width: 40px;">
                     <i class="col-4 fa-solid fa-house " style="padding: 3px;"></i>
 
                 </div>
+                <div id="chatsMenuCounter" style="display:none;">
+                    <div style="color: black;background: white;position: absolute;height: 20px;width: 20px;border-radius: 20px;display: flex;justify-content: center;align-items: center;font-size: 11px;left: 54%;">
 
+                    </div>
+                </div>
             </a>
 
             @if (Auth::id()!=3)
@@ -115,6 +131,11 @@
                 <div class="row" style="padding: 9px;height: 42px;width: 40px;">
                     <i class="col-4 fa-solid fa-user-group" style="padding: 3px;"></i>
 
+                </div>
+                <div id="groupsMenuCounter" style="display:none;">
+                    <div style="color: black;background: white;position: absolute;height: 20px;width: 20px;border-radius: 20px;display: flex;justify-content: center;align-items: center;font-size: 11px;left: 54%;">
+
+                    </div>
                 </div>
 
             </a>
@@ -172,7 +193,7 @@
                     <div style="display: flex;align-items: center;margin-left: 20px;color: white;">
                         Real Time Chat
                     </div>
-                    <div style="position: absolute;right: 7%;">
+                    <div class="size-9 rounded-[50px] hover_change_all d-flex justify-content-center align-items-center" style="position: absolute;right: 7%;" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Menu" data-bs-custom-class="custom-tooltip-style" data-bs-placement="left">
                         <i class="fa-solid fa-ellipsis-vertical text-white" id="showMenuId" onclick="MainMoreOpetionShow()"></i>
                     </div>
                     <div id="moreOptionDivMain" style="border: 1px solid rgb(94 89 89);z-index: 999;padding: 6px;display: none;position: absolute;top: 97%;right: 3%;background-color: #161717;color:white;border-radius: 18px;">
@@ -210,9 +231,9 @@
     <!-- Image Modal -->
     <div class="modal fade" id="imageshowmodel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen mt-0 mb-0" id="imageDivforUserid">
-            <div class="modal-content text-white" style="height: 551px;background: white;width: 100%;">
+            <div class="modal-content text-white" style="height: 551px;background: #161717;width: 100%;border: 1px solid wheat;border-radius: 27px;">
                 <div style="display: flex;padding: 19px;">
-                    <h3 class="modal-title fs-5 text-dark" id="ImageShowUserName"></h3>
+                    <h3 class="modal-title fs-5 text-white" id="ImageShowUserName"></h3>
                     <button style="color: #f9d8c9;position: absolute;right: 25px;" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="height: 254px;width: 100%;">
@@ -235,8 +256,6 @@
         $(document).ready(function() {
 
             const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-            console.log(tooltipTriggerList);
-
             const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
         });
 
@@ -246,9 +265,10 @@
         var totalTimeType = 0;
         $(document).ready(function() {
 
-
-
+            CountNotificationMessages();
             userfriendlist();
+
+
             // Pusher.logToConsole = true;
             Pusher.logToConsole = false;
             window.Echo.join("send-channel").here((mem) => {
@@ -263,25 +283,16 @@
                                     img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
                                 } else {
                                     if (element['gender'] == "Men") {
-                                        img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
+                                        img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','male.png','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
                                     }
                                     if (element['gender'] == "Women") {
-                                        img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
+                                        img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','female.png','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
                                     }
                                 }
 
                                 $(`#${element['id']}`).append(`<div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>`);
                                 $($(`#${element['id']}`).find('.TimeOldOnline')[0]).remove();
 
-                                // $(`#${element['id']}`).html(`<div style="height: 37px;width: 37px;">
-                                //         ${img}
-                                //         </div>
-                                //         <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
-                                //         <div style="width: 100%;" onclick="setsenduser( ${element['id']} )">
-                                //         <div style="margin-left: 21px;" id="${element['name']}">
-                                //              ${element['name']} 
-                                //         </div>
-                                //         </div>`);
                             }
                         }
                     });
@@ -293,10 +304,10 @@
                                 img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','${member['image_path']}','${member['phone']}','${member['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${member['image_path']}" alt="">`;
                             } else {
                                 if (member['gender'] == "Men") {
-                                    img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
+                                    img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','male.png','${member['phone']}','${member['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
                                 }
                                 if (member['gender'] == "Women") {
-                                    img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
+                                    img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','female.png','${member['phone']}','${member['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
                                 }
                             }
                             $(`#${member['id']}`).append(`<div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>`);
@@ -313,10 +324,10 @@
                                 img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','${member['image_path']}','${member['phone']}','${member['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${member['image_path']}" alt="">`;
                             } else {
                                 if (member['gender'] == "Men") {
-                                    img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
+                                    img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','male.png','${member['phone']}','${member['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
                                 }
                                 if (member['gender'] == "Women") {
-                                    img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
+                                    img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','female.png','${member['phone']}','${member['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
                                 }
                             }
                             $(`#${member['id']}`).html(`<div style="height: 37px;width: 37px;">
@@ -351,23 +362,6 @@
                 })
 
                 .listen(".send-event", (e) => {
-
-                    if ("{{ URL::full() }}" == "http://127.0.0.1:8000/groups") {
-                        if ("{{ Auth::user()->id }}" == e.message['receive_id'] && "{{ URL::full() }}" != "http://127.0.0.1:8000/dashboard") {
-
-                            Toastify({
-                                text: `${e.message['sender']['name']} Send Message to ${e.message['message']}`
-                                , duration: 5000
-                                , gravity: "top"
-                                , position: "center"
-                                , style: {
-                                    background: '#fbdfd2'
-                                    , color: "black"
-                                }
-                                , stopOnFocus: true
-                            , }).showToast();
-                        }
-                    }
 
                     if ("{{ Auth::user()->id }}" == e.message['receive_id'] && "{{ URL::full() }}" == "http://127.0.0.1:8000/dashboard" || "{{ URL::full() }}" == "http://127.0.0.1:8000/help") {
 
@@ -485,65 +479,31 @@
                                     }
                                     , stopOnFocus: true
                                 , }).showToast();
+
                             }
 
                             // Get Not View Messages Count
+                            CountNotificationMessages();
 
-                            setTimeout(GetMessageCount, 5000);
-
-                            function GetMessageCount() {
-
-                                $.ajax({
-                                    type: 'post'
-                                    , headers: {
-                                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                                    }
-                                    , url: "{{ route('get.message.not.view.count') }}"
-                                    , data: {
-                                        User_id: e.message['sender']['id']
-                                    }
-                                    , success: function(res) {
-                                        console.log(res["count_message"]);
-
-                                        $(`#${e.message['sender']['id']}`).html(`<div style = "height: 37px;width: 37px;">
-                                                <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${e.message['sender']['name']}','${e.message['sender']['image_path']}','${e.message['sender']['phone']}','${e.message['sender']['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${e.message['sender']['image_path']}" alt="">
-                                        </div>
-                                        <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
-                                        <div style="width: 100%;" onclick="setsenduser( ${e.message['sender']['id']} )">
-                                        <div style="margin-left: 21px;" id="${e.message['sender']['name']}">
-                                             ${e.message['sender']['name']}
-                                        </div>
-                                      ${res["count_message"]!=0 ? `<div style="top: 20px;right: 68px;position: absolute;background: lightblue;height: 20px;width: 20px;display: flex;justify-content: center;border-radius: 14px;align-items: center;">
-                                                ${res["count_message"]}
-                                            </div>`:''}
-                                        </div>
-                                        `);
-                                    }
-                                    , error: function(e) {
-                                        console.log(e);
-                                    }
-                                });
-                            }
-
-
-                            // if ($(`#${e.message['send_id']}`).html() != null) {
-
-                            //     if (e.message['sender']['name'] == $(`#${e.message['sender']['name']}`).html().trim()) {
-
-                            //         $(`#${e.message['sender']['id']}`).html(`<div style = "height: 37px;width: 37px;">
-                            //                     <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${e.message['sender']['name']}','${e.message['sender']['image_path']}','${e.message['sender']['phone']}','${e.message['sender']['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${e.message['sender']['image_path']}" alt="">
-                            //             </div>
-                            //             <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
-                            //             <div style="width: 100%;" onclick="setsenduser( ${e.message['sender']['id']} )">
-                            //             <div style="margin-left: 21px;font-weight: bold;" id="${e.message['sender']['name']}">
-                            //                  ${e.message['sender']['name']} 
-                            //             </div>
-                            //             </div>
-                            //             `);
-                            //     }
-
-                            // }
                         }
+                    } else {
+
+                        if ("{{ Auth::user()->id }}" == e.message['receive_id']) {
+                            Toastify({
+                                text: `${e.message['sender']['name']} Send Message to ${e.message['message']}`
+                                , duration: 5000
+                                , gravity: "top"
+                                , position: "center"
+                                , style: {
+                                    background: '#fbdfd2'
+                                    , color: "black"
+                                }
+                                , stopOnFocus: true
+                            , }).showToast();
+
+                            CountNotificationMessages();
+                        }
+
                     }
                 });
 
@@ -563,9 +523,6 @@
 
                         if (e.user == localStorage.getItem('cuurentCatboard')) {
 
-
-
-                            // localStorage.getItem('cuurentCatboard')
                             if ($('.typing').html() == null) {
                                 var scrollbardiv = $("#scrollbarid").html();
                                 var addhtmldiv = `<div style="background: #fbdfd2;width: 33px;display: flex;justify-content: center;border-radius: 18px;"" class='typing'><span>...</span></div>`;
@@ -739,6 +696,21 @@
 
                     if (localStorage.getItem('current_group_chatboard') == e.message && "{{ URL::full() }}" == "http://127.0.0.1:8000/groups") {
                         message_show_group(e.message)
+
+                        $.ajax({
+                            type: 'post'
+                            , headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            }
+                            , url: "{{ route('group.message.view.pusher') }}"
+                            , data: {
+                                group_id: e.message
+                            }
+                            , error: function(e) {
+                                console.log(e);
+                            }
+                        });
+
                     } else {
                         Toastify({
                             text: `${e.user['name']} Send Message in Group`
@@ -751,7 +723,14 @@
                             }
                             , stopOnFocus: true
                         , }).showToast();
+
+                        $(`#gc${e.message}`).css('display', 'block');
+                        var oldHtmlCount = $($(`#gc${e.message}`).children()[0]).html();
+                        $($(`#gc${e.message}`).children()[0]).html(Number(oldHtmlCount) + 1);
+
+                        CountNotificationMessages();
                     }
+
                 });
 
             // set deshboard data
@@ -796,6 +775,8 @@
         }
 
         function imagesetshow(name, image_path, phone, email) {
+            // console.log(image_path);
+
             if (phone != null && email != null) {
 
                 const element = document.getElementById("imageDivforUserid");
@@ -808,11 +789,11 @@
             <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 126px;" src="storage/img/${image_path}" alt="">
             </div>
             </div>
-            <div style="color: black;display: flex;justify-content: center;padding: 19px;font-size: 20px;" id='userid'>
+            <div style="color: white;display: flex;justify-content: center;padding: 19px;font-size: 20px;" id='userid'>
                 </div>
-            <div style="color: black;display: flex;justify-content: center;padding: 10px;" id='userphone'>
+            <div style="color: white;display: flex;justify-content: center;padding: 10px;" id='userphone'>
                 </div>
-            <div style="color: black;display: flex;justify-content: center;padding: 10px;" id='useremail'>
+            <div style="color: white;display: flex;justify-content: center;padding: 10px;" id='useremail'>
                 </div>
             `);
                 $('#userid').html(name);
@@ -919,10 +900,10 @@
                                     img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
                                 } else {
                                     if (element['gender'] == "Men") {
-                                        img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
+                                        img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','male.png','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
                                     }
                                     if (element['gender'] == "Women") {
-                                        img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
+                                        img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','female.png','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
                                     }
                                 }
                                 $(`#${element['id']}`).html(`<div style="height: 37px;width: 37px;">
@@ -968,6 +949,7 @@
                     $('#loader').css('display', 'none');
                     userfriendlist();
                     Tolltip_Intialization();
+                    CountNotificationMessages();
                 }
                 , error: function(e) {
                     console.log(e);
@@ -1198,10 +1180,10 @@
                                     img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
                                 } else {
                                     if (element['gender'] == "Men") {
-                                        img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
+                                        img = `<div data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','male.png','${element['phone']}','${element['email']}')" style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
                                     }
                                     if (element['gender'] == "Women") {
-                                        img = `<div style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
+                                        img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','female.png','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
                                     }
                                 }
                                 $(`#${element['id']}`).append(`<div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>`);
@@ -1526,6 +1508,66 @@
         function Tolltip_Intialization() {
             const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
             const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+        }
+
+        function showContactInfo(Select_user_id) {
+
+            $.ajax({
+                type: 'post'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , url: "{{ route('show.contact.info') }}"
+                , data: {
+                    select_user_id: Select_user_id
+                }
+                , success: function(res) {
+                    $('#chatboardofreceiver').html(res);
+
+                    // $('#message_to_show').html(res);
+                    // const element = document.getElementById("scrollbarid");
+                    // element.scrollTop = element.scrollHeight;
+
+                }
+                , error: function(e) {
+                    console.log(e);
+                }
+            });
+
+            console.log(Select_user_id);
+        }
+
+        function CountNotificationMessages() {
+            $.ajax({
+                type: 'post'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , url: "{{ route('get.message.not.view.count') }}"
+                , success: function(res) {
+                    // console.log(res);
+
+                    // Chats
+                    if (res["count_message"] != 0) {
+                        $("#chatsMenuCounter").css('display', 'block');
+                        $($('#chatsMenuCounter').children()[0]).html(res["count_message"]);
+                    } else {
+                        $("#chatsMenuCounter").css('display', 'none');
+                    }
+
+                    // Groups
+                    if (res["group_count_message"] != 0) {
+                        $("#groupsMenuCounter").css('display', 'block');
+                        $($('#groupsMenuCounter').children()[0]).html(res["group_count_message"]);
+                    } else {
+                        $("#groupsMenuCounter").css('display', 'none');
+                    }
+
+                }
+                , error: function(e) {
+                    console.log(e);
+                }
+            });
         }
 
     </script>
