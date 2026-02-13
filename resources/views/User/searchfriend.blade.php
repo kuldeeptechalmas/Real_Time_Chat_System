@@ -96,21 +96,25 @@ use Carbon\Carbon;
 
         <div class="TimeOldOnline" style="font-size: 12px;position: absolute;top: 29%;right: 6%;">
 
-            @if ($old_time->diffInMinutes($current)>60)
-            @if ($old_time->diffInHours($current)>24)
-            {{ $diff->format('%d') }}d
+            @php
+            $date = \Carbon\Carbon::parse($old_time);
+            @endphp
+
+            @if($date->isToday())
+            {{ $date->format('H:i a') }}
+
+            @elseif($date->isYesterday())
+            Yesterday
+
+            @elseif($date->isCurrentWeek())
+            {{ $date->format('l') }}
 
             @else
-            {{ $diff->format('%h') }}h
-            {{ $diff->format('%i') }}m
-
-            @endif
-            @else
-            {{ $diff->format('%i') }}m
+            {{ $date->format('d/m/y') }}
             @endif
 
-            @endif
         </div>
+        @endif
     </div>
 </div>
 

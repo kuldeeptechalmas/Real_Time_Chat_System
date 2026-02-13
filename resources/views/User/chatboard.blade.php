@@ -48,6 +48,7 @@
         border-radius: 10px;
         font-weight: bold;
         cursor: pointer;
+        color: #161717;
     }
 
     .remove-btn:hover {

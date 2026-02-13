@@ -1,15 +1,15 @@
 @if (isset($friendList))
 @if ($friendList->isNotEmpty())
 
-<div class="row w-100" style="background: #f9d8c9;margin: 0;padding: 22px;">
+<div class="row w-100 text-white" style="background: #1c1d1d;margin: 0;padding: 22px;">
     Forword User Select...
 </div>
 
 @foreach ($friendList as $item)
 
 @if ($item->sender_user_id==Auth::id())
-{{-- <div class="d-flex" onclick="ForwordMessageUserSelectGroup({{ $item->receiverData->id }})" data-id="{{ $item->receiverData->id }}" style="background-color: white;position: relative;padding: 16px;margin: 4px;"> --}}
-<div class="d-flex" onclick="SelectedForwordUserGroup(this)" data-id="{{ $item->receiverData->id }}" style="background-color: white;position: relative;padding: 16px;margin: 4px;">
+
+<div class="d-flex text-white" onclick="SelectedForwordUserGroup(this)" data-id="{{ $item->receiverData->id }}" style="border-radius: 20px;background-color:#212529;position: relative;padding: 16px;margin: 4px;">
     <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
 
         @if ($item->receiverData->image_path!=Null)
@@ -29,8 +29,8 @@
     </div>
 </div>
 @else
-{{-- <div class="d-flex" onclick="ForwordMessageUserSelectGroup({{ $item->sendersData->id }})" data-id="{{ $item->sendersData->id }}" style="background-color: white;position: relative;padding: 16px;margin: 4px;"> --}}
-<div class="d-flex" onclick="SelectedForwordUserGroup(this)" data-id="{{ $item->sendersData->id }}" style="background-color: white;position: relative;padding: 16px;margin: 4px;">
+
+<div class="d-flex text-white" onclick="SelectedForwordUserGroup(this)" data-id="{{ $item->sendersData->id }}" style="border-radius: 20px;background-color:#212529;position: relative;padding: 16px;margin: 4px;">
     <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
 
         @if ($item->sendersData->image_path!=Null)

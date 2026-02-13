@@ -2,6 +2,10 @@
     scrollbar-color: #2e2f2f black;
     overflow-y: scroll;
 }
+.scroll-container2 {
+    scrollbar-color: #2e2f2f black;
+    overflow-y: scroll;
+}
 .scroll-container {
     -ms-overflow-style: none;
     scrollbar-width: none;

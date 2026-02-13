@@ -46,7 +46,7 @@
         }
 
         .hover_change_all_remove:hover {
-            color: #fa99a4;
+            color: #fa99a4 !important;
         }
 
         .tooltip .tooltip-arrow {
@@ -151,6 +151,11 @@
                     <i class="col-4 fa-solid fa-bell" style="padding: 3px;"></i>
 
                 </div>
+                <div id="notificationsMenuCounter" style="display:none;">
+                    <div style="color: black;background: white;position: absolute;height: 20px;width: 20px;border-radius: 20px;display: flex;justify-content: center;align-items: center;font-size: 11px;left: 54%;">
+
+                    </div>
+                </div>
 
             </a>
             <a href="{{ route('user.star.show') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Star Friend" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;">
@@ -169,8 +174,8 @@
 
             </a>
             @endif
-            <div style="position: fixed;bottom: 11px;left: 10px;">
-                <a class="btn btn-info" href="{{ route('logout') }}">
+            <div class="hover_change_all justify-content-center d-flex" style="border-radius: 20px;height: 42px;width: 42px;position: fixed;bottom: 11px;left: 13px;" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Logout" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right">
+                <a class="hover_change_all_remove" style="text-decoration: none;color: #a5a5a5;padding: 9px;" href="{{ route('logout') }}">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </a>
             </div>
@@ -197,7 +202,7 @@
                         <i class="fa-solid fa-ellipsis-vertical text-white" id="showMenuId" onclick="MainMoreOpetionShow()"></i>
                     </div>
                     <div id="moreOptionDivMain" style="border: 1px solid rgb(94 89 89);z-index: 999;padding: 6px;display: none;position: absolute;top: 97%;right: 3%;background-color: #161717;color:white;border-radius: 18px;">
-                        <div style="padding: 5px;">
+                        <div class="hover_change_all" style="padding: 5px;border-radius: 20px;">
                             <div class="d-flex">
                                 <i class="fa-solid fa-circle-minus d-flex justify-content-center align-items-center"></i>
                                 <div style="padding-left: 5px;" onclick="CreateGroupDiv()">
@@ -213,7 +218,7 @@
             </div>
 
             {{-- here --}}
-            <div class="scroll-container" style="padding: 0px 20px 7px 20px;height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;background: #1c1d1d;" id="search_data" style="padding: 0px 20px 7px 20px;">
+            <div class="scroll-container2" style="padding: 0px 20px 7px 20px;height: 432px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;background: #1c1d1d;" id="search_data" style="padding: 0px 20px 7px 20px;">
 
             </div>
         </div>
@@ -231,8 +236,8 @@
     <!-- Image Modal -->
     <div class="modal fade" id="imageshowmodel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen mt-0 mb-0" id="imageDivforUserid">
-            <div class="modal-content text-white" style="height: 551px;background: #161717;width: 100%;border: 1px solid wheat;border-radius: 27px;">
-                <div style="display: flex;padding: 19px;">
+            <div class="modal-content text-white" style="height: 543px;background: #161717;width: 100%;border: 1px solid wheat;border-radius: 27px;margin-top: 4px;">
+                <div style="display: flex;padding: 19px;" data-bs-theme="dark">
                     <h3 class="modal-title fs-5 text-white" id="ImageShowUserName"></h3>
                     <button style="color: #f9d8c9;position: absolute;right: 25px;" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -350,7 +355,7 @@
                                     leav_id: member['id']
                                 }
                                 , success: function(res) {
-
+                                    userfriendlist();
                                 }
                                 , error: function(e) {
                                     console.log(e);
@@ -1367,7 +1372,7 @@
         function SelectedForwordUser(thisdiv) {
 
             if ($(thisdiv).css('background-color') == 'rgba(208, 242, 208, 0.5)') {
-                $(thisdiv).css('background-color', 'rgb(255, 255, 255)');
+                $(thisdiv).css('background-color', '#212529');
 
                 const index = Select_User_Array_Forword.indexOf($(thisdiv).data('id'));
                 Select_User_Array_Forword.splice(index, 1);
@@ -1431,7 +1436,6 @@
             console.log($(thisdiv).css('background-color'));
 
             if ($(thisdiv).css('background-color') == 'rgba(208, 242, 208, 0.5)') {
-                // $(thisdiv).css('background-color', 'rgb(255, 255, 255)');
                 $(thisdiv).css('background-color', '#212529');
 
                 const index = Select_User_Array.indexOf($(thisdiv).data('id'));
@@ -1545,7 +1549,7 @@
                 }
                 , url: "{{ route('get.message.not.view.count') }}"
                 , success: function(res) {
-                    // console.log(res);
+                    console.log(res);
 
                     // Chats
                     if (res["count_message"] != 0) {
@@ -1561,6 +1565,14 @@
                         $($('#groupsMenuCounter').children()[0]).html(res["group_count_message"]);
                     } else {
                         $("#groupsMenuCounter").css('display', 'none');
+                    }
+
+                    // Notifications
+                    if (res["notification_count"] != 0) {
+                        $("#notificationsMenuCounter").css('display', 'block');
+                        $($('#notificationsMenuCounter').children()[0]).html(res["notification_count"]);
+                    } else {
+                        $("#notificationsMenuCounter").css('display', 'none');
                     }
 
                 }

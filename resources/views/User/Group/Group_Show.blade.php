@@ -306,7 +306,7 @@
 
     function SelectedForwordUserGroup(thisdiv) {
         if ($(thisdiv).css('background-color') == 'rgba(208, 242, 208, 0.5)') {
-            $(thisdiv).css('background-color', 'rgb(255, 255, 255)');
+            $(thisdiv).css('background-color', '#212529');
 
             const index = Select_User_Array_Forword_Group.indexOf($(thisdiv).data('id'));
             Select_User_Array_Forword_Group.splice(index, 1);

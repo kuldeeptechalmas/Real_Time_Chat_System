@@ -353,6 +353,12 @@ class UserController extends Controller
             ->where('receiver_user_id', Auth::id())
             ->orderByDesc('created_at')
             ->get();
+
+        foreach ($current_user_notification as  $value) {
+            $value->seen = "yes";
+            $value->save();
+        }
+
         if (isset($current_user_notification)) {
             return view('User.user_notification', ['friendlistrequest' => $current_user_notification]);
         } else {
@@ -374,6 +380,19 @@ class UserController extends Controller
             return redirect()->route('main_error');
         }
     }
+
+    public function temp(Request $request)
+    {
+        return view('temp');
+    }
+    public function store(Request $request)
+    {
+        if (isset($request->audio)) {
+            $path = $request->file('audio')->store('audio', 'public');
+        }
+    }
+
+
 
     // Message send Specific User
     public function message_send_specific_user(Request $request)
@@ -650,6 +669,7 @@ class UserController extends Controller
                 $new_friend->sender_user_id = Auth::id();
                 $new_friend->receiver_user_id  = $request->select_id;
                 $new_friend->status  = 0;
+                $new_friend->seen  = "no";
                 $new_friend->save();
                 $data_notification = array('receiver_id' => $new_friend->receiver_user_id, 'sender_name' => $new_friend->sendersData->name);
                 event(new SendFollowNotification($data_notification));
@@ -920,12 +940,16 @@ class UserController extends Controller
                 }
             }
 
-            if (!empty($Message_Not_View_Count_Data)) {
-                return response()->json([
-                    'count_message' => $Message_Not_View_Count_Data->count(),
-                    'group_count_message' => $count_All,
-                ]);
-            }
+            // Notification Count
+            $current_user_notification = Friendship::where('receiver_user_id', Auth::id())
+                ->where('seen', 'no')
+                ->get();
+
+            return response()->json([
+                'count_message' => $Message_Not_View_Count_Data->count(),
+                'group_count_message' => $count_All,
+                'notification_count' => $current_user_notification->count(),
+            ]);
         } else {
             return response()->route('main_error');
         }

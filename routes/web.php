@@ -113,3 +113,7 @@ Route::middleware('AuthCheckExist')->group(function () {
 
     Route::match(['get', 'post'], '/Get_Message_Not_View_Count', [UserController::class, 'Get_Message_Not_View_Count'])->name('get.message.not.view.count');
 });
+
+
+Route::match(['get', 'post'], '/tempdemo', [UserController::class, 'temp'])->name('temp');
+Route::match(['get', 'post'], '/store', [UserController::class, 'store'])->name('store');
