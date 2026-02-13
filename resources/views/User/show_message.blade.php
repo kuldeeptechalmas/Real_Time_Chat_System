@@ -51,7 +51,7 @@
     $etc = explode('.',$item->message);
     @endphp
 
-    <div class="messagehover sender_message" id="m{{ $item->id }}" style="position: relative;margin: 18px 14px 14px 14px;display: flex;justify-content: flex-end;">
+    <div class="messagehover moreoptionArrow" id="m{{ $item->id }}" style="position: relative;margin: 18px 14px 14px 14px;display: flex;justify-content: flex-end;">
         <div class="emoji-bar">
             <div class="emoji-reaction" onclick="removemessagebyone({{ $item->id }})">
                 <div class="emoji">Remove</div>
@@ -95,8 +95,17 @@
             @endif
         </div>
 
+        <div class="showoption text-white" style="border-radius: 12px;background-color:#1c1d1d;z-index: 999;position: absolute;display: none;top: -20%;right: 21%;width: 209px;height: 229px;">
+            <div style="padding: 10px">
+                <div class="d-flex" onclick="removemessagebyone({{ $item->id }})">
+                    <i class="fa-regular fa-trash-can d-flex align-items-center" style="padding-left: 10px;"></i>
+                    <span style="padding-left: 10px;">Remove</span>
+                </div>
+            </div>
+        </div>
+
         <div class="w_message d-flex gap-2">
-            <div class="sub-w_message" style="position: relative;background: #fdf1ec;padding: 28px 7px 7px 7px;border-radius: 10px 0px 10px 10px;cursor: default;min-width: 72px;">
+            <div class="sub-w_message" style="position: relative;background: #fdf1ec;padding: 28px 7px 7px 7px;border-radius: 10px 0px 10px 10px;cursor: default;min-width: 102px;">
 
                 @if (isset($etc[1]))
                 @if ($etc[1]=='png' || $etc[1]=='jpg'|| $etc[1]=='svg'|| $etc[1]=='pdf')
@@ -124,10 +133,15 @@
                 @endif
 
                 <div style="position: absolute;top: 0%;right: 3%;" class="d-flex justify-content-end align-items-center mt-2">
+                    <div class="showmoareoptionArrow" onclick="showOtherOption(this)">
+                        <i class="fa-solid fa-angle-down"></i>
+                    </div>
+
                     <span style="font-size: 11px;">{{ $item->created_at->timezone('Asia/Kolkata')->format('g:i a') }}</span>
                     @if ($item->status=='send')
                     <i class="fa-solid fa-check" style="font-size: 11px;"></i>
                     @endif
+
                     @if ($item->status=='view')
                     <i class="fa-solid fa-check" style="color: #7a7afc;font-size: 11px;margin-right: -9px;"></i>
                     <i class="fa-solid fa-check" style="color: #7a7afc;font-size: 11px;margin-right: 1px;"></i>

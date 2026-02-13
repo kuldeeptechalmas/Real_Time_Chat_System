@@ -92,12 +92,12 @@
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog mt-0 mb-0">
-        <div class="modal-content" style="background: white;">
+        <div class="modal-content" data-bs-theme="dark" style=" margin-bottom: 4px;background: #161717;width: 100%;border: 1px solid wheat;border-radius: 27px;margin-top: 4px;">
             <div style="text-align: end;padding: 5px 10px 0px 0px;">
                 <button style="right: 11px;top: 9px;" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div id="ImageShowUserImage_pathGroup" style="align-items: center;text-align: center;">
+                <div class="d-flex justify-content-center" id="ImageShowUserImage_pathGroup" style="align-items: center;text-align: center;">
 
                 </div>
                 <h3 class="modal-title fs-5" style="text-align: center;" id="ImageShowUserNameGroup"></h3>

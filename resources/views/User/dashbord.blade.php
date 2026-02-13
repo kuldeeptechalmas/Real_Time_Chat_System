@@ -218,7 +218,7 @@
             </div>
 
             {{-- here --}}
-            <div class="scroll-container2" style="padding: 0px 20px 7px 20px;height: 432px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;background: #1c1d1d;" id="search_data" style="padding: 0px 20px 7px 20px;">
+            <div class="scroll-container2" style="padding: 0px 20px 7px 20px;height: 432px;overflow: scroll;overflow-y: auto;background: #1c1d1d;" id="search_data" style="padding: 0px 20px 7px 20px;">
 
             </div>
         </div>
@@ -749,8 +749,8 @@
         });
 
         // Close div to Menu 
-        const myDivMore = document.getElementById('moreOptionDivMain');
-        const menuId = document.getElementById('showMenuId');
+        var myDivMore = document.getElementById('moreOptionDivMain');
+        var menuId = document.getElementById('showMenuId');
 
         document.addEventListener('click', function(event) {
             if (myDivMore) {
@@ -1549,7 +1549,7 @@
                 }
                 , url: "{{ route('get.message.not.view.count') }}"
                 , success: function(res) {
-                    console.log(res);
+                    // console.log(res);
 
                     // Chats
                     if (res["count_message"] != 0) {
@@ -1580,6 +1580,15 @@
                     console.log(e);
                 }
             });
+        }
+
+        function showOtherOption(thisDiv) {
+            if ($(thisDiv).parent().parent().parent().prev().css('display') == "none") {
+                $(thisDiv).parent().parent().parent().prev().css('display', 'block')
+            } else {
+                $(thisDiv).parent().parent().parent().prev().css('display', 'none')
+            }
+
         }
 
     </script>

@@ -172,6 +172,14 @@
     transform: translateX(-50%) scale(1);
 }
 
+.showmoareoptionArrow{
+    display: none;
+}
+
+.moreoptionArrow:hover .showmoareoptionArrow{
+    display: block;
+}   
+
 .emoji-reaction {
     display: flex;
     flex-direction: column;

@@ -1,7 +1,7 @@
 <div>
     @if (isset($UserAllGroup))
     @foreach ($UserAllGroup as $item)
-    <div class="bg-light" style="padding: 21px;display:flex;">
+    <div class="bg-dark text-white" style="margin-bottom: 4px;padding: 21px;display:flex;border-radius: 18px;">
         <div style="width: 27px;height: 27px;">
             @if ($item->UserData->image_path!=Null)
             <img style="width: 100%;height: 100%;object-fit: cover;border-radius: 20px;" src="{{ asset('storage/img/'.$item->UserData->image_path) }}" alt="">
@@ -43,7 +43,7 @@
 
     </div>
     @endforeach
-    <div class="bg-light" style="padding: 21px;display:flex;margin: 10px 0px 10px 0px;position: relative;">
+    <div class="bg-dark" style="border-radius: 18px;padding: 21px;display:flex;margin: 10px 0px 10px 0px;position: relative;">
         <div style="margin-left: 27px;color: green;">
             Change Group Image
         </div>
@@ -60,7 +60,7 @@
         </div>
         <input type="file" name="groupimage" style="display:none;" id="groupimage">
     </div>
-    <div class="bg-light btn" style="padding: 21px;display:flex;" onclick="ExitGroup('{{ $UserAllGroup[0]->group_id }}')">
+    <div class="bg-dark btn" style="border-radius: 18px;padding: 21px;display:flex;" onclick="ExitGroup('{{ $UserAllGroup[0]->group_id }}')">
         <div style="margin-left: 27px;color: red;">
             Exit Group
         </div>
