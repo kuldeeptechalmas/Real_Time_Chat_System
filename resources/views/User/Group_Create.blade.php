@@ -7,7 +7,7 @@
         <input type="text" placeholder="Group Name" class="form-control scroll-container" style="width: 31%;" name="" id="group_name">
         <button type="button" onclick="FinalCreateGroup()" style="position: absolute;background: rgba(208, 242, 208, 0.5);right: 3%;" class="btn btn-info">New Group Create</button>
     </div>
-    <div>
+    <div class="scroll-container2" style="height: 415px;">
 
         @if (isset($friendList))
         @if ($friendList->isNotEmpty())

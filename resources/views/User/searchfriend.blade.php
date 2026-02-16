@@ -106,7 +106,7 @@ use Carbon\Carbon;
             @elseif($date->isYesterday())
             Yesterday
 
-            @elseif($date->isCurrentWeek())
+            @elseif($date->greaterThanOrEqualTo(now()->subDays(7)))
             {{ $date->format('l') }}
 
             @else

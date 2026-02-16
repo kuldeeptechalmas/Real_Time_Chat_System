@@ -210,6 +210,17 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="hover_change_all hover_change_all_remove" style="padding: 5px;border-radius: 20px;">
+                            <div>
+                                <a class="d-flex hover_change_all_remove text-white" style="text-decoration: none;" href="{{ route('logout') }}">
+                                    <i class="fa-solid fa-right-from-bracket d-flex justify-content-center align-items-center"></i>
+                                    <div style="padding-left: 5px;" onclick="CreateGroupDiv()">
+                                        Logout
+                                    </div>
+
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -447,7 +458,7 @@
                                                     <div class="emoji-reaction" onclick="removemessagebyone(${e.message['id']})">
                                                         <div class="emoji">Remove</div>
                                                     </div>
-                                                    <div class="emoji-reaction" onclick="forwordmessage('${e.message['id']}',${e.message['message']})">
+                                                    <div class="emoji-reaction" onclick="forwordmessage('${e.message['id']}','${e.message['message']}')">
                                                         <div class="emoji"><i class="fa-regular fa-share-from-square"></i></div>
                                                     </div>
                                                     ${extentionOfImage[1]=='jpg' || extentionOfImage[1]=='svg'|| extentionOfImage[1]=='pdf' || extentionOfImage[1]=='png' ?`
@@ -753,6 +764,18 @@
         var menuId = document.getElementById('showMenuId');
 
         document.addEventListener('click', function(event) {
+
+            // const isClickInside1 = event.target.closest('.showmoareoptionArrow');
+            // const isClickInside2 = event.target.closest('.showoption');
+
+            // if (!isClickInside1 && !isClickInside2) {
+            //     var closeAllOtherOpen = $('.showoption');
+            //     for (let i = 0; i < closeAllOtherOpen.length; i++) {
+            //         const element = closeAllOtherOpen[i];
+            //         element.style.display = 'none';
+            //     }
+            // }
+
             if (myDivMore) {
 
                 const isClickOutSideDiv = myDivMore.contains(event.target);
@@ -830,6 +853,23 @@
                 , success: function(res) {
                     $('#moreoptiondiv').css('display', 'none')
                     message_show(messageuserid);
+                    if (res['allclean'] == 'yes') {
+                        Toastify({
+                            text: `Delete All Message Successfully`
+                            , duration: 3000
+                            , gravity: "top"
+                            , position: "right"
+                            , style: {
+                                background: '#fbdfd2'
+                                , color: "black"
+                                , border: "1px blue solid"
+                                , "border-radius": "14px"
+
+                            }
+                            , stopOnFocus: true
+                        , }).showToast();
+                    }
+
                 }
                 , error: function(e) {
                     console.log(e);
@@ -1582,14 +1622,38 @@
             });
         }
 
-        function showOtherOption(thisDiv) {
-            if ($(thisDiv).parent().parent().parent().prev().css('display') == "none") {
-                $(thisDiv).parent().parent().parent().prev().css('display', 'block')
-            } else {
-                $(thisDiv).parent().parent().parent().prev().css('display', 'none')
-            }
+        // function showOtherOption(thisDiv) {
 
-        }
+        //     var closeAllOtherOpen = $('.showoption');
+
+        //     for (let i = 0; i < closeAllOtherOpen.length; i++) {
+        //         const element = closeAllOtherOpen[i];
+        //         element.style.display = 'none';
+        //     }
+
+        //     if ($(thisDiv).parent().parent().parent().prev().css('display') == "none") {
+        //         $(thisDiv).parent().parent().parent().prev().css('display', 'block')
+        //     } else {
+        //         $(thisDiv).parent().parent().parent().prev().css('display', 'none')
+        //     }
+
+        // }
+
+        // function showOtherOptionSenderMessage(thisDiv) {
+        //     var closeAllOtherOpen = $('.showoption');
+
+        //     for (let i = 0; i < closeAllOtherOpen.length; i++) {
+        //         const element = closeAllOtherOpen[i];
+        //         element.style.display = 'none';
+        //     }
+
+        //     if ($(thisDiv).parent().parent().parent().prev().css('display') == "none") {
+        //         $(thisDiv).parent().parent().parent().prev().css('display', 'block')
+        //     } else {
+        //         $(thisDiv).parent().parent().parent().prev().css('display', 'none')
+        //     }
+
+        // }
 
     </script>
 </body>

@@ -8,6 +8,7 @@ use App\Models\Message;
 use App\Models\User;
 use App\Rules\check_password;
 use App\Rules\check_username_email;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -159,6 +160,7 @@ class MainController extends Controller
     // Dashboard
     public function dashboard(Request $request)
     {
+
         $message_data_order = Message::select('send_id', 'receive_id')
             ->selectRaw('MAX(created_at) as last_message_time')
             ->where('send_id', Auth::user()->id)

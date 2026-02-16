@@ -12,12 +12,23 @@
                 <i class="fa-solid fa-ellipsis-vertical text-white" id="showMenuId" onclick="MainMoreOpetionShow()"></i>
             </div>
             <div id="moreOptionDivMain" style="border: 1px solid rgb(94 89 89);z-index: 999;padding: 6px;display: none;position: absolute;top: 97%;right: 3%;background-color: #161717;color:white;border-radius: 18px;">
-                <div style="padding: 5px;">
+                <div class="hover_change_all" style="padding: 5px;border-radius: 20px;">
                     <div class="d-flex">
                         <i class="fa-solid fa-circle-minus d-flex justify-content-center align-items-center"></i>
                         <div style="padding-left: 5px;" onclick="CreateGroupDiv()">
                             New Group
                         </div>
+                    </div>
+                </div>
+                <div class="hover_change_all hover_change_all_remove" style="padding: 5px;border-radius: 20px;">
+                    <div>
+                        <a class="d-flex hover_change_all_remove text-white" style="text-decoration: none;" href="{{ route('logout') }}">
+                            <i class="fa-solid fa-right-from-bracket d-flex justify-content-center align-items-center"></i>
+                            <div style="padding-left: 5px;" onclick="CreateGroupDiv()">
+                                Logout
+                            </div>
+
+                        </a>
                     </div>
                 </div>
             </div>

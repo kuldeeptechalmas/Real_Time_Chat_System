@@ -79,22 +79,23 @@
         </div>
 
         <div id="moreoptiondiv" style="border: 1px solid rgb(94 89 89);z-index: 999;padding: 6px;display: none;position: absolute;top: 97%;right: 3%;background-color: #161717;color:white;border-radius: 18px;">
-
-            <div style="padding: 5px;">
-                <div class="d-flex">
-                    <i class="fa-solid fa-circle-minus d-flex justify-content-center align-items-center"></i>
-                    <div onclick="removeallmessageGroup({{ $chatboart_group->id }})" style="padding: 5px;">
-                        Remove All
-                    </div>
-                </div>
-                @if ($chatboart_group->creater_id==Auth::id())
+            @if ($chatboart_group->creater_id==Auth::id())
+            <div class="hover_change_all" style="padding: 5px;cursor: pointer;border-radius: 11px;">
                 <div class="d-flex">
                     <i class="fa-solid fa-user-plus d-flex justify-content-center align-items-center"></i>
-                    <div onclick="addFriendPage('{{ $chatboart_group->id }}')" style="padding: 5px;">
+                    <div onclick="removeallmessageGroup({{ $chatboart_group->id }})" style="padding-left: 10px;">
                         Add Friend
                     </div>
                 </div>
-                @endif
+            </div>
+            @endif
+            <div class="hover_change_all hover_change_all_remove" style="padding: 5px;cursor: pointer;border-radius: 11px;">
+                <div class="d-flex">
+                    <i class="fa-solid fa-circle-minus d-flex justify-content-center align-items-center"></i>
+                    <div onclick="removeallmessageGroup({{ $chatboart_group->id }})" style="padding-left: 10px;">
+                        Delete Chat
+                    </div>
+                </div>
             </div>
 
         </div>
