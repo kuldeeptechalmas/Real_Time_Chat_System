@@ -1,11 +1,18 @@
-{{-- <div class="scroll-container" style="height: 500px;overflow: scroll; padding-bottom: 90px;overflow-y: auto;" id="scrollbarid"> --}}
-<div class="scroll-container1" style="height: 409px;overflow: scroll;overflow-x: hidden;" id="scrollbarid">
+<div class="scroll-container1" style="height:445px;overflow: scroll;overflow-x: hidden;" id="scrollbarid">
 
     @php
     $previosDate = null;
     @endphp
 
     @foreach ($message as $item)
+
+    @php
+    $etc = explode('.',$item->message);
+    @endphp
+
+    @if ($item->user_id==Auth::id())
+
+    @if ($item->GroupMessageDeleteAtData->isNotEmpty())
 
     {{-- Date Show Code --}}
     @if ($previosDate!=$item->created_at->format('l, j F'))
@@ -43,35 +50,34 @@
     @endphp
     @endif
 
-    @php
-    $etc = explode('.',$item->message);
-    @endphp
+    <div class="messagehover " id="m{{ $item->id }}" style="position: relative;margin: 18px 14px 14px 14px;display: flex;justify-content: flex-end;">
 
-    @if ($item->user_id==Auth::id())
-    @if ($item->GroupMessageDeleteAtData->isNotEmpty())
+        <div class="w_message sender_message d-flex gap-2">
 
-    <div class="messagehover sender_message" id="m{{ $item->id }}" style="position: relative;margin: 18px 14px 14px 14px;display: flex;justify-content: flex-end;">
-        <div class="emoji-bar">
-            <div class="emoji-reaction" onclick="removemessagebyoneGroup({{ $item->id }},{{ $item->group_id }})">
-                <div class="emoji">Remove</div>
-            </div>
-            <div class="emoji-reaction" onclick="ClearMessageByOneGroup('{{ $item->id }}','{{ $item->group_id }}')">
-                <div class="emoji">Clear</div>
-            </div>
-            <div class="emoji-reaction" onclick="forwordmessageGroup('{{ $item->id }}',`{{ $item->message }}`)">
-                <div class="emoji"><i class="fa-regular fa-share-from-square"></i></div>
+            {{-- Show Hover Effect --}}
+            <div class="emoji-bar">
+                <div class="emoji-reaction" onclick="removemessagebyoneGroup({{ $item->id }},{{ $item->group_id }})">
+                    <div class="emoji">Remove</div>
+                </div>
+                <div class="emoji-reaction" onclick="editmessagebyoneGroup('{{ $item->id }}')">
+                    <div class="emoji">Edit</div>
+                </div>
+                <div class="emoji-reaction" onclick="ClearMessageByOneGroup('{{ $item->id }}','{{ $item->group_id }}')">
+                    <div class="emoji">Clear</div>
+                </div>
+                <div class="emoji-reaction" onclick="forwordmessageGroup('{{ $item->id }}',`{{ $item->message }}`)">
+                    <div class="emoji"><i class="fa-regular fa-share-from-square"></i></div>
+                </div>
+
+                @if (isset($etc[1]))
+                <div class="emoji-reaction">
+                    <a href="/pdf-download/{{ $item->message }}" style="color: black;" rel="noopener noreferrer">
+                        <div class="emoji"><i class="fa-solid fa-download"></i></div>
+                    </a>
+                </div>
+                @endif
             </div>
 
-            @if (isset($etc[1]))
-            <div class="emoji-reaction">
-                <a href="/pdf-download/{{ $item->message }}" style="color: black;" rel="noopener noreferrer">
-                    <div class="emoji"><i class="fa-solid fa-download"></i></div>
-                </a>
-            </div>
-            @endif
-        </div>
-
-        <div class="w_message d-flex gap-2">
             <div class="sub-w_message" style="position: relative;background: #fdf1ec;padding: 28px 7px 7px 7px;border-radius: 10px 0px 10px 10px;cursor: default;min-width: 160px;">
                 <div style="position: absolute;display: flex;top: 0px;left: 0px;">
                     <div style="height: 21px;width: 21px;">
@@ -155,9 +161,45 @@
     @else
     {{-- Receive Message of Group --}}
     @if ($item->GroupMessageDeleteAtData->isNotEmpty())
+    {{-- Date Show Code --}}
+    @if ($previosDate!=$item->created_at->format('l, j F'))
 
-    <div class="messagehover receiver_message" id="m{{ $item->id }}" style="position: relative;margin: 18px 14px 14px 14px;display: flex;justify-content: flex-start;">
-        <div class="w_message d-flex gap-2" style="position: relative;">
+    @if ($item->created_at->format('l, j F')==now()->format('l, j F'))
+
+    <div style="position: relative">
+        <hr>
+        <div style="padding: 0px 20px;background: white;position: absolute;top: -14px;left: 44%;height: 30px;display: flex;justify-content: center;border: 1px solid #cbbbbb;border-radius: 20px;">
+            Today
+        </div>
+    </div>
+
+    @elseif($item->created_at->format('l, j F')==now()->yesterday()->format('l, j F'))
+
+    <div style="position: relative">
+        <hr>
+        <div style="padding: 0px 20px;background: white;position: absolute;top: -14px;left: 44%;height: 30px;display: flex;justify-content: center;border: 1px solid #cbbbbb;border-radius: 20px;">
+            Yesterday
+        </div>
+    </div>
+
+    @else
+    <div style="position: relative">
+        <hr>
+        <div style="padding: 0px 20px;background: white;position: absolute;top: -14px;left: 44%;height: 30px;display: flex;justify-content: center;border: 1px solid #cbbbbb;border-radius: 20px;">
+            {{ $item->created_at->format('l, j F') }}
+        </div>
+    </div>
+
+    @endif
+
+    @php
+    $previosDate = $item->created_at->format('l, j F');
+    @endphp
+    @endif
+
+    <div class="messagehover" id="m{{ $item->id }}" style="position: relative;margin: 38px 14px 14px 14px;display: flex;justify-content: flex-start;">
+
+        <div class="w_message receiver_message d-flex gap-2" style="position: relative;">
 
             <div style="min-width: 160px;position: relative;background: #fbdfd2;padding: 28px 7px 7px 7px;border-radius: 0px 10px 10px;cursor: default;">
                 @php
@@ -208,6 +250,7 @@
                 <div style="position: absolute;top: 0px;right: 16px;">
                     <span style="font-size: 11px;">{{ $item->created_at->timezone('Asia/Kolkata')->format('g:i a') }}</span>
                 </div>
+                {{ $item->message_emoji }}
                 @if ($item->response==1)
                 <div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>👍</div>
                 @endif
@@ -227,43 +270,95 @@
                 <div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😡</div>
                 @endif
             </div>
+
+            <div class='emoji-div' id="emoji_div" style="position:absolute;top:85%;left:0%;">
+
+                @if (isset($item->MessageEmoji) && $item->MessageEmoji->count())
+
+                @php
+                $count_of_emoji = 6;
+
+                // Count emojis by code
+                $groupedEmojis = $item->MessageEmoji->groupBy('emoji_code');
+
+                // Emoji map
+                $emojiMap = [
+                1 => '👍',
+                2 => '❤️',
+                3 => '😂',
+                4 => '😮',
+                5 => '😢',
+                6 => '😡',
+                ];
+                @endphp
+
+                @foreach ($groupedEmojis as $code => $emojis)
+
+                <span class="emoji-wrapper" style="position:relative; display:inline-block;">
+
+                    <span id="{{ $emojiMap[$code] }}" style="background:#828CAC;border-radius:28px;padding:4px 8px;cursor:pointer;">
+
+                        {{ $emojiMap[$code] ?? '' }}
+
+                        <span id="{{ $emojiMap[$code] }}count" style="font-size:12px;">
+                            {{ $emojis->count() }}
+                        </span>
+
+                    </span>
+
+                    <!-- Hover User List -->
+                    <div class="emoji-users" style="display:none;position:absolute;bottom:120%;left:0;background:#2c2f33;color:white;padding:8px 10px;border-radius:6px;font-size:12px;white-space:nowrap;z-index:999;">
+
+                        @foreach($emojis as $emoji)
+                        <div>{{ $emoji->UserData->name ?? 'User' }} ,</div>
+                        @endforeach
+
+                    </div>
+
+                </span>
+
+                @endforeach
+
+                @endif
+            </div>
+
+            <div class="emoji-bar">
+                <div class="emoji-reaction" data-reaction="like">
+                    <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="1">👍</div>
+                </div>
+                <div class="emoji-reaction" data-reaction="love">
+                    <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="2">❤️</div>
+                </div>
+                <div class="emoji-reaction" data-reaction="haha">
+                    <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="3">😂</div>
+                </div>
+                <div class="emoji-reaction" data-reaction="wow">
+                    <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="4">😮</div>
+                </div>
+                <div class="emoji-reaction" data-reaction="sad">
+                    <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="5">😢</div>
+                </div>
+                <div class="emoji-reaction" data-reaction="angry">
+                    <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="6">😡</div>
+                </div>
+                <div class="emoji-reaction" style="width: 74px;" onclick="removemessagebyoneGroup({{ $item->id }},{{ $item->group_id }})">
+                    <div class="emoji">Remove</div>
+                </div>
+                <div class="emoji-reaction" onclick="forwordmessageGroup('{{ $item->id }}',`{{ $item->message }}`)">
+                    <div class="emoji"><i class="fa-regular fa-share-from-square"></i></div>
+                </div>
+
+                @if (isset($etc[1]))
+                <div class="emoji-reaction">
+                    <a href="/pdf-download/{{ $item->message }}" style="color: black;" rel="noopener noreferrer">
+                        <div class="emoji"><i class="fa-solid fa-download"></i></div>
+                    </a>
+                </div>
+                @endif
+
+            </div>
         </div>
 
-        <div class="emoji-bar">
-            <div class="emoji-reaction" data-reaction="like">
-                <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="1">👍</div>
-            </div>
-            <div class="emoji-reaction" data-reaction="love">
-                <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="2">❤️</div>
-            </div>
-            <div class="emoji-reaction" data-reaction="haha">
-                <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="3">😂</div>
-            </div>
-            <div class="emoji-reaction" data-reaction="wow">
-                <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="4">😮</div>
-            </div>
-            <div class="emoji-reaction" data-reaction="sad">
-                <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="5">😢</div>
-            </div>
-            <div class="emoji-reaction" data-reaction="angry">
-                <div class="emoji" onclick="emojigetshowGroup(this,'{{ $item->id }}')" data-code="6">😡</div>
-            </div>
-            <div class="emoji-reaction" onclick="removemessagebyoneGroup({{ $item->id }},{{ $item->group_id }})">
-                <div class="emoji">Remove</div>
-            </div>
-            <div class="emoji-reaction" onclick="forwordmessageGroup('{{ $item->id }}',`{{ $item->message }}`)">
-                <div class="emoji"><i class="fa-regular fa-share-from-square"></i></div>
-            </div>
-
-            @if (isset($etc[1]))
-            <div class="emoji-reaction">
-                <a href="/pdf-download/{{ $item->message }}" style="color: black;" rel="noopener noreferrer">
-                    <div class="emoji"><i class="fa-solid fa-download"></i></div>
-                </a>
-            </div>
-            @endif
-
-        </div>
     </div>
 
     @endif

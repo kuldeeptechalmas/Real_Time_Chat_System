@@ -12,15 +12,138 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/dashboard_css.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="icon" type="image/png" href="{{ asset('img/logo1.png') }}" sizes="50x27">
     <style>
+        body {
+            background: linear-gradient(135deg,
+                    #0f2027 0%,
+                    #0b3d4a 40%,
+                    #021114 100%);
+            font-family: 'Inter', sans-serif;
+        }
+
+        #moreOptionDivMain {
+            opacity: 0;
+            transform: scale(0.70);
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            pointer-events: none;
+        }
+
+        #moreOptionDivMain.show {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        .custom-left {
+            position: relative;
+            left: 23px;
+        }
+
+        @media (max-width: 768px) {
+            .custom-left {
+                left: 13px !important;
+            }
+
+            #MianMenu {
+                height: 100vh;
+                background: transparent;
+                backdrop-filter: blur(10px);
+                top: 0;
+                left: 0;
+            }
+
+            body.rtc-menu-open #MianMenu {
+                transform: translateX(0);
+            }
+
+            /* When sidebar is open, show both sidebar and user list side by side */
+            body.rtc-menu-open #searchpanel {
+                margin-left: 72px;
+                width: calc(100% - 72px) !important;
+                transition: margin-left 0.25s ease, width 0.25s ease;
+            }
+
+            #mobileMenuBackdrop {
+                display: none;
+                /* No backdrop needed since both show together */
+            }
+
+            /* Apply to all content panels that extend dashboard */
+            body.rtc-menu-open .col-12.col-md-4,
+            body.rtc-menu-open .col-12.col-sm-4,
+            body.rtc-menu-open .col-4 {
+                margin-left: 72px;
+                width: calc(100% - 72px) !important;
+                transition: margin-left 0.25s ease, width 0.25s ease;
+            }
+        }
+
+        @media (max-width: 426px) {
+            .custom-left {
+                left: 13px !important;
+            }
+        }
+
+        .height-div-scroller {
+            height: 76vh;
+        }
+
+        @media (max-width: 768px) {
+            .height-div-scroller {
+                height: calc(100vh - 200px);
+            }
+        }
+
+        @media (max-width: 426px) {
+            .height-div-scroller {
+                height: calc(100vh - 180px);
+            }
+
+            .message_div_width {
+                height: calc(100vh - 150px) !important;
+                padding-bottom: 0px !important;
+            }
+
+            .spinner {
+                top: 50% !important;
+                left: 40% !important;
+            }
+        }
+
         input::placeholder {
             color: #a5a5a5 !important;
         }
 
         textarea::placeholder {
             color: #a5a5a5 !important;
+        }
+
+        /* Enhanced Mobile Responsiveness */
+        @media (max-width: 768px) {
+            /* #searchpanel {
+                width: 100% !important;
+            } */
+
+            /* #chatboardofreceiver {
+                width: 100% !important;
+            } */
+
+            .chatboardofreceiver {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                z-index: 999;
+            }
+        }
+
+        @media (max-width: 576px) {
+            #moreOptionDivMain {
+                right: 5% !important;
+                top: 95% !important;
+                max-width: 200px;
+            }
         }
 
         .manu_chatbord_top_userDetails {
@@ -78,20 +201,201 @@
 
 
 </head>
-<body style="height: 100vh;overflow: hidden;cursor: default;background: #1c1d1d;">
+<body style="height: 100vh;overflow: hidden;cursor: default;">
 
+    {{-- loader --}}
     <div style="position: absolute;height: 100%;width: 100%;display:none;" id="loader">
 
         <div class="spinner" style="position: absolute;top: 42%;left: 68%;">
             <div class="spinner1"></div>
         </div>
     </div>
-    <div class="row" style="margin: 0px;width: 100%;height: 100%;border-radius: 8px;">
+
+    {{-- <div id="mobileMenuBackdrop" onclick="openMianMenu()"></div> --}}
+    <div class="row m-0 w-100 h-100 rounded">
 
         {{-- first side manu --}}
-        <div class="col-1" style="border-right: 1px solid #504f4f;position: relative;width: 5.333333%;background: #1d1f1f;color: #a5a5a5;">
-            <div class="d-flex justify-content-center">
-                <div class="row" style="padding: 15px 0px 15px 0px;">
+        <div id="MianMenu" class="col-2 col-sm-1 d-none d-sm-block position-relative text-secondary ">
+
+            {{-- Dashboard --}}
+            @if (URL::full()=="http://127.0.0.1:8000/dashboard")
+            <div style="position: relative">
+                <a href="{{ route('dashboard') }}" id="chatsMenu" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Chats" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="background-color: #2e2f2f;position: relative;margin-top: 11px;color: #a5a5a5;text-decoration: none;border-radius: 50px;">
+                    <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                        <i class="col-4 fa-solid fa-house " style="padding: 3px;"></i>
+
+                    </div>
+                    <div id="chatsMenuCounter" style="display:none;">
+                        <div style="color: black;background: #21c063;position: absolute;height: 20px;width: 20px;border-radius: 20px;display: flex;justify-content: center;align-items: center;font-size: 11px;left: 54%;">
+
+                        </div>
+                    </div>
+                </a>
+                <div style="border-right: 5px solid #01a58b;position: absolute;background: red;height: 100%;border-radius: 10px;top: 0%;right: -6px;">
+
+                </div>
+            </div>
+            @else
+            <a href="{{ route('dashboard') }}" id="chatsMenu" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Chats" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="position: relative;margin-top: 11px;color: #a5a5a5;text-decoration: none;border-radius: 50px;">
+                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                    <i class="col-4 fa-solid fa-house " style="padding: 3px;"></i>
+                </div>
+                <div id="chatsMenuCounter" style="display:none;">
+                    <div style="color: black;background: #21c063;position: absolute;height: 20px;width: 20px;border-radius: 20px;display: flex;justify-content: center;align-items: center;font-size: 11px;left: 54%;">
+
+                    </div>
+                </div>
+            </a>
+
+            @endif
+
+            @if (Auth::id()!=3)
+
+            {{-- Groups --}}
+            @if (URL::full()=="http://127.0.0.1:8000/groups")
+            <div style="position: relative">
+                <a href="{{ route('group.show') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Groups" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center border-radius-circle" style="margin-top: 11px;color: #a5a5a5;text-decoration: none;border-radius: 50px;background-color: #2e2f2f;">
+                    <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                        <i class="col-4 fa-solid fa-user-group" style="padding: 3px;"></i>
+
+                    </div>
+                    <div id="groupsMenuCounter" style="display:none;">
+                        <div style="color: black;background: #21c063;position: absolute;height: 20px;width: 20px;border-radius: 20px;display: flex;justify-content: center;align-items: center;font-size: 11px;left: 54%;">
+
+                        </div>
+                    </div>
+
+                </a>
+                <div style="border-right: 5px solid #01a58b;position: absolute;background: red;height: 100%;border-radius: 10px;top: 0%;right: -6px;">
+
+                </div>
+            </div>
+            @else
+            <a href="{{ route('group.show') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Groups" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center border-radius-circle" style="margin-top: 11px;color: #a5a5a5;text-decoration: none;border-radius: 50px;">
+                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                    <i class="col-4 fa-solid fa-user-group" style="padding: 3px;"></i>
+
+                </div>
+                <div id="groupsMenuCounter" style="display:none;">
+                    <div style="color: black;background: #21c063;position: absolute;height: 20px;width: 20px;border-radius: 20px;display: flex;justify-content: center;align-items: center;font-size: 11px;left: 54%;">
+
+                    </div>
+                </div>
+
+            </a>
+            @endif
+
+            {{-- User friend --}}
+            @if (URL::full()=="http://127.0.0.1:8000/user-friendlist")
+            <div style="position: relative">
+                <a href="{{ route('user_friendlist_show') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Friend List" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;background-color: #2e2f2f;">
+                    <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                        <i class="col-4 fa-solid fa-address-card" style="padding: 3px;"></i>
+
+                    </div>
+
+                </a>
+                <div style="border-right: 5px solid #01a58b;position: absolute;background: red;height: 100%;border-radius: 10px;top: 0%;right: -6px;">
+
+                </div>
+            </div>
+            @else
+            <a href="{{ route('user_friendlist_show') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Friend List" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;">
+                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                    <i class="col-4 fa-solid fa-address-card" style="padding: 3px;"></i>
+
+                </div>
+
+            </a>
+            @endif
+
+            {{-- user-notification --}}
+            @if (URL::full()=="http://127.0.0.1:8000/user-notification")
+            <div style="position: relative">
+                <a href="{{ route('user_show_notification') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Notifications" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;">
+                    <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                        <i class="col-4 fa-solid fa-bell" style="padding: 3px;"></i>
+
+                    </div>
+                    <div id="notificationsMenuCounter" style="display:none;">
+                        <div style="color: black;background: #21c063;position: absolute;height: 20px;width: 20px;border-radius: 20px;display: flex;justify-content: center;align-items: center;font-size: 11px;left: 54%;">
+
+                        </div>
+                    </div>
+                </a>
+                <div style="border-right: 5px solid #01a58b;position: absolute;background: red;height: 100%;border-radius: 10px;top: 0%;right: -6px;">
+
+                </div>
+            </div>
+            @else
+            <a href="{{ route('user_show_notification') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Notifications" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;">
+                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                    <i class="col-4 fa-solid fa-bell" style="padding: 3px;"></i>
+
+                </div>
+                <div id="notificationsMenuCounter" style="display:none;">
+                    <div style="color: black;background: #21c063;position: absolute;height: 20px;width: 20px;border-radius: 20px;display: flex;justify-content: center;align-items: center;font-size: 11px;left: 54%;">
+
+                    </div>
+                </div>
+
+            </a>
+            @endif
+
+
+            {{-- star-friend --}}
+            @if (URL::full()=="http://127.0.0.1:8000/star-friend")
+            <div style="position: relative">
+                <a href="{{ route('user.star.show') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Star Friend" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;background-color: #2e2f2f;">
+                    <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                        <i class="col-4 fa-solid fa-star" style="padding: 3px;"></i>
+
+                    </div>
+
+                </a>
+                <div style="border-right: 5px solid #01a58b;position: absolute;background: red;height: 100%;border-radius: 10px;top: 0%;right: -6px;">
+
+                </div>
+            </div>
+            @else
+            <a href="{{ route('user.star.show') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Star Friend" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;">
+                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                    <i class="col-4 fa-solid fa-star" style="padding: 3px;"></i>
+
+                </div>
+
+            </a>
+            @endif
+
+            @if (URL::full()=="http://127.0.0.1:8000/help")
+            <div style="position: relative">
+                <a href="{{ route('help.page') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Helps" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;">
+                    <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                        <i class="col-4 fa-solid fa-circle-info" style="padding: 3px;"></i>
+
+                    </div>
+
+                </a>
+                <div style="border-right: 5px solid #01a58b;position: absolute;background: red;height: 100%;border-radius: 10px;top: 0%;right: -6px;">
+
+                </div>
+            </div>
+            @else
+            <a href="{{ route('help.page') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Helps" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;">
+                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
+                    <i class="col-4 fa-solid fa-circle-info" style="padding: 3px;"></i>
+
+                </div>
+
+            </a>
+            @endif
+
+            @endif
+
+            <div class="hover_change_all justify-content-center d-flex custom-left" style="left: 33px;border-radius: 20px;height: 42px;width: 42px;position: fixed;bottom: 11px;" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Profile" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right">
+                <div class="d-flex justify-content-center">
+
+                    {{-- <div class="row" style="padding: 15px 0px 15px 0px;"> --}}
                     <a href="{{ route('user_profiles') }}">
 
                         @if (Auth::user()->image_path==Null)
@@ -110,102 +414,34 @@
                         </div>
                         @endif
                     </a>
+                    {{-- </div> --}}
                 </div>
-            </div>
-
-            <a href="{{ route('dashboard') }}" id="chatsMenu" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Chats" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="position: relative;margin-top: 11px;color: #a5a5a5;text-decoration: none;border-radius: 50px;">
-                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
-                    <i class="col-4 fa-solid fa-house " style="padding: 3px;"></i>
-
-                </div>
-                <div id="chatsMenuCounter" style="display:none;">
-                    <div style="color: black;background: white;position: absolute;height: 20px;width: 20px;border-radius: 20px;display: flex;justify-content: center;align-items: center;font-size: 11px;left: 54%;">
-
-                    </div>
-                </div>
-            </a>
-
-            @if (Auth::id()!=3)
-
-            <a href="{{ route('group.show') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Groups" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center border-radius-circle" style="margin-top: 11px;color: #a5a5a5;text-decoration: none;border-radius: 50px;">
-                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
-                    <i class="col-4 fa-solid fa-user-group" style="padding: 3px;"></i>
-
-                </div>
-                <div id="groupsMenuCounter" style="display:none;">
-                    <div style="color: black;background: white;position: absolute;height: 20px;width: 20px;border-radius: 20px;display: flex;justify-content: center;align-items: center;font-size: 11px;left: 54%;">
-
-                    </div>
-                </div>
-
-            </a>
-            <a href="{{ route('user_friendlist_show') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Friend List" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;">
-                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
-                    <i class="col-4 fa-solid fa-address-card" style="padding: 3px;"></i>
-
-                </div>
-
-            </a>
-            <a href="{{ route('user_show_notification') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Notifications" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;">
-                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
-                    <i class="col-4 fa-solid fa-bell" style="padding: 3px;"></i>
-
-                </div>
-                <div id="notificationsMenuCounter" style="display:none;">
-                    <div style="color: black;background: white;position: absolute;height: 20px;width: 20px;border-radius: 20px;display: flex;justify-content: center;align-items: center;font-size: 11px;left: 54%;">
-
-                    </div>
-                </div>
-
-            </a>
-            <a href="{{ route('user.star.show') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Star Friend" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;">
-                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
-                    <i class="col-4 fa-solid fa-star" style="padding: 3px;"></i>
-
-                </div>
-
-            </a>
-
-            <a href="{{ route('help.page') }}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Helps" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right" class="hover_change_all d-flex justify-content-center" style="color: #a5a5a5;text-decoration: none;margin-top: 11px;border-radius: 50px;">
-                <div class="row" style="padding: 9px;height: 42px;width: 40px;">
-                    <i class="col-4 fa-solid fa-circle-info" style="padding: 3px;"></i>
-
-                </div>
-
-            </a>
-            @endif
-            <div class="hover_change_all justify-content-center d-flex" style="border-radius: 20px;height: 42px;width: 42px;position: fixed;bottom: 11px;left: 13px;" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Logout" data-bs-custom-class="custom-tooltip-style" data-bs-placement="right">
-                <a class="hover_change_all_remove" style="text-decoration: none;color: #a5a5a5;padding: 9px;" href="{{ route('logout') }}">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </a>
             </div>
         </div>
         @if (isset($dashboardshow))
 
         {{-- searching and show user --}}
-        <div class="col-4 bg-light" style="border-right: 1px solid #504f4f;padding: 0px;width: 36.333333%;">
+        <div id="searchpanel" class="col-12 col-sm-4 d-block d-lg-block p-0 rounded-4">
 
-            {{-- @if (Auth::id()!=3) --}}
-            {{-- <div onclick="CreateGroupDiv()" style="display: flex;justify-content: center;align-items: center;font-size: 21px;position: absolute;background: #828CAC;border-radius: 27px;bottom: 20px;right: 61%;z-index: 99;height: 40px;width: 40px;">
-                <i class="fa-solid fa-plus" style="color: white;"></i>
-            </div> --}}
-            {{-- @endif --}}
-            <div style="padding: 21px;background-color: #1c1d1d;position: relative;">
+            <div style="padding: 21px;background: transparent;position: relative;">
                 <div class="d-flex">
+                    {{-- <div class="hover_change_all d-block d-sm-none" onclick="openMianMenu()">
+                        <i class="fa-solid fa-bars text-white"></i>
+                    </div> --}}
                     <div style="height: 26px;width: 49px;">
                         <img style="height: 100%;width: 100%;" src="{{ asset('img/logo.png') }}" alt="">
                     </div>
-                    <div style="display: flex;align-items: center;margin-left: 20px;color: white;">
+                    <div style="font-family: 'Inter', sans-serif;display: flex;align-items: center;margin-left: 20px;color: white;">
                         Real Time Chat
                     </div>
-                    <div class="size-9 rounded-[50px] hover_change_all d-flex justify-content-center align-items-center" style="position: absolute;right: 7%;" data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Menu" data-bs-custom-class="custom-tooltip-style" data-bs-placement="left">
+                    <div class="size-9 hover_change_all d-flex justify-content-center align-items-center" style="position: absolute;right: 7%;">
                         <i class="fa-solid fa-ellipsis-vertical text-white" id="showMenuId" onclick="MainMoreOpetionShow()"></i>
                     </div>
-                    <div id="moreOptionDivMain" style="border: 1px solid rgb(94 89 89);z-index: 999;padding: 6px;display: none;position: absolute;top: 97%;right: 3%;background-color: #161717;color:white;border-radius: 18px;">
+                    <div id="moreOptionDivMain" style="border: 1px solid rgb(94 89 89); z-index: 999; padding: 6px; position: absolute; top: 97%; right: 3%; background-color: #161717; color:white; border-radius: 18px;">
                         <div class="hover_change_all" style="padding: 5px;border-radius: 20px;">
                             <div class="d-flex">
                                 <i class="fa-solid fa-circle-minus d-flex justify-content-center align-items-center"></i>
-                                <div style="padding-left: 5px;" onclick="CreateGroupDiv()">
+                                <div style="padding-left: 5px;font-family: 'Inter', sans-serif;" onclick="CreateGroupDiv()">
                                     New Group
                                 </div>
                             </div>
@@ -214,7 +450,7 @@
                             <div>
                                 <a class="d-flex hover_change_all_remove text-white" style="text-decoration: none;" href="{{ route('logout') }}">
                                     <i class="fa-solid fa-right-from-bracket d-flex justify-content-center align-items-center"></i>
-                                    <div style="padding-left: 5px;" onclick="CreateGroupDiv()">
+                                    <div style="padding-left: 5px;font-family: 'Inter', sans-serif;">
                                         Logout
                                     </div>
 
@@ -224,22 +460,24 @@
                     </div>
                 </div>
             </div>
-            <div class="row" style="padding: 15px 0px 15px 0px;background: #1c1d1d;margin: 0px;">
-                <input style="color: white;width: 91%;margin-left: 20px;background-color: #2e2f2f;border-radius: 20px;border: none;" autocomplete="off" id="searchfriendname" oninput="Searchfriend()" class="form-control" type="search" placeholder="Search" aria-label="Search" />
+            <i class="fa-brands fa-sistrix" style="position: absolute;color: white;top: 17.5%;left: 11%;"></i>
+            <div class="row" style="height: 79px;position: relative;padding: 15px 0px 15px 0px;background: transparent;margin: 0px;">
+                <input style="padding-left: 41px;color: white;width: 91%;margin-left: 20px;background-color: transparent;border-radius: 20px;" autocomplete="off" id="searchfriendname" oninput="Searchfriend()" class="form-control" type="search" placeholder="Search" aria-label="Search" />
             </div>
 
             {{-- here --}}
-            <div class="scroll-container2" style="padding: 0px 20px 7px 20px;height: 432px;overflow: scroll;overflow-y: auto;background: #1c1d1d;" id="search_data" style="padding: 0px 20px 7px 20px;">
+            <div class="scroll-container2 height-div-scroller" style="padding: 0px 20px 7px 20px;overflow: scroll;overflow-y: auto;background: transparent;" id="search_data">
 
             </div>
         </div>
 
         {{-- chatboard --}}
-        <div class="col-7 chatboardofreceiver" style="background: white;padding: 0px;background: #161717;" id="chatboardofreceiver">
-            <div style="width: 292px;height: 283px;margin-left: 250px;margin-top: 92px;">
+        <div id="chatboardofreceiver" class="col-7 d-none d-sm-block p-0 flex-grow-1 chatboardofreceiver">
+            <div style="width: 292px;height: 283px;margin-left: 250px;margin-top: 135px;">
                 <img src="{{ asset('img/messages.png') }}" style="height: 100%;width: 100%;" alt="">
             </div>
         </div>
+
         @endif
         @yield('content')
     </div>
@@ -278,6 +516,25 @@
     </script>
     @endonce
     <script>
+        function openMianMenu() {
+            if ($('#MianMenu').css('display') == "none") {
+                $('#MianMenu').removeClass('d-none');
+                $('#MianMenu').addClass('d-block');
+
+                // Ensure searchpanel is visible when sidebar opens
+                $('#searchpanel').removeClass('d-none');
+                $('#searchpanel').addClass('d-block');
+                $('#searchpanel').removeClass('col-12');
+                $('#searchpanel').addClass('col-10');
+            } else {
+                $('#MianMenu').removeClass('d-block');
+                $('#MianMenu').addClass('d-none');
+                document.body.classList.remove('rtc-menu-open');
+                $('#searchpanel').removeClass('col-10');
+                $('#searchpanel').addClass('col-12');
+            }
+        }
+
         var totalTimeType = 0;
         $(document).ready(function() {
 
@@ -288,48 +545,49 @@
             // Pusher.logToConsole = true;
             Pusher.logToConsole = false;
             window.Echo.join("send-channel").here((mem) => {
+
                     localStorage.setItem('onlinedata', JSON.stringify(mem));
                     mem.forEach(element => {
                         if ($(`#${element['id']}`).html() != null) {
 
-                            if (element['name'] == $(`#${element['name']}`).html().trim()) {
+                            // if (element['name'] == $(`#${element['name']}`).html().trim()) {
 
-                                let img = "";
-                                if (element['image_path'] != null) {
-                                    img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
-                                } else {
-                                    if (element['gender'] == "Men") {
-                                        img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','male.png','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
-                                    }
-                                    if (element['gender'] == "Women") {
-                                        img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','female.png','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
-                                    }
+                            let img = "";
+                            if (element['image_path'] != null) {
+                                img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
+                            } else {
+                                if (element['gender'] == "Men") {
+                                    img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','male.png','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
                                 }
-
-                                $(`#${element['id']}`).append(`<div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>`);
-                                $($(`#${element['id']}`).find('.TimeOldOnline')[0]).remove();
-
+                                if (element['gender'] == "Women") {
+                                    img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','female.png','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
+                                }
                             }
+
+                            $(`#${element['id']}`).append(`<div style="position: absolute;right: 84%;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>`);
+                            $($(`#${element['id']}`).find('.TimeOldOnline')[0]).remove();
+
+                            // }
                         }
                     });
                 }).joining((member) => {
                     if ($(`#${member['id']}`).html() != null) {
 
-                        if (member['name'] == $(`#${member['name']}`).html().trim()) {
-                            if (member['image_path'] != null) {
-                                img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','${member['image_path']}','${member['phone']}','${member['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${member['image_path']}" alt="">`;
-                            } else {
-                                if (member['gender'] == "Men") {
-                                    img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','male.png','${member['phone']}','${member['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
-                                }
-                                if (member['gender'] == "Women") {
-                                    img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','female.png','${member['phone']}','${member['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
-                                }
+                        // if (member['name'] == $(`#${member['name']}`).html().trim()) {
+                        if (member['image_path'] != null) {
+                            img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','${member['image_path']}','${member['phone']}','${member['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${member['image_path']}" alt="">`;
+                        } else {
+                            if (member['gender'] == "Men") {
+                                img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','male.png','${member['phone']}','${member['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
                             }
-                            $(`#${member['id']}`).append(`<div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>`);
-                            $($(`#${member['id']}`).find('.TimeOldOnline')[0]).remove();
-
+                            if (member['gender'] == "Women") {
+                                img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${member['name']}','female.png','${member['phone']}','${member['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
+                            }
                         }
+                        $(`#${member['id']}`).append(`<div style="position: absolute;right: 84%;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>`);
+                        $($(`#${member['id']}`).find('.TimeOldOnline')[0]).remove();
+
+                        // }
                     }
 
                 }).leaving((member) => {
@@ -750,13 +1008,13 @@
                 });
 
             // set deshboard data
-            if ("{{ isset($last_send_message_user) }}") {
+            // if ("{{ isset($last_send_message_user) }}") {
 
-                if ("{{ isset($last_send_message_user)?$last_send_message_user:''!=Auth::id() }}") {
-                    localStorage.setItem('current_user_chatboard', "{{ isset($last_send_message_user)?$last_send_message_user:'' }}");
-                    setsenduser("{{ isset($last_send_message_user)?$last_send_message_user:'' }}");
-                }
-            }
+            //     if ("{{ isset($last_send_message_user)?$last_send_message_user:''!=Auth::id() }}") {
+            //         localStorage.setItem('current_user_chatboard', "{{ isset($last_send_message_user)?$last_send_message_user:'' }}");
+            //         setsenduser("{{ isset($last_send_message_user)?$last_send_message_user:'' }}");
+            //     }
+            // }
         });
 
         // Close div to Menu 
@@ -782,9 +1040,7 @@
                 const isClickButton = menuId.contains(event.target);
 
                 if (!isClickOutSideDiv && !isClickButton) {
-                    if ($('#moreOptionDivMain').css('display') == 'block') {
-                        $('#moreOptionDivMain').css('display', 'none');
-                    }
+                    $('#moreOptionDivMain').removeClass('show');
 
                 }
             }
@@ -903,13 +1159,17 @@
         }
 
         function MainMoreOpetionShow() {
-            if ($('#moreOptionDivMain').css('display') == 'block') {
-                $('#moreOptionDivMain').css('display', 'none');
-            } else {
-                $('#moreOptionDivMain').css('display', 'block');
-            }
-
+            $('#moreOptionDivMain').toggleClass('show');
         }
+
+        // Optional: hide when clicking outside
+        $(document).on('click', function(e) {
+            const $menu = $('#moreOptionDivMain');
+            const $toggle = $('#showMenuId');
+            if (!$menu.is(e.target) && !$menu.has(e.target).length && !$toggle.is(e.target)) {
+                $menu.removeClass('show');
+            }
+        });
 
         function moreoptionshow() {
 
@@ -940,27 +1200,28 @@
                     onlineuserData.forEach(element => {
                         if ($(`#${element['id']}`).html() != null) {
 
-                            if (element['name'] == $(`#${element['name']}`).html().trim()) {
-                                if (element['image_path'] != null) {
-                                    img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
-                                } else {
-                                    if (element['gender'] == "Men") {
-                                        img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','male.png','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
-                                    }
-                                    if (element['gender'] == "Women") {
-                                        img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','female.png','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
-                                    }
+                            // if (element['name'] == $(`#${element['name']}`).html().trim()) {
+                            if (element['image_path'] != null) {
+                                img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
+                            } else {
+                                if (element['gender'] == "Men") {
+                                    img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','male.png','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
                                 }
-                                $(`#${element['id']}`).html(`<div style="height: 37px;width: 37px;">
-                                        ${img}
-                                        </div>
-                                        <div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
-                                        <div style="width: 100%;" onclick="setsenduser( ${element['id']} )">
-                                        <div style="margin-left: 21px;" id="${element['name']}">
-                                       ${element['name']} 
-                                        </div>
-                                        </div>`);
+                                if (element['gender'] == "Women") {
+                                    img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','female.png','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
+                                }
                             }
+                            $(`#${element['id']}`).append(`<div style="position: absolute;right: 84%;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>`);
+                            // $(`#${element['id']}`).html(`<div style="height: 37px;width: 37px;">
+                            //             ${img}
+                            //             </div>
+                            //             <div style="position: absolute;right: 84%;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>
+                            //             <div style="width: 100%;" onclick="setsenduser( ${element['id']} )">
+                            //             <div style="margin-left: 21px;" id="${element['name']}">
+                            //            ${element['name']} 
+                            //             </div>
+                            //             </div>`);
+                            // }
                         }
                     });
                 }
@@ -972,6 +1233,16 @@
 
         // ChatBort set user
         function setsenduser(user_id, notloader) {
+
+            if ($('#chatboardofreceiver').css('display') == "none") {
+
+                $('#searchpanel').removeClass('d-block');
+                $('#searchpanel').addClass('d-none');
+                $('#chatboardofreceiver').removeClass('d-none');
+                $('#chatboardofreceiver').addClass('d-block');
+
+            }
+
             $('#chatboardofreceiver').html('');
             if (notloader != 'notloader') {
 
@@ -995,6 +1266,8 @@
                     userfriendlist();
                     Tolltip_Intialization();
                     CountNotificationMessages();
+                    const element = document.getElementById("scrollbarid");
+                    element.scrollTop = element.scrollHeight;
                 }
                 , error: function(e) {
                     console.log(e);
@@ -1220,21 +1493,22 @@
                     onlineuserData.forEach(element => {
                         if ($(`#${element['id']}`).html() != null) {
 
-                            if (element['name'] == $(`#${element['name']}`).html().trim()) {
-                                if (element['image_path'] != null) {
-                                    img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
-                                } else {
-                                    if (element['gender'] == "Men") {
-                                        img = `<div data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','male.png','${element['phone']}','${element['email']}')" style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
-                                    }
-                                    if (element['gender'] == "Women") {
-                                        img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','female.png','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
-                                    }
+                            // if (element['name'] == $(`#${element['name']}`).html().trim()) {
+                            if (element['image_path'] != null) {
+                                img = `<img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','${element['image_path']}','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="storage/img/${element['image_path']}" alt="">`;
+                            } else {
+                                if (element['gender'] == "Men") {
+                                    img = `<div data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','male.png','${element['phone']}','${element['email']}')" style="height: 37px;width: 37px;"><img style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/male.png') }}" alt=""></div>`;
                                 }
-                                $(`#${element['id']}`).append(`<div style="position: absolute;right: 19px;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>`);
-                                $($(`#${element['id']}`).find('.TimeOldOnline')[0]).remove();
-
+                                if (element['gender'] == "Women") {
+                                    img = `<div style="height: 37px;width: 37px;"><img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('${element['name']}','female.png','${element['phone']}','${element['email']}')" style="height: 100%;width: 100%;border-radius: 114px;object-fit: cover;" src="{{ asset('img/female.png') }}" alt=""></div>`;
+                                }
                             }
+
+                            $(`#${element['id']}`).append(`<div style="position: absolute;right: 84%;background: green;width: 8px;height: 8px;border-radius: 23px;"> </div>`);
+                            $($(`#${element['id']}`).find('.TimeOldOnline')[0]).remove();
+
+                            // }
                         }
                     });
                 }
@@ -1322,6 +1596,8 @@
                     $("#sendmessageid").css('background-color', 'green');
                 }
             } else {
+                localStorage.setItem('editMessageIdGroup', null);
+
                 if ($("#sendmessageid").css('background-color') == "rgb(0, 128, 0)") {
                     $("#sendmessageid").css('background-color', 'rgb(33, 37, 41)');
                 }
@@ -1345,25 +1621,25 @@
         // Get Emoji And Show
         function emojigetshow(div, message_id) {
 
-            var message_div = $(div).parent().parent().parent().find('div.w_message.d-flex.gap-2').children()[0];
+            var message_div = $(div).parent().parent().parent();
 
             if ($(div).data('code') == 1) {
-                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>👍</div>");
+                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;left: 7%;top: 82%;'>👍</div>");
             }
             if ($(div).data('code') == 2) {
-                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>❤️</div>");
+                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;left: 7%;top: 82%;'>❤️</div>");
             }
             if ($(div).data('code') == 3) {
-                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😂</div>");
+                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;left: 7%;top: 82%;'>😂</div>");
             }
             if ($(div).data('code') == 4) {
-                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😮</div>");
+                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;left: 7%;top: 82%;'>😮</div>");
             }
             if ($(div).data('code') == 5) {
-                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😢</div>");
+                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;left: 7%;top: 82%;'>😢</div>");
             }
             if ($(div).data('code') == 6) {
-                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;'>😡</div>");
+                var newdiv = $("<div class='emoji-div' style='position: absolute;background: #828CAC;border-radius: 28px;left: 7%;top: 82%;'>😡</div>");
             }
 
             $(message_div).append(newdiv);
@@ -1451,7 +1727,23 @@
         }
 
         function CreateGroupDiv() {
-            $('#moreOptionDivMain').css('display', 'none');
+            if ($('#chatboardofreceiver').css('display') == "none") {
+
+                $('#searchpanel').css('display', 'none');
+                $('#chatboardofreceiver').css('display', 'block');
+                $('#chatboardofreceiver').css('width', '100%');
+            }
+
+            if ($('#chatboardofreceiverGroup').css('display') == "none") {
+
+                $('#searchpanel').css('display', 'none');
+                $('#chatboardofreceiverGroup').css('display', 'block');
+                $('#chatboardofreceiverGroup').css('width', '100%');
+            }
+
+
+            // $('#moreOptionDivMain').css('display', 'none');
+            $('#moreOptionDivMain').removeClass('show')
 
             $.ajax({
                 type: 'post'
@@ -1582,6 +1874,7 @@
         }
 
         function CountNotificationMessages() {
+
             $.ajax({
                 type: 'post'
                 , headers: {

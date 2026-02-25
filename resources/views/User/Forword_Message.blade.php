@@ -1,11 +1,11 @@
 @if (isset($friendList))
 @if ($friendList->isNotEmpty())
 
-<div class="row w-100 text-white" style="background: #1c1d1d;margin: 0;padding: 22px;">
+<div class="row w-100 text-white" style=";margin: 0;padding: 22px;">
     Forword User Select...
 </div>
 
-<div class="scroll-container1" style="height: 477px;">
+<div class="scroll-container1" style="height: 500px">
     @foreach ($friendList as $item)
 
     @if ($item->sender_user_id==Auth::id())

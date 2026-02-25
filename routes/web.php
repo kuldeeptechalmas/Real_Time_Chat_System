@@ -53,11 +53,15 @@ Route::middleware('AuthCheckExist')->group(function () {
     Route::match(['get', 'post'], '/message-show', [UserController::class, 'message_show_send_receive'])->name('message_show_send_receive');
     Route::match(['get', 'post'], '/message-clean', [UserController::class, 'message_clean'])->name('message.clean');
 
+    // Message Disappearing
+    Route::match(['get', 'post'], '/message-disappearing', [UserController::class, 'Message_Deisappearing_Set'])->name('message.deisappearing.set');
+
     Route::match(['get', 'post'], '/message-show-pusher', [UserController::class, 'message_show_send_receive_pusher'])->name('message_show_send_receive_pusher');
     Route::match(['get', 'post'], '/current-user-type-pusher', [UserController::class, 'Current_User_Type_Pusher'])->name('Current_User_Type_Pusher');
 
     Route::match(['get', 'post'], '/message-remove', [UserController::class, 'message_remove_current'])->name('message_remove_current');
     Route::match(['get', 'post'], '/message-remove-all', [UserController::class, 'message_remove_current_all'])->name('message_remove_current_all');
+    Route::match(['get', 'post'], '/message-remove-all-delete', [UserController::class, 'message_remove_current_all_delete'])->name('message_remove_current_all.delete');
     Route::match(['get', 'post'], '/user-friend-list', [UserController::class, 'user_friend_list'])->name('user_friend_list');
     Route::match(['get', 'post'], '/user-send-request', [UserController::class, 'user_send_request'])->name('user_send_request');
 
@@ -93,6 +97,8 @@ Route::middleware('AuthCheckExist')->group(function () {
 
     Route::match(['get', 'post'], '/group-in-all-user', [GroupController::class, 'Group_user_Show_All'])->name('group.user.show.all');
     Route::match(['get', 'post'], '/group-exit', [GroupController::class, 'Group_Exit'])->name('group.exit');
+
+    Route::match(['get', 'post'], '/group-edit-get-message', [GroupController::class, 'Edit_Get_Message_Group'])->name('edit.get_message.group');
 
     Route::match(['get', 'post'], '/group-message-emoji', [GroupController::class, 'Group_Message_Emoji'])->name('group.message.emoji');
     Route::match(['get', 'post'], '/group-message-remove', [GroupController::class, 'Group_Message_Remove'])->name('group.message.remove');

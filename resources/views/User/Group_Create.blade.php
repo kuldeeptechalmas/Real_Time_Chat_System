@@ -1,13 +1,18 @@
-<div style="position: relative;height: 100vh;background-color: #1c1d1d;">
+<div style="position: relative;height: 100vh;">
     {{-- header of chating user --}}
-    <div class="text-white" style="position: relative;padding: 22px;background-color: #1c1d1d;display: flex;justify-content: space-between;">
-        Create Group...
+
+    <div class="text-white" style="position: relative;padding: 22px;display: flex;padding-right: 20px;">
+
+
+        <span>
+            Create Group...
+        </span>
     </div>
-    <div class="d-flex mt-2 text-white" style="padding: 10px;background-color: #1c1d1d;">
+    <div class="d-flex mt-2 text-white" style="padding: 10px;">
         <input type="text" placeholder="Group Name" class="form-control scroll-container" style="width: 31%;" name="" id="group_name">
         <button type="button" onclick="FinalCreateGroup()" style="position: absolute;background: rgba(208, 242, 208, 0.5);right: 3%;" class="btn btn-info">New Group Create</button>
     </div>
-    <div class="scroll-container2" style="height: 415px;">
+    <div class="scroll-container2" style="height: 451px">
 
         @if (isset($friendList))
         @if ($friendList->isNotEmpty())

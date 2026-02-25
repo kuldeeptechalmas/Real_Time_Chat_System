@@ -1,12 +1,49 @@
 @php
 use Carbon\Carbon;
 @endphp
+<style>
+    /* Responsive adjustments for friend list */
+    @media (max-width: 768px) {
+        .d-flex.hover_change_all {
+            padding: 12px !important;
+            margin: 3px !important;
+        }
+
+        .d-flex.justify-content-center {
+            height: 32px !important;
+            width: 32px !important;
+        }
+
+        div[style*="margin-left: 21px"] {
+            margin-left: 15px !important;
+            font-size: 14px;
+        }
+
+        div[style*="max-width: 210px"] {
+            max-width: 150px !important;
+            font-size: 12px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .d-flex.hover_change_all {
+            padding: 10px !important;
+            border-radius: 12px !important;
+        }
+
+        div[style*="max-width: 210px"] {
+            max-width: 120px !important;
+        }
+    }
+
+</style>
+
 @if (isset($user_data))
 
 @if ($user_data->isNotEmpty())
 
 @foreach ($user_data as $item)
-<div class="d-flex bg-dark text-white" id="{{ $item->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
+<div class="d-flex hover_change_all text-white" id="{{ $item->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
     <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
 
         @if ($item->image_path!=Null)
@@ -22,6 +59,18 @@ use Carbon\Carbon;
     <div style="width: 100%;" onclick="setsenduser({{ $item->id }})">
         <div style="margin-left: 21px;" id="{{ $item->name }}">
             {{ $item->name }}
+            <br>
+            <div style="max-width: 210px;color: gray;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                @if ($item->status=='send')
+                <i class="fa-solid fa-check" style="font-size: 11px;"></i>
+                @endif
+
+                @if ($item->status=='view')
+                <i class="fa-solid fa-check" style="color: #7a7afc;font-size: 11px;margin-right: -13px;"></i>
+                <i class="fa-solid fa-check" style="color: #7a7afc;font-size: 11px;margin-right: 1px;"></i>
+                @endif
+                {{ $item->message }}
+            </div>
         </div>
     </div>
 </div>
@@ -31,6 +80,7 @@ use Carbon\Carbon;
     Result Not found
 </div>
 @endif
+
 @endif
 
 @if (isset($last_message_send_data))
@@ -40,7 +90,7 @@ use Carbon\Carbon;
 
 @if ($item->receive_id==Auth::id())
 
-<div class="d-flex bg-dark text-white" id="{{ $item->sender->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
+<div class="d-flex hover_change_all text-white" id="{{ $item->sender->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
     <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
         @if ($item->sender->image_path!=Null)
 
@@ -56,13 +106,58 @@ use Carbon\Carbon;
     <div style="width: 100%;" onclick="setsenduser({{ $item->sender->id }})">
         <div style="margin-left: 21px;" id="{{ $item->sender->name }}">
             {{ $item->sender->name }}
+            <br>
+            <div style="max-width: 210px;color: gray;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                @if ($item->status=='send')
+                <i class="fa-solid fa-check" style="font-size: 11px;"></i>
+                @endif
+
+                @if ($item->status=='view')
+                <i class="fa-solid fa-check" style="color: #7a7afc;font-size: 11px;margin-right: -13px;"></i>
+                <i class="fa-solid fa-check" style="color: #7a7afc;font-size: 11px;margin-right: 1px;"></i>
+                @endif
+                {{ $item->message }}
+            </div>
         </div>
+        @if (isset($item->sender->last_seen_at))
+        @php
+        $old_time = $item->sender->last_seen_at
+        ->copy()
+        ->setTimezone('Asia/Kolkata');
+
+        $now = now()->setTimezone('Asia/Kolkata');
+        @endphp
+
+        @if ($item->message_count != 0)
+        <div style="font-size: 12px;color: black;top: 46px;right: 33px;position: absolute;background: #21c063;height: 20px;width: 20px;display: flex;justify-content: center;border-radius: 14px;align-items: center;">
+            {{ $item->message_count }}
+        </div>
+        @endif
+
+        <div class="TimeOldOnline" style="font-family: 'Inter', sans-serif;font-size: 12px;position: absolute;top: 29%;right: 6%;">
+
+            @if($old_time->isToday())
+            {{ $old_time->format('h:i A') }}
+
+            @elseif($old_time->isYesterday())
+            Yesterday
+
+            @elseif($old_time->greaterThanOrEqualTo($now->copy()->subDays(7)))
+            {{ $old_time->format('l') }}
+
+            @else
+            {{ $old_time->format('d/m/y') }}
+            @endif
+
+        </div>
+
+        @endif
     </div>
 </div>
 
 @else
 
-<div class="d-flex bg-dark text-white" id="{{ $item->user_data_to_message->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
+<div class="d-flex hover_change_all text-white" id="{{ $item->user_data_to_message->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
     <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
         @if ($item->user_data_to_message->image_path!=Null)
         <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->user_data_to_message->name }}','{{ $item->user_data_to_message->image_path }}','{{ $item->user_data_to_message->phone }}','{{ $item->user_data_to_message->email }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->user_data_to_message->image_path) }}" alt="">
@@ -75,50 +170,60 @@ use Carbon\Carbon;
         @endif
     </div>
     <div style="width: 100%;display: flex;height: 37px;" onclick="setsenduser({{ $item->user_data_to_message->id }})">
-        <div style="margin-left: 21px;display: flex;" id="{{ $item->user_data_to_message->name }}">
+        <div style="margin-left: 21px;font-family: 'Inter', sans-serif;" id="{{ $item->user_data_to_message->name }}">
             {{ $item->user_data_to_message->name }}
-            {{-- {{ $item }} --}}
+            <br>
+            <div style="max-width: 210px;color: gray;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                @if ($item->status=='send')
+                <i class="fa-solid fa-check" style="font-size: 11px;"></i>
+                @endif
+
+                @if ($item->status=='view')
+                <i class="fa-solid fa-check" style="color: #7a7afc;font-size: 11px;margin-right: -13px;"></i>
+                <i class="fa-solid fa-check" style="color: #7a7afc;font-size: 11px;margin-right: 1px;"></i>
+                @endif
+                {{ $item->message }}
+            </div>
         </div>
 
         @if (isset($item->user_data_to_message->last_seen_at))
-
         @php
-        $old_time = Carbon::parse($item->user_data_to_message->last_seen_at->timezone('Asia/Kolkata'));
-        $current = Carbon::now();
-        $diff = $old_time->diff($current);
+        $old_time = $item->user_data_to_message->last_seen_at
+        ->copy()
+        ->setTimezone('Asia/Kolkata');
+
+        $now = now()->setTimezone('Asia/Kolkata');
         @endphp
-        @if ($item->message_count!=0)
-        <div style="top: 20px;right: 68px;position: absolute;background: lightblue;height: 20px;width: 20px;display: flex;justify-content: center;border-radius: 14px;align-items: center;">
+
+        @if ($item->message_count != 0)
+        <div style="font-size: 12px;color: black;top: 46px;right: 33px;position: absolute;background: #21c063;height: 20px;width: 20px;display: flex;justify-content: center;border-radius: 14px;align-items: center;">
             {{ $item->message_count }}
         </div>
-
         @endif
 
-        <div class="TimeOldOnline" style="font-size: 12px;position: absolute;top: 29%;right: 6%;">
+        <div class="TimeOldOnline" style="font-family: 'Inter', sans-serif;font-size: 12px;position: absolute;top: 29%;right: 6%;">
 
-            @php
-            $date = \Carbon\Carbon::parse($old_time);
-            @endphp
+            @if($old_time->isToday())
+            {{ $old_time->format('h:i A') }}
 
-            @if($date->isToday())
-            {{ $date->format('H:i a') }}
-
-            @elseif($date->isYesterday())
+            @elseif($old_time->isYesterday())
             Yesterday
 
-            @elseif($date->greaterThanOrEqualTo(now()->subDays(7)))
-            {{ $date->format('l') }}
+            @elseif($old_time->greaterThanOrEqualTo($now->copy()->subDays(7)))
+            {{ $old_time->format('l') }}
 
             @else
-            {{ $date->format('d/m/y') }}
+            {{ $old_time->format('d/m/y') }}
             @endif
 
         </div>
+
         @endif
     </div>
 </div>
 
 @endif
+
 @endforeach
 
 @else

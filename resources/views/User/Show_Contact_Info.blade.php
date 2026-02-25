@@ -31,8 +31,8 @@
     <hr style="margin: 3px;">
     <div class="hover_change_all_remove hover_change_all d-flex" onclick="removeallmessage({{ $select_user_data->id }})" style="height: 49px;border-radius: 16px;">
         <i class="fa-regular fa-trash-can d-flex justify-content-center align-items-center" style="margin-left: 20px;"></i>
-        <span class="d-flex justify-content-center align-items-center" style="padding-left: 13px;">
-            Delete Chat
+        <span class="d-flex justify-content-center align-items-center" style="padding-left: 13px;width: 129px !important;">
+            Clear Chat
         </span>
     </div>
     <hr style="margin: 3px;">

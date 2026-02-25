@@ -1,9 +1,52 @@
 @extends('User.dashbord')
 
 @section('content')
+<style>
+    /* Responsive friendlist page */
+    @media (max-width: 768px) {
+        .friendlist-left {
+            width: 100% !important;
+            border-right: none !important;
+        }
+
+        /* When sidebar is open, show both sidebar and friend list side by side */
+        body.rtc-menu-open .friendlist-left {
+            margin-left: 72px;
+            width: calc(100% - 72px) !important;
+            transition: margin-left 0.25s ease, width 0.25s ease;
+        }
+
+        .friendlist-right {
+            display: none !important;
+        }
+
+        .friendlist-item {
+            padding: 12px !important;
+            margin: 3px !important;
+        }
+
+        .friendlist-item button.btn {
+            padding: 8px 14px !important;
+            font-size: 13px !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .friendlist-item {
+            padding: 10px !important;
+        }
+
+        .friendlist-item button.btn {
+            position: static !important;
+            width: 100%;
+            margin-top: 10px;
+        }
+    }
+
+</style>
 {{-- searching and show user --}}
-<div class="col-4 bg-light" style="padding: 0px;width: 36.333333%;border-right: 1px solid #504f4f;">
-    <div style="padding: 21px;background-color: #1c1d1d">
+<div class="col-12 col-md-4 friendlist-left" style="padding: 0px;border-right: 1px solid #504f4f;">
+    <div style="padding: 21px;">
         <div class="d-flex">
             <div style="height: 26px;width: 49px;">
                 <img style="height: 100%;width: 100%;" src="{{ asset('img/logo.png') }}" alt="">
@@ -13,12 +56,12 @@
             </div>
         </div>
     </div>
-    <div class="row" style="margin: 0px;padding: 15px;display: flex;justify-content: center;background: #1c1d1d;color: white;">
+    <div class="row" style="margin: 0px;padding: 15px;display: flex;justify-content: center;color: white;">
         Friend List
     </div>
 
     {{-- here --}}
-    <div class="scroll-container" style="padding: 0px 20px 7px 20px;background: #1c1d1d;height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;" style="padding: 0px 20px 7px 20px;">
+    <div class="scroll-container" style="padding: 0px 20px 7px 20px;height: 500px;overflow: scroll; padding-bottom: 80px;overflow-y: auto;" style="padding: 0px 20px 7px 20px;">
         @if (isset($friendList))
         @if ($friendList->isNotEmpty())
 
@@ -27,7 +70,7 @@
         @foreach ($friendList as $item)
 
         @if ($item->sender_user_id==Auth::id())
-        <div class="d-flex bg-dark text-white" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
+        <div class="d-flex bg-dark text-white friendlist-item" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
             <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
 
                 @if ($item->receiverData->image_path!=Null)
@@ -48,7 +91,7 @@
             <button style="position: absolute;right: 4%;" type="button" onclick="unfollowbyid('{{ $item->id }}',this)" class="btn btn-primary">UnFollow</button>
         </div>
         @else
-        <div class="d-flex bg-dark text-white" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
+        <div class="d-flex bg-dark text-white friendlist-item" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
             <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
                 @if (isset($item->sendersData->image_path))
                 <img style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->sendersData->image_path) }}" data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->sendersData->name }}','{{ $item->sendersData->image_path }}','{{ $item->sendersData->phone }}','{{ $item->sendersData->email }}')" alt="">
@@ -87,8 +130,8 @@
 </div>
 
 {{-- chatboard --}}
-<div class="col-7" style="background: #1c1d1d;color: white;padding: 0px;" id="chatboardofreceiver">
-    <div style="width: 292px;height: 283px;margin-left: 250px;margin-top: 92px;">
+<div class="col-7 d-none d-md-block friendlist-right" style="color: white;padding: 0px;" id="chatboardofreceiver">
+    <div style="width: 292px;height: 283px;margin-left: 250px;margin-top: 135px;">
         <img src="{{ asset('img/messages.png') }}" style="height: 100%;width: 100%;" alt="">
     </div>
 </div>

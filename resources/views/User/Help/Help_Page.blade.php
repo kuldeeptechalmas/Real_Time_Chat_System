@@ -1,10 +1,42 @@
 @extends('User.dashbord')
 
 @section('content')
-{{-- searching and show user --}}
-<div class="col-4 text-white" style="padding: 0px;width: 36.333333%;border-right: 1px solid #504f4f;">
+<style>
+    /* Responsive help page styles */
+    @media (max-width: 768px) {
+        .col-4 {
+            width: 100% !important;
+            border-right: none !important;
+        }
 
-    <div style="padding: 21px;background-color: #1d1f1f">
+        /* When sidebar is open, show both sidebar and help user list side by side */
+        body.rtc-menu-open .col-12.col-md-4 {
+            margin-left: 72px;
+            width: calc(100% - 72px) !important;
+            transition: margin-left 0.25s ease, width 0.25s ease;
+        }
+
+        .col-7 {
+            display: none !important;
+        }
+
+        .d-flex.bg-dark.text-white {
+            padding: 12px !important;
+            margin: 3px !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .d-flex.bg-dark.text-white {
+            padding: 10px !important;
+        }
+    }
+
+</style>
+{{-- searching and show user --}}
+<div class="col-12 col-md-4 text-white" style="padding: 0px;border-right: 1px solid #504f4f;">
+
+    <div style="padding: 21px;">
         <div class="d-flex">
             <div style="height: 26px;width: 49px;">
                 <img style="height: 100%;width: 100%;" src="{{ asset('img/logo.png') }}" alt="">
@@ -39,8 +71,8 @@
 </div>
 
 {{-- chatboard --}}
-<div class="col-7" style="background: #1d1f1f;padding: 0px;" id="chatboardofreceiverHelpUser">
-    <div style="width: 292px;height: 283px;margin-left: 250px;margin-top: 92px;">
+<div class="col-7 d-none d-md-block" style=";padding: 0px;" id="chatboardofreceiverHelpUser">
+    <div style="width: 292px;height: 283px;margin-left: 250px;margin-top: 135px;">
         <img src="{{ asset('img/messages.png') }}" style="height: 100%;width: 100%;" alt="">
     </div>
 </div>

@@ -1,10 +1,11 @@
 <style>
     .img-thumbs {
-        background: #eee;
-        border: 1px solid #ccc;
-        border-radius: 0.25rem;
-        margin: 1.5rem 0;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 0.5rem;
+        margin: 1rem 0;
         padding: 0.75rem;
+        backdrop-filter: blur(10px);
     }
 
     .img-thumbs-hidden {
@@ -17,7 +18,7 @@
         width: 84px;
         position: relative;
         display: inline-block;
-        margin: 1rem 0;
+        margin: 0.5rem;
         justify-content: space-around;
     }
 
@@ -26,12 +27,17 @@
         width: 100%;
         object-fit: cover;
         background: #fff;
-        border: 1px solid none;
-        border-radius: 0.25rem;
-        box-shadow: 0.125rem 0.125rem 0.0625rem rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 0.5rem;
+        box-shadow: 0.125rem 0.125rem 0.5rem rgba(0, 0, 0, 0.2);
         margin-right: 1rem;
         max-width: 140px;
         padding: 0.25rem;
+        transition: transform 0.3s ease;
+    }
+
+    .img-preview-thumb:hover {
+        transform: scale(1.05);
     }
 
     .remove-btn {
@@ -42,25 +48,69 @@
         font-size: .7rem;
         top: -5px;
         right: 10px;
-        width: 20px;
-        height: 20px;
-        background: white;
-        border-radius: 10px;
+        width: 24px;
+        height: 24px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
         font-weight: bold;
         cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 10;
     }
 
     .remove-btn:hover {
-        box-shadow: 0px 0px 3px grey;
-        transition: all .3s ease-in-out;
+        box-shadow: 0px 2px 8px rgba(255, 0, 0, 0.4);
+        transform: scale(1.1);
+        background: #ff4444;
+        color: white;
+    }
+
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+        .wrapper-thumb {
+            height: 60px;
+            width: 75px;
+            margin: 0.3rem;
+        }
+
+        .img-thumbs {
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        #moreoptiondiv {
+            right: 5% !important;
+            top: 12% !important;
+            max-width: 200px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .wrapper-thumb {
+            height: 55px;
+            width: 70px;
+        }
+
+        .remove-btn {
+            width: 20px;
+            height: 20px;
+            font-size: 0.6rem;
+        }
+
+        #emoji_picker {
+            width: 280px !important;
+            height: 200px !important;
+            bottom: 12% !important;
+        }
     }
 
 </style>
 
-<div style="position: relative;height: 100vh;">
+<div style="position: relative;height: 100vh;background-size: cover;background-position: center;">
     {{-- header of chating user --}}
-    <div style="position: relative;padding: 15px;background-color: #1c1d1d;display: flex;justify-content: space-between;">
-        <div style="height: 37px;width: 66px;display: flex;align-items: center;">
+    <div style="z-index: 1000;backdrop-filter: blur(45px);position: relative;padding: 15px;background-color: #transparent;display: flex;justify-content: space-between;">
+        <div style="height: 37px;width: 355px;display: flex;align-items: center;">
+
             <div>
                 <div style="height: 37px;width: 37px;">
 
@@ -74,8 +124,12 @@
             <div class="text-white" style="padding-left: 27px;">{{ $chatboart_group->name }}</div>
         </div>
 
-        <div data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Menu" data-bs-custom-class="custom-tooltip-style" data-bs-placement="left" class="manu_chatbord_top_userDetails d-flex justify-content-center align-items-center size-9 rounded-[50px]">
+        {{-- <div data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Menu" data-bs-custom-class="custom-tooltip-style" data-bs-placement="left" class="manu_chatbord_top_userDetails d-flex justify-content-center align-items-center size-9 rounded-[50px]">
             <i class="fa-solid fa-ellipsis-vertical text-white" id="toggleId" onclick="moreoptionshow()"></i>
+        </div> --}}
+
+        <div data-bs-toggle="tooltip" data-bs-html="true" data-bs-title="Menu" data-bs-custom-class="custom-tooltip-style" data-bs-placement="left" class="manu_chatbord_top_userDetails d-flex justify-content-center align-items-center size-9 rounded-[50px]">
+            <i class="fa-solid fa-ellipsis-vertical" id="toggleId" onclick="moreoptionshow()"></i>
         </div>
 
         <div id="moreoptiondiv" style="border: 1px solid rgb(94 89 89);z-index: 999;padding: 6px;display: none;position: absolute;top: 97%;right: 3%;background-color: #161717;color:white;border-radius: 18px;">
@@ -83,12 +137,20 @@
             <div class="hover_change_all" style="padding: 5px;cursor: pointer;border-radius: 11px;">
                 <div class="d-flex">
                     <i class="fa-solid fa-user-plus d-flex justify-content-center align-items-center"></i>
-                    <div onclick="removeallmessageGroup({{ $chatboart_group->id }})" style="padding-left: 10px;">
+                    <div onclick="addFriendPage({{ $chatboart_group->id }})" style="padding-left: 10px;">
                         Add Friend
                     </div>
                 </div>
             </div>
             @endif
+            <div class="hover_change_all hover_change_all_remove" style="padding: 5px;cursor: pointer;border-radius: 11px;">
+                <div class="d-flex">
+                    <i class="fa-solid fa-circle-minus d-flex justify-content-center align-items-center"></i>
+                    <div onclick="removeallmessageGroup({{ $chatboart_group->id }})" style="padding-left: 10px;">
+                        Clear Chat
+                    </div>
+                </div>
+            </div>
             <div class="hover_change_all hover_change_all_remove" style="padding: 5px;cursor: pointer;border-radius: 11px;">
                 <div class="d-flex">
                     <i class="fa-solid fa-circle-minus d-flex justify-content-center align-items-center"></i>
@@ -100,6 +162,7 @@
 
         </div>
     </div>
+
     <div style="position: absolute;left: 50%;top: 50%;">
         <div class="loader" style="display: none" id="loader"></div>
     </div>
@@ -110,17 +173,17 @@
     </div>
 
     {{-- message input --}}
-    <emoji-picker id="emoji_picker" class="light" no-search style="display:none;width: 339px;height: 247px;position: absolute;bottom: 14%;"></emoji-picker>
-    <div class="bg-dark text-white" style="position: absolute;bottom: 1px;padding: 16px;width: 96%;margin: 10px;display: flex;border-radius: 129px;">
+    <emoji-picker id="emoji_picker" class="light" no-search style="display:none;width: 339px;height: 247px;position: absolute;bottom: 14%;z-index: 100;"></emoji-picker>
+    <div class="bg-dark text-white" style="position: absolute;bottom: 1px;padding: 12px 16px;width: calc(100% - 20px);margin: 10px;display: flex;border-radius: 129px;max-width: 100%;">
 
         <input type="file" class="form-control" name="oldfiles[]" multiple id="oldfiles" style="display: none" hidden>
         <input type="file" class="form-control" name="files[]" multiple id="files" style="display: none">
         <i class="fa-solid fa-paperclip" style="padding-top: 14px;font-size: 19px;align-items: center;display: flex;justify-content: center;" onclick="FilesImageSend()"></i>
         <i class="fa-solid fa-face-smile" id="emoji_id" style="padding-top: 14px;font-size: 19px;align-items: center;display: flex;justify-content: center;padding-left: 25px;"></i>
 
-        <textarea style="color: white;border: none;background: #212529;width: 87%;margin-left: 28px;field-sizing: content;resize: none;max-height: 5lh;" rows="1" oninput="userWriteText(this,{{ $chatboart_group->id }})" autocomplete="off" class="form-control shadow-none scroll-container" id="messages" placeholder="Type a message" aria-label="Search"></textarea>
+        <textarea style="color: white;border: none;background: #212529;width: 87%;margin-left: 15px;field-sizing: content;resize: none;max-height: 5lh;" rows="1" oninput="userWriteText(this,{{ $chatboart_group->id }})" autocomplete="off" class="form-control shadow-none scroll-container" id="messages" placeholder="Type a message" aria-label="Search"></textarea>
 
-        <div class="img-thumbs img-thumbs-hidden scroll-container" id="img-preview" style="overflow: scroll;overflow-y: auto;width: 86%;margin: 0px;height: 97px;margin-left:20px"></div>
+        <div class="img-thumbs img-thumbs-hidden scroll-container" id="img-preview" style="overflow: scroll;overflow-y: auto;width: 86%;margin: 0px;height: 97px;margin-left:15px"></div>
 
         <input type="submit" value="" hidden>
         <div class="d-flex justify-content-center align-items-center">

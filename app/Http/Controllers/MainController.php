@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\Email_OTP_Ver_Job;
 use App\Mail\Email_OTP_Verification;
+use App\Models\Group_Message_Emoji;
 use App\Models\Message;
 use App\Models\User;
 use App\Rules\check_password;
@@ -268,6 +269,11 @@ class MainController extends Controller
     public function logout(Request $request)
     {
         if (Auth::check()) {
+            $User_find = User::find(Auth::id());
+            if (isset($User_find)) {
+                $User_find->last_seen_at = now();
+                $User_find->save();
+            }
             Auth::logout();
         }
         return redirect()->route('login');

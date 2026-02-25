@@ -8,6 +8,7 @@ use App\Events\SendFollowNotification;
 use App\Events\SendMeesages;
 use App\Events\UserFollowORUnFollowEvent;
 use App\Events\ViewToReceiver;
+use App\Models\DisappearingMessage;
 use App\Models\Friendship;
 use App\Models\Group;
 use App\Models\GroupMessageDeleteAt;
@@ -18,7 +19,9 @@ use App\Models\StarUser;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File as FacadesFile;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
@@ -52,26 +55,32 @@ class UserController extends Controller
                         'required',
                         'email',
                         'email:rfc,dns',
-                        'regex:/^[a-zA-Z0-9._%+-]+@(gmail|yahoo|yopmail)\.com$/',
+                        'regex:/^[a-zA-Z0-9._%+-]+@(gmail|yahoo|yopmail|techalmas)\.com$/',
                         Rule::unique('users', 'email')->ignore($request->id)
                     ],
                     'file' => 'image|mimes:jpeg,png,jpg|max:2048',
                 ], [
-                    'username.required' => 'Enter User Name is Required',
-                    'gender.required' => 'Enter Gender is Required',
-                    'username.alpha_dash' => 'Enter Only Letters, Numbers, Dashes and Underscores is Required',
-                    'username.unique' => 'Enter User Name is Already Exist',
-                    'phone.required' => 'Enter Phone No. is Required',
-                    'phone.unique' => 'Enter Phone No. is Already Exist',
-                    'phone.numeric' => 'Enter Only Digits is Required',
-                    'phone.digits' => 'Enter 10 Digits is Required',
-                    'email.required' => 'Enter Email Address is Required',
-                    'email.unique' => 'Enter Email Address is Already Exist',
-                    'email.email' => 'Enter Valid Email Address is Required',
-                    'email.regex' => 'Enter only Gmail,Yahoo,Yopmail Domain is Required',
-                    'file.image' => 'Enter Only Images is Required',
-                    'file.mimes' => 'Enter Images is Jpg or Png Required',
-                    'file.max' => 'Enter Images is Max Size 2 MB Required',
+                    // Username messages
+                    'username.required' => 'The User Name field is required.',
+                    'username.alpha_dash' => 'The User Name may only contain letters, numbers, dashes, and underscores.',
+                    'username.unique' => 'This User Name is already taken.',
+
+                    // Phone messages
+                    'phone.required' => 'The Phone Number field is required.',
+                    'phone.numeric' => 'The Phone Number must contain only digits.',
+                    'phone.digits' => 'The Phone Number must be exactly 10 digits.',
+                    'phone.unique' => 'This Phone Number is already in use.',
+
+                    // Email messages
+                    'email.required' => 'The Email Address field is required.',
+                    'email.email' => 'Please enter a valid Email Address.',
+                    'email.regex' => 'Email domain must be Gmail, Yahoo, Yopmail, or Techalmas.',
+                    'email.unique' => 'This Email Address is already registered.',
+
+                    // File messages
+                    'file.image' => 'Please upload a valid image.',
+                    'file.mimes' => 'Image must be a file of type: jpeg, jpg, png.',
+                    'file.max' => 'Image size must not exceed 2 MB.',
                 ]);
 
                 if ($Validator->fails()) {
@@ -151,14 +160,19 @@ class UserController extends Controller
                 return response()->json(['error' => 'not found data']);
             }
         } else {
-            $message_data_order = Message::select('send_id', 'receive_id')
-                ->selectRaw('MAX(created_at) as last_message_time')
-                ->where('send_id', Auth::user()->id)
-                ->orWhere('receive_id', Auth::user()->id)
+            $sub = Message::select(
+                DB::raw('MAX(id) as id')
+            )
+                ->where(function ($query) {
+                    $query->where('send_id', Auth::id())
+                        ->orWhere('receive_id', Auth::id());
+                })
                 ->where('send_id', '!=', 3)
                 ->where('receive_id', '!=', 3)
-                ->groupBy('send_id', 'receive_id')
-                ->orderByDesc('last_message_time')
+                ->groupBy(DB::raw('LEAST(send_id, receive_id), GREATEST(send_id, receive_id)'));
+
+            $message_data_order = Message::whereIn('id', $sub)
+                ->orderByDesc('created_at')
                 ->get();
 
             $extra_collect = $message_data_order;
@@ -252,9 +266,10 @@ class UserController extends Controller
 
                 if (isset($check_this_friend_receiver)) {
 
-                    $user_Select_to_show = User::with(['starUserFind' => function ($query) {
+                    $user_Select_to_show = User::with(['DisappearMessageData', 'starUserFind' => function ($query) {
                         $query->where('current_user_id', Auth::id());
                     }])->find($request->select_user_id);
+
 
                     if ($user_Select_to_show) {
                         $message_view_ok = Message::where('send_id', $request->select_user_id)->where('receive_id', Auth::id())->get();
@@ -298,7 +313,9 @@ class UserController extends Controller
             }
 
             // Message Show To ViewREceiver Code
-            $user_Select_to_show = User::find($request->select_user_id);
+            $user_Select_to_show = User::with(['DisappearMessageData'])->find($request->select_user_id);
+
+            dd($user_Select_to_show->toArray());
 
             if ($user_Select_to_show) {
                 $message_view_ok = Message::where('send_id', $request->select_user_id)->where('receive_id', Auth::id())->get();
@@ -428,6 +445,15 @@ class UserController extends Controller
                     }
                 } else {
 
+                    $Expire_time = 0;
+                    // Find Disappearing Message
+                    $disappearing_Message_Time = DisappearingMessage::where('from_user_id', Auth::id())
+                        ->where("to_user_id", $request->receive_data_id)
+                        ->first();
+                    if (!empty($disappearing_Message_Time)) {
+                        $Expire_time = $disappearing_Message_Time->expiring_time;
+                    }
+                    // Message Send
                     if ($files = $request->file('files')) {
                         foreach ($files as $file) {
                             $file->storeAs('public/img', $file->getClientOriginalName());
@@ -436,6 +462,10 @@ class UserController extends Controller
                             $message_data->send_id = Auth::user()->id;
                             $message_data->receive_id = $request->receive_data_id;
                             $message_data->status = 'send';
+                            // $message_data->expire_at = $Expire_time != 0 ? $Expire_time : null;
+                            if ($Expire_time != 0) {
+                                $message_data->expire_at = now()->addHours($Expire_time);
+                            }
                             $message_data->save();
 
                             $get_with_message_user = Message::with('sender')->find($message_data->id);
@@ -451,7 +481,12 @@ class UserController extends Controller
                             $message_data->send_id = Auth::user()->id;
                             $message_data->receive_id = $request->receive_data_id;
                             $message_data->status = 'send';
+                            // $message_data->expire_at = $Expire_time != 0 ? $Expire_time : null;
+                            if ($Expire_time != 0) {
+                                $message_data->expire_at = Carbon::now()->addHours($Expire_time);
+                            }
                             $message_data->save();
+
 
                             $get_with_message_user = Message::with('sender')->find($message_data->id);
 
@@ -569,6 +604,38 @@ class UserController extends Controller
         return response()->json(['message_user' => $message_users]);
     }
 
+    // Message Disappearing Exipres time set
+    public function Message_Deisappearing_Set(Request $request)
+    {
+        if (Auth::check()) {
+
+            // Remove existing Disappearing Time
+            if ($request->expired_time == "off") {
+                $check_disappear_message = DisappearingMessage::where("from_user_id", Auth::id())
+                    ->where("to_user_id", $request->to_user_id)
+                    ->first();
+                $check_disappear_message->delete();
+            } else {
+
+                // Add Disappearing Time
+                $check_disappear_message = DisappearingMessage::where("from_user_id", Auth::id())
+                    ->where("to_user_id", $request->to_user_id)
+                    ->first();
+                if (!empty($check_disappear_message)) {
+                    $check_disappear_message->expiring_time = $request->expired_time;
+                    $check_disappear_message->save();
+                } else {
+
+                    $disappear_message = new DisappearingMessage();
+                    $disappear_message->from_user_id = Auth::id();
+                    $disappear_message->to_user_id = $request->to_user_id;
+                    $disappear_message->expiring_time = $request->expired_time;
+                    $disappear_message->save();
+                }
+            }
+        }
+    }
+
     // Remove all Messages For Current open User
     public function message_remove_current_all(Request $request)
     {
@@ -599,17 +666,42 @@ class UserController extends Controller
         return response()->json(['allclean' => 'yes']);
     }
 
+    public function message_remove_current_all_delete(Request $request)
+    {
+        $userid = Auth::id();
+        $selectuserid = $request->chatboard_user_id;
+
+        $message_data_to_show = Message::where(function ($query) use ($userid, $selectuserid) {
+            $query->where('send_id', $userid)->whereNull('sender_deleted_at')
+                ->where('receive_id', $selectuserid);
+        })->orWhere(function ($query) use ($userid, $selectuserid) {
+            $query->where('send_id', $selectuserid)
+                ->where('receive_id', $userid)->whereNull('receiver_deleted_at');
+        })->orderBy('created_at', "asc")->get();
+
+        foreach ($message_data_to_show as $items) {
+            $items->delete();
+        }
+
+        return response()->json(['AllDelete' => 'yes']);
+    }
+
     // Get User Friend Panel List
     public function user_friend_list(Request $request)
     {
-        $message_data_order = Message::select('send_id', 'receive_id')
-            ->selectRaw('MAX(created_at) as last_message_time')
-            ->where('send_id', Auth::user()->id)
-            ->orWhere('receive_id', Auth::user()->id)
+        $sub = Message::select(
+            DB::raw('MAX(id) as id')
+        )
+            ->where(function ($query) {
+                $query->where('send_id', Auth::id())
+                    ->orWhere('receive_id', Auth::id());
+            })
             ->where('send_id', '!=', 3)
             ->where('receive_id', '!=', 3)
-            ->groupBy('send_id', 'receive_id')
-            ->orderByDesc('last_message_time')
+            ->groupBy(DB::raw('LEAST(send_id, receive_id), GREATEST(send_id, receive_id)'));
+
+        $message_data_order = Message::whereIn('id', $sub)
+            ->orderByDesc('created_at')
             ->get();
 
         $extra_collect = $message_data_order;
@@ -643,12 +735,15 @@ class UserController extends Controller
         });
 
         foreach ($filtered as  $value) {
-            $Message_Not_View_Count_Data = Message::where('receive_id', $value->send_id)
-                ->where('send_id', $value->receive_id)
+            $Message_Not_View_Count_Data = Message::where('send_id', $value->send_id)
+                ->where('receive_id', Auth::id())
                 ->where('status', 'send')
-                ->get();
-            $value['message_count'] = $Message_Not_View_Count_Data->count();
+                ->count();
+
+            $value['message_count'] = $Message_Not_View_Count_Data;
         }
+
+        // dd($filtered->user_data_to_message->toArray());
 
         if (isset($message_data_order)) {
 
@@ -915,7 +1010,6 @@ class UserController extends Controller
         } else {
             return response()->json(['data' => 'not found']);
         }
-        // dd($request->all());
     }
 
     public function Get_Message_Not_View_Count(Request $request)

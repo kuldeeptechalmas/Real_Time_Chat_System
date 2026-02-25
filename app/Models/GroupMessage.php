@@ -16,6 +16,10 @@ class GroupMessage extends Model
     {
         return $this->hasMany(User::class, 'id', 'user_id');
     }
+    public function MessageEmoji()
+    {
+        return $this->hasMany(Group_Message_Emoji::class, 'message_id', 'id');
+    }
     public function GroupMessageDeleteAtData()
     {
         return $this->hasMany(GroupMessageDeleteAt::class, 'message_id', 'id');

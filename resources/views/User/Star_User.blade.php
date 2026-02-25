@@ -1,10 +1,42 @@
 @extends('User.dashbord')
 
 @section('content')
+<style>
+    /* Responsive star-friend page */
+    @media (max-width: 768px) {
+        .star-left {
+            width: 100% !important;
+            border-right: none !important;
+        }
+
+        /* When sidebar is open, show both sidebar and star user list side by side */
+        body.rtc-menu-open .star-left {
+            margin-left: 72px;
+            width: calc(100% - 72px) !important;
+            transition: margin-left 0.25s ease, width 0.25s ease;
+        }
+
+        .star-right {
+            display: none !important;
+        }
+
+        .star-item {
+            padding: 12px !important;
+            margin: 3px !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .star-item {
+            padding: 10px !important;
+        }
+    }
+
+</style>
 
 {{-- star and show user --}}
-<div class="col-4 " style="padding: 0px;width: 36.333333%;border-right: 1px solid #504f4f;">
-    <div class="text-white" style="padding: 21px;background-color: #1d1f1f">
+<div class="col-12 col-md-4 star-left" style="padding: 0px;border-right: 1px solid #504f4f;">
+    <div class="text-white" style="padding: 21px;">
         <div class="d-flex">
             <div style="height: 26px;width: 49px;">
                 <img style="height: 100%;width: 100%;" src="{{ asset('img/logo.png') }}" alt="">
@@ -29,7 +61,7 @@
 
         @if (isset($item->StarUserWithMessage))
 
-        <div class="d-flex bg-dark text-white" id="{{ $item->receiver->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
+        <div class="d-flex bg-dark text-white star-item" id="{{ $item->receiver->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
             <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
                 @if ($item->receiver->image_path!=Null)
                 <img data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ $item->receiver->name }}','{{ $item->receiver->image_path }}','{{ $item->receiver->phone }}','{{ $item->receiver->email }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->receiver->image_path) }}" alt="">
@@ -66,8 +98,8 @@
     </div>
 
 </div>
-<div class="col-7" style="background: #1d1f1f;padding: 0px;" id="chatboardofreceiver">
-    <div style="width: 292px;height: 283px;margin-left: 250px;margin-top: 92px;">
+<div class="col-7 d-none d-md-block star-right" style="padding: 0px;" id="chatboardofreceiver">
+    <div style="width: 292px;height: 283px;margin-left: 250px;margin-top: 135px;">
         <img src="{{ asset('img/messages.png') }}" style="height: 100%;width: 100%;" alt="">
     </div>
 </div>

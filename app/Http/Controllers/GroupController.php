@@ -7,6 +7,7 @@ use App\Events\GroupMessageEvent;
 use App\Events\ViewToReceiver;
 use App\Models\Friendship;
 use App\Models\Group;
+use App\Models\Group_Message_Emoji;
 use App\Models\GroupMessage;
 use App\Models\GroupMessageDeleteAt;
 use App\Models\GroupUser;
@@ -105,8 +106,9 @@ class GroupController extends Controller
 
     public function Group_Send_Message(Request $request)
     {
-        // dd($request->all());
+
         if (Auth::check()) {
+
             $files = $request->file('files');
             if (isset($files)) {
                 foreach ($files as $file) {
@@ -130,22 +132,33 @@ class GroupController extends Controller
                     }
                 }
             } else {
-                $group_message = new GroupMessage();
-                $group_message->user_id = Auth::id();
-                $group_message->group_id = $request->group_id;
-                $group_message->message = $request->message;
-                $group_message->save();
 
-                $get_group_message_user = GroupUser::where('group_id', $group_message->group_id)->get();
+                if ($request->editId != null) {
+                    $group_message = GroupMessage::find($request->editId);
 
-                foreach ($get_group_message_user as $item) {
+                    if (!empty($group_message)) {
+                        $group_message->message = $request->message;
+                        $group_message->save();
+                    }
+                } else {
 
-                    $message_add_delete_at = new GroupMessageDeleteAt();
-                    $message_add_delete_at->message_id = $group_message->id;
-                    $message_add_delete_at->user_id = $item->user_id;
-                    $message_add_delete_at->group_id  = $group_message->group_id;
-                    $message_add_delete_at->status  = "send";
-                    $message_add_delete_at->save();
+                    $group_message = new GroupMessage();
+                    $group_message->user_id = Auth::id();
+                    $group_message->group_id = $request->group_id;
+                    $group_message->message = $request->message;
+                    $group_message->save();
+
+                    $get_group_message_user = GroupUser::where('group_id', $group_message->group_id)->get();
+
+                    foreach ($get_group_message_user as $item) {
+
+                        $message_add_delete_at = new GroupMessageDeleteAt();
+                        $message_add_delete_at->message_id = $group_message->id;
+                        $message_add_delete_at->user_id = $item->user_id;
+                        $message_add_delete_at->group_id  = $group_message->group_id;
+                        $message_add_delete_at->status  = "send";
+                        $message_add_delete_at->save();
+                    }
                 }
             }
 
@@ -167,13 +180,12 @@ class GroupController extends Controller
         $userid = Auth::id();
         $group_id = $request->group_id;
 
-        $message_data_to_show = GroupMessage::with(['UserData', 'GroupMessageDeleteAtData' => function ($query) {
+        $message_data_to_show = GroupMessage::with(['MessageEmoji.UserData', 'UserData', 'GroupMessageDeleteAtData' => function ($query) {
             $query->where('user_id', Auth::id());
         }])->where('group_id', $group_id)
             ->orderBy('created_at', "asc")
             ->get();
 
-        // dd($message_data_to_show->toArray());
         if (isset($message_data_to_show)) {
             return view('User.Group.Group_Message_Show', ['message' => $message_data_to_show]);
         } else {
@@ -217,15 +229,27 @@ class GroupController extends Controller
     public function Group_Message_Emoji(Request $request)
     {
         if (Auth::check()) {
-            $messages = GroupMessage::find($request->message_id);
-            if (isset($messages)) {
-                $messages->response = $request->emoji_code;
-                $messages->save();
-                // dd($messages->toArray());
-                event(new EmojiResponseEvent($messages));
-                return response()->json(['data' => 'yes']);
+
+            $Group_Emoji_Exist = Group_Message_Emoji::where("user_id", Auth::id())
+                ->where("message_id", $request->message_id)
+                ->where("emoji_code", $request->emoji_code)
+                ->first();
+
+            $Group_Message = GroupMessage::find($request->message_id);
+
+            if (empty($Group_Emoji_Exist)) {
+
+                $GroupMessageEmoji = new Group_Message_Emoji();
+                $GroupMessageEmoji->user_id = Auth::id();
+                $GroupMessageEmoji->message_id = $request->message_id;
+                $GroupMessageEmoji->emoji_code = $request->emoji_code;
+                $GroupMessageEmoji->save();
+                event(new GroupMessageEvent($Group_Message->group_id, Auth::user()));
             } else {
-                return response()->json(['data' => 'not found data message']);
+
+                $Group_Emoji_Exist->delete();
+                event(new GroupMessageEvent($Group_Message->group_id, Auth::user()));
+                return response()->json(['group_id' => $Group_Message->group_id]);
             }
         } else {
             return response()->json(['data' => 'not found data message']);
@@ -354,10 +378,18 @@ class GroupController extends Controller
         $group_Find = Group::find($request->group_id);
 
         $files = $request->file;
-        if (isset($group_Find)) {
+        $groupName = $request->groupname;
+        if (isset($files)) {
             $files->storeAs('public/img', $files->getClientOriginalName());
             $group_Find->image_path = $files->getClientOriginalName();
             $group_Find->save();
+        }
+        if (isset($groupName)) {
+            $group_Find->name = $groupName;
+            $group_Find->save();
+        }
+
+        if (isset($group_Find)) {
             return response()->json(['data' => 'done save image']);
         } else {
             return response()->json(['data' => 'not save image']);
@@ -398,10 +430,7 @@ class GroupController extends Controller
             $query->where('name', 'like', "%" . $search_text . "%");
         }])->where('user_id', Auth::id())->get();
 
-        // dd($Group_Data->toArray());
-        // $Group_Data = Group::where('name', 'like', "%" . $request->search_text . "%")->get();
         if (isset($Group_Data)) {
-            // dd($request->all()); 
             return view('User.Group.Group_Search', ['group' => $Group_Data]);
         }
     }
@@ -420,5 +449,18 @@ class GroupController extends Controller
             $value->save();
         }
         return response()->json(['data' => 'done']);
+    }
+
+    public function Edit_Get_Message_Group(Request $request)
+    {
+        if (isset($request->g_message_id)) {
+            $group_message = GroupMessage::find($request->g_message_id);
+
+            if (isset($group_message)) {
+                return response()->json(['message' => $group_message->message]);
+            }
+        } else {
+            return response()->json(['data' => 'not found']);
+        }
     }
 }

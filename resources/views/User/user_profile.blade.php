@@ -127,95 +127,116 @@
     }
 
 </style>
-<div class="col-11">
-    <form method="post" action="{{ route('user_profiles') }}" style="padding: 11px 119px 136px 112px;" enctype="multipart/form-data">
-        <div class="row">
-            <div class="col-5">
+<div class="col-12 col-sm-4">
+    <form method="post" action="{{ route('user_profiles') }}" enctype="multipart/form-data">
+        <div class="row" style="padding: 20px;">
+            <h3 class="text-white" style="font-family: 'Inter', sans-serif;">Profile</h3>
+
+            <div class="row scroll-container2" style="height: 89vh;">
                 @if (isset(Auth::user()->image_path))
-                <div class="d-flex justify-content-center">
-                    <div style="height: 222px;width: 219px;" class="d-flex justify-content-center">
-                        {{-- <img id="UserImagePreview" data-bs-toggle="modal" data-bs-target="#imageshowmodel" onclick="imagesetshow('{{ Auth::user()->name }}','{{ Auth::user()->image_path }}')" src="{{ asset('storage/img/'.Auth::user()->image_path) }}" style="object-fit: contain;height: 222px;width: 219px;border-radius: 18px;" alt=""> --}}
-                        <img id="UserImagePreview" style="height: 187px;width: 175px;object-fit: cover;border-radius: 18px;" src="{{ asset('storage/img/'.Auth::user()->image_path) }}" alt="">
-                    </div>
-                </div>
-                @error('file')
-                <div style="margin: px 0px 0px 40px;" class="text-danger">{{ $message }}</div>
-                @enderror
+                <div class="d-flex justify-content-center" style="padding: 30px;">
 
-                <div class="d-flex justify-content-center mt-2">
-                    <a href="{{ route('user_profiles_image_remove') }}">
-                        <button type="button" class="btn btn-primary">Remove Image</button>
-                    </a>
-                </div>
+                    <div style="position: relative; height: 151px; width: 150px;" onclick="imageMoreMenuShow()" class="d-flex justify-content-center">
 
-                <div class="container" style="margin-top: 109px;">
-                    <div class="folder">
-                        <div class="front-side">
-                            <div class="tip"></div>
-                            <div class="cover"></div>
+                        <!-- Profile Image -->
+                        <img id="UserImagePreview" style="height: 100%; width:100%; object-fit: cover; border-radius: 180px;" src="{{ asset('storage/img/'.Auth::user()->image_path) }}" alt="">
+
+                        <!-- Camera/Icon Button -->
+                        <div style="top: 11px;position: absolute;bottom: 0;right: 0;height: 40px;width: 40px;background: #0a3843;display: flex;justify-content: center;align-items: center;border-radius: 50%;color: white;">
+
+                            <i class="fa-solid fa-image"></i>
+
                         </div>
-                        <div class="back-side cover"></div>
+
                     </div>
-                    <label class="custom-file-upload">
-                        <input class="title" type="file" name="file" />
-                        Upload a File
-                    </label>
+
+                </div>
+
+                <div id="imageMenu" style="display:none;position: absolute;background: rgb(22, 23, 23);height: 81px;width: 168px;top: 29%;left: 26%;border-radius: 20px;">
+
+                    <div class="hover_change_all" style="margin-top: 7px;padding: 5px;border-radius: 20px;">
+                        <div class="d-flex text-white" onclick="triggerInputFile()">
+                            <i class="fa-solid fa-folder-open d-flex justify-content-center align-items-center"></i>
+                            <div style="padding-left: 5px;font-family: 'Inter', sans-serif;">
+                                Upload Image
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hover_change_all" style="padding: 5px;border-radius: 20px;">
+                        <a href="{{ route('user_profiles_image_remove') }}" style="text-decoration: none;">
+                            <div class="d-flex text-white">
+                                <i class="fa-regular fa-trash-can d-flex justify-content-center align-items-center"></i>
+                                <div style="padding-left: 5px;font-family: 'Inter', sans-serif;">
+                                    Remove Image
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
                 </div>
                 @else
-                <div class="mt-4">
-                    <div class="text-white" style="display: flex;justify-content: center;margin: 20px;">
-                        Add Your Images
-                    </div>
-                    <div class="d-flex justify-content-center">
-                        <div style="height: 222px;width: 219px;" class="d-flex justify-content-center">
-                            <img id="UserImagePreview" style="border-radius: 18px;height: 187px;width: 175px;object-fit: cover;" src="{{ asset('img/galleryimg01.png') }}" alt="">
+                <div class="d-flex justify-content-center" style="padding: 30px;">
+                    <div style="height: 151px;width: 150px;" onclick="imageMoreMenuShow()" class="d-flex justify-content-center">
+                        @if (Auth::user()->gender=='Men')
+                        <img id="UserImagePreview" style="height: 100%;width:100%;object-fit: cover;border-radius: 180px;" src="{{ asset('img/male.png') }}" alt="">
 
-                        </div>
-                    </div>
-                    @error('file')
-                    <div style="margin: px 0px px 40px;" class="text-danger">{{ $message }}</div>
-                    @enderror
-
-                    <div class="d-flex justify-content-center">
-                        <div class="container" style="margin-top: 80px;">
-                            <div class="folder">
-                                <div class="front-side">
-                                    <div class="tip"></div>
-                                    <div class="cover"></div>
-                                </div>
-                                <div class="back-side cover"></div>
-                            </div>
-                            <label class="custom-file-upload">
-                                <input class="title" type="file" id="UserImage" name="file" />
-                                Upload a File
-                            </label>
-                        </div>
+                        @else
+                        <img id="UserImagePreview" style="height: 100%;width:100%;object-fit: cover;border-radius: 180px;" src="{{ asset('img/female.png') }}" alt="">
+                        @endif
                     </div>
                 </div>
+
+                <div id="imageMenu" style="display:none;position: absolute;background: rgb(22, 23, 23);height: 50px;width: 168px;top: 29%;left: 26%;border-radius: 20px;">
+
+                    <div class="hover_change_all" style="margin-top: 7px;padding: 5px;border-radius: 20px;">
+                        <div class="d-flex text-white" onclick="triggerInputFile()">
+                            <i class="fa-solid fa-folder-open d-flex justify-content-center align-items-center"></i>
+                            <div style="padding-left: 5px;font-family: 'Inter', sans-serif;">
+                                Upload Image
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
                 @endif
-            </div>
-            <div class="col-6 scroll-container" style="overflow: scroll; padding-bottom: 80px;overflow-y: auto;" id="scrollbarid">
-                <h3 class="text-center mt-5 d-flex justify-content-center align-items-center" style="  background: linear-gradient(135deg, #4942e7, #f9d8c9);-webkit-background-clip: text;-webkit-text-fill-color: transparent;background-clip: text;color: transparent;height: 50px;">User Inforamtion</h3>
+                @error('file')
+
+                <div style="margin: px 0px 0px 40px;" class="text-danger">{{ $message }}</div>
+
+                @enderror
 
                 @csrf
+                <input class="title" type="file" id="UserImage" name="file" hidden />
                 <div class="mb-3">
-                    <label class="form-label text-white">User Name</label>
+                    <label class="form-label" style="color: gray;">Name</label>
                     <input type="text" name="id" value="{{ Auth::id() }}" hidden>
-                    <input type="text" class="form-control profile-input-border" name="username" value="{{ old('username',Auth::user()->name) }}">
+                    <div class="d-flex">
+                        <input type="text" id="username" readonly style="border-radius: 0px;background: transparent;border: none;color: white;padding: 10px 0px;box-shadow: none;" class="form-control" name="username" value="{{ old('username',Auth::user()->name) }}">
+                        <div class="d-flex justify-content-center align-items-center" onclick="editInputBox(this)">
+                            <i class="fa-solid fa-pen-fancy text-white"></i>
+                            <i class="fa-solid fa-check text-white" style="display: none"></i>
+                        </div>
+                    </div>
                     @error('username')
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="mb-3">
-                    <label class="form-label text-white">Phone No.</label>
-                    <input type="text" class="form-control profile-input-border" name="phone" value="{{ old('phone',Auth::user()->phone) }}">
+                    <label class="form-label" style="color: gray;">Phone No.</label>
+                    <div class="d-flex">
+                        <input type="text" readonly style="border-radius: 0px;background: transparent;border: none;color: white;padding: 10px 0px;box-shadow: none;" class="form-control profile-input-border" name="phone" value="{{ old('phone',Auth::user()->phone) }}">
+                        <div class="d-flex justify-content-center align-items-center" onclick="editInputBox(this)">
+                            <i class="fa-solid fa-pen-fancy text-white"></i>
+                            <i class="fa-solid fa-check text-white" style="display: none"></i>
+                        </div>
+                    </div>
                     @error('phone')
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="mb-3">
 
-                    <label class="form-label text-white">Gender</label> <br>
+                    <label class="form-label" style="color: gray;">Gender</label> <br>
                     <input type="radio" name="gender" value="Men" {{ old('gender',Auth::user()->gender)=='Men'?'checked':'' }}><span class="text-white">Men</span>
                     <input type="radio" name="gender" value="Women" {{ old('gender',Auth::user()->gender)=='Women'?'checked':'' }}><span class="text-white">Women</span>
                     @error('gender')
@@ -223,24 +244,72 @@
                     @enderror
                 </div>
                 <div class="mb-3">
-                    <label class="form-label text-white">Email Address</label>
-                    <input type="text" class="form-control profile-input-border" name="email" value="{{ old('email',Auth::user()->email) }}">
+                    <label class="form-label" style="color: gray;">Email Address</label>
+                    <div class="d-flex">
+                        <input type="text" readonly style="border-radius: 0px;background: transparent;border: none;color: white;padding: 10px 0px;box-shadow: none;" class="form-control profile-input-border" name="email" value="{{ old('email',Auth::user()->email) }}">
+                        <div class="d-flex justify-content-center align-items-center" onclick="editInputBox(this)">
+                            <i class="fa-solid fa-pen-fancy text-white"></i>
+                            <i class="fa-solid fa-check text-white" style="display: none"></i>
+                        </div>
+                    </div>
                     @error('email')
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between" style="padding-top: 26px;padding-bottom: 26px;">
 
-                    <a href="{{ route('dashboard') }}"><button type="button" class="btn btn-primary">Back</button></a>
-                    <button type="submit" class="btn btn-primary ">Save Change</button>
+                    <a href="{{ route('dashboard') }}"><button type="button" class="rounded-5 btn btn-primary">Back</button></a>
+                    <button type="submit" class="btn btn-primary rounded-5">Save Change</button>
                 </div>
+
+            </div>
     </form>
 </div>
+</div>
+<div class="col-0 col-sm-7">
+    <div class="d-flex justify-content-center align-items-center text-white" style="height: 100vh">
+        <h3>
+            Profile
+        </h3>
+    </div>
 </div>
 </div>
 
 
 <script>
+    function triggerInputFile() {
+        $("#UserImage").click();
+        $('#imageMenu').css('display', 'none');
+    }
+
+    function imageMoreMenuShow() {
+
+        if ($('#imageMenu').css('display') == 'none') {
+            $('#imageMenu').css('display', 'block');
+        } else {
+            $('#imageMenu').css('display', 'none');
+        }
+
+    }
+
+    function editInputBox(thisDiv) {
+
+        if ($($(thisDiv).children()[1]).css('display') == 'none') {
+            $($(thisDiv).children()[0]).css('display', 'none');
+            $($(thisDiv).children()[1]).css('display', 'block');
+            $(thisDiv).parent().children().eq(0).prop('readonly', false);
+            $(thisDiv).parent().children().eq(0).css("border-bottom", "1px solid");
+
+        } else {
+            $($(thisDiv).children()[0]).css('display', 'block');
+            $($(thisDiv).children()[1]).css('display', 'none');
+            $(thisDiv).parent().children().eq(0).prop('readonly', true);
+            $(thisDiv).parent().children().eq(0).css("border-bottom", "none");
+
+        }
+    }
+
+
     fileInput = document.getElementById('UserImage');
     imagePreview = document.getElementById('UserImagePreview');
 

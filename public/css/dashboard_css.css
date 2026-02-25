@@ -1,11 +1,35 @@
+/* Enhanced Scrollbar Styles */
 .scroll-container1 {
     scrollbar-color: #2e2f2f black;
     overflow-y: scroll;
 }
+
 .scroll-container2 {
-    scrollbar-color: #2e2f2f black;
+    scrollbar-color: #2e2f2f transparent;
     overflow-y: scroll;
+    scrollbar-width: thin;
 }
+
+::-webkit-scrollbar {
+    width: 8px;      /* vertical scrollbar */
+    height: 8px;     /* horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
 .scroll-container {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -14,6 +38,14 @@
 
 .scroll-container::-webkit-scrollbar {
     display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
 }
 
 .messagehovercontent {
@@ -26,8 +58,21 @@
 
 .w_message {
     max-width: 60%;
-    /* overflow-wrap: break-word; */
     overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* Responsive message width */
+@media (max-width: 768px) {
+    .w_message {
+        max-width: 85%;
+    }
+}
+
+@media (max-width: 576px) {
+    .w_message {
+        max-width: 90%;
+    }
 }
 
 .loader {
@@ -143,13 +188,13 @@
 /* Emoji Bar Styles */
 .emoji-bar {
     position: absolute;
-    left: 36%;
-    top: 15%;
+    left: 297px;
+    top: 3%;
     transform: translateX(-50%) scale(0.5);
     display: flex;
     background-color: white;
     border-radius: 30px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     padding: 8px;
     z-index: 10;
     opacity: 0;
@@ -164,12 +209,38 @@
     visibility: visible;
     transform: translateX(-50%) scale(1);
 }
+
 .sender_message:hover .emoji-bar {
     height: 50px;
     opacity: 1;
-    left: 52%;
+    left: 70%;
     visibility: visible;
     transform: translateX(-50%) scale(1);
+    width: 252px;
+}
+
+/* Mobile emoji bar adjustments */
+@media (max-width: 768px) {
+    .emoji-bar {
+        left: 50%;
+        transform: translateX(-50%) scale(0.8);
+    }
+    
+    .receiver_message:hover .emoji-bar,
+    .sender_message:hover .emoji-bar {
+        transform: translateX(-50%) scale(0.9);
+    }
+}
+
+@media (max-width: 576px) {
+    .emoji-bar {
+        padding: 6px;
+        border-radius: 25px;
+    }
+    
+    .emoji-reaction {
+        margin: 0 2px;
+    }
 }
 
 .showmoareoptionArrow{
@@ -285,5 +356,97 @@
 @keyframes spinning82341 {
     to {
         transform: rotate(360deg);
+    }
+}
+
+/* Additional Responsive Styles */
+@media (max-width: 1200px) {
+    .container {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 992px) {
+    .post {
+        padding: 15px;
+        margin: 15px 5px;
+    }
+}
+
+@media (max-width: 768px) {
+    .post {
+        padding: 12px;
+        margin: 10px 5px;
+        border-radius: 8px;
+    }
+    
+    .post-content h2 {
+        font-size: 16px;
+    }
+    
+    .post-content p {
+        font-size: 14px;
+    }
+    
+    .reaction-button {
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 576px) {
+    .post {
+        padding: 10px;
+        margin: 8px 5px;
+    }
+    
+    .post-content h2 {
+        font-size: 15px;
+    }
+    
+    .post-content p {
+        font-size: 13px;
+    }
+    
+    .spinner {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .spinner1 {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+/* Smooth transitions for all interactive elements */
+.hover_change_all,
+.hover_change_all_remove,
+.emoji-reaction,
+.reaction-button {
+    transition: all 0.3s ease;
+}
+
+/* Better focus states for accessibility */
+button:focus,
+a:focus,
+input:focus,
+textarea:focus {
+    outline: 2px solid #01a58b;
+    outline-offset: 2px;
+}
+
+/* Improved loading states */
+.loader {
+    transition: opacity 0.3s ease;
+}
+
+/* Mobile-friendly touch targets */
+@media (max-width: 768px) {
+    button,
+    .emoji-reaction,
+    .reaction-button {
+        min-height: 44px;
+        min-width: 44px;
     }
 }

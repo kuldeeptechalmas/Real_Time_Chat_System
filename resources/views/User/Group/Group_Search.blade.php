@@ -1,12 +1,14 @@
+@if (isset($group))
+
+
 @if ($group->isNotEmpty())
 
-
-@if (isset($group))
 @foreach ($group as $item)
+
 @if (isset($item->GroupData))
 
 
-<div class="d-flex bg-dark text-white" id="{{ $item->GroupData->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
+<div class="d-flex hover_change_all text-white" id="{{ $item->GroupData->id }}" style="border-radius: 16px;position: relative;padding: 16px;margin: 4px;">
     <div class="d-flex justify-content-center" style="height: 37px;width: 37px;">
         @if ($item->GroupData->image_path!=Null)
         <img data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="imagesetshowGroup('{{ $item->GroupData->id }}','{{ $item->GroupData->name }}','{{ $item->GroupData->image_path }}')" style="height: 100%;width: 100%;object-fit: cover;border-radius: 21px;" src="{{ asset('storage/img/'.$item->GroupData->image_path) }}" alt="">
@@ -22,10 +24,13 @@
     </div>
 </div>
 @endif
+
 @endforeach
+
 @else
 <div class="text-white" style="padding: 144px 20px 20px 20px;display: flex;justify-content: center;">Group Data is Not found</div>
 @endif
+
 @else
 <div class="text-white" style="padding: 144px 20px 20px 20px;display: flex;justify-content: center;">Group Data is Not found</div>
 @endif
